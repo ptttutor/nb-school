@@ -85,7 +85,7 @@ export default function PrivacyPolicyDialog() {
 
             <div className="pt-4 border-t">
               <p className="text-sm text-gray-600">
-                การกดปุ่ม "ยอมรับ" ถือว่าท่านได้อ่านและยินยอมให้โรงเรียนเก็บรวบรวม 
+                การกดปุ่ม &ldquo;ยอมรับ&rdquo; ถือว่าท่านได้อ่านและยินยอมให้โรงเรียนเก็บรวบรวม 
                 ใช้ และเปิดเผยข้อมูลส่วนบุคคลตามนโยบายฉบับนี้
               </p>
               <p className="text-sm text-amber-700 mt-2">
