@@ -50,7 +50,7 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
 
   const { validateForm, validateStep, validateStepFields } = useFormValidation(isM4);
 
-  const gradeText = isM4 ? "มัธยมศึกษาปีที่ ๔" : "มัธยมศึกษาปีที่ ๑";
+  const gradeText = isM4 ? "มัธยมศึกษาปีที่ 4" : "มัธยมศึกษาปีที่ 1";
 
   // Address handlers
   const handleStudentProvinceChange = (province: string) => {

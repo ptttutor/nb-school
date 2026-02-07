@@ -28,7 +28,7 @@ export function Footer() {
               </div>
               <div className="flex items-start gap-2">
                 <Award className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>โรงเรียนต้นแบบ 1 อำเภอ 1 โรงเรียนในฝัน</span>
+                <span>โรงเรียนคุณภาพ ประจำอำเภอ</span>
               </div>
             </div>
           </div>
@@ -58,7 +58,7 @@ export function Footer() {
               <div>
                 <p>79 หมู่ 1 ตำบลหนองบัว</p>
                 <p>อำเภอหนองบัว จังหวัดนครสวรรค์ 60110</p>
-                <p className="mt-2 text-xs">สังกัด สพม.นครสวรรค์ (สพม.42)</p>
+                <p className="mt-2 text-xs">สังกัด สพม.นครสวรรค์</p>
               </div>
             </div>
           </div>

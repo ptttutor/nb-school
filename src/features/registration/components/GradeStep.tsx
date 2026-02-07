@@ -35,6 +35,12 @@ export function GradeStep({
                     name="scienceCumulativeM1M3"
                     value={formData.scienceCumulativeM1M3}
                     onChange={handleChange}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                        e.currentTarget.value = value.slice(0, -1);
+                      }
+                    }}
                     placeholder="0.00"
                     className="border-amber-200"
                     pattern="[0-4](\.[0-9]{1,2})?"
@@ -50,6 +56,12 @@ export function GradeStep({
                     name="mathCumulativeM1M3"
                     value={formData.mathCumulativeM1M3}
                     onChange={handleChange}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                        e.currentTarget.value = value.slice(0, -1);
+                      }
+                    }}
                     placeholder="0.00"
                     className="border-amber-200"
                     pattern="[0-4](\.[0-9]{1,2})?"
@@ -65,6 +77,12 @@ export function GradeStep({
                     name="englishCumulativeM1M3"
                     value={formData.englishCumulativeM1M3}
                     onChange={handleChange}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                        e.currentTarget.value = value.slice(0, -1);
+                      }
+                    }}
                     placeholder="0.00"
                     className="border-amber-200"
                     pattern="[0-4](\.[0-9]{1,2})?"
@@ -82,8 +100,15 @@ export function GradeStep({
                     name="gradeP4"
                     value={formData.gradeP4}
                     onChange={handleChange}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                        e.currentTarget.value = value.slice(0, -1);
+                      }
+                    }}
                     placeholder="0.00"
                     className="border-amber-200"
+                    pattern="[0-4](\.[0-9]{1,2})?"
                   />
                   <p className="text-xs text-gray-500">ระบุเกรดเฉลี่ย 0.00 - 4.00</p>
                 </div>
@@ -96,8 +121,15 @@ export function GradeStep({
                     name="gradeP5"
                     value={formData.gradeP5}
                     onChange={handleChange}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                        e.currentTarget.value = value.slice(0, -1);
+                      }
+                    }}
                     placeholder="0.00"
                     className="border-amber-200"
+                    pattern="[0-4](\.[0-9]{1,2})?"
                   />
                   <p className="text-xs text-gray-500">ระบุเกรดเฉลี่ย 0.00 - 4.00</p>
                 </div>

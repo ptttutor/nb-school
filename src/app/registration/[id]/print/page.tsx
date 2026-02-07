@@ -135,10 +135,10 @@ export default function PrintPage({ params }: { params: Promise<{ id: string }> 
     );
   }
 
-  const grade = registration.gradeLevel === "m4" ? "๔" : "๑";
+  const grade = registration.gradeLevel === "m4" ? "4" : "1";
   const gradeTH = registration.gradeLevel === "m4"
-    ? "มัธยมศึกษาปีที่ ๔"
-    : "มัธยมศึกษาปีที่ ๑";
+    ? "มัธยมศึกษาปีที่ 4"
+    : "มัธยมศึกษาปีที่ 1";
   const roomType = registration.isSpecialISM ? "ห้องเรียนพิเศษ ISM" : "ห้องเรียนปกติ";
 
   return (
@@ -446,7 +446,7 @@ export default function PrintPage({ params }: { params: Promise<{ id: string }> 
               <div className="border-2 border-black" style={{padding: '8px', margin: '12px 0'}}>
                 <div className="font-bold text-sm" style={{marginBottom: '6px'}}>วิชาที่สอบ</div>
                 <div className="text-sm" style={{lineHeight: '1.6'}}>
-                  <div>๑. วิทยาศาสตร์</div>
+                  <div>1. วิทยาศาสตร์</div>
                   <div>๒. คณิตศาสตร์</div>
                   <div>๓. ภาษาอังกฤษ</div>
                 </div>

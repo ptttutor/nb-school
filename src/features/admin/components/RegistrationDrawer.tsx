@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Save, X } from "lucide-react";
 import type { Registration } from "@/types";
@@ -98,7 +97,7 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:w-[400px] overflow-y-auto">
+      <SheetContent className="w-full sm:max-w-[1200px] max-w-none overflow-y-auto">
         <SheetHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -114,7 +113,7 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
                 variant="outline"
                 size="sm"
                 onClick={startEdit}
-                className="border-amber-300"
+                className="border-amber-300 text-amber-700 hover:bg-amber-100"
               >
                 <Edit className="w-4 h-4 mr-1" />
                 แก้ไข
@@ -134,7 +133,7 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
                   size="sm"
                   onClick={saveEdit}
                   disabled={isSaving}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
                 >
                   <Save className="w-4 h-4 mr-1" />
                   {isSaving ? 'กำลังบันทึก...' : 'บันทึก'}
@@ -144,110 +143,106 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
           </div>
         </SheetHeader>
 
-        <div className="mt-6 space-y-4">
-          {/* ระดับชั้น */}
-          <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-            <Label className="text-gray-600 text-xs">ระดับชั้นที่สมัคร</Label>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge className="bg-blue-600 text-white text-xs">
-                {registration.gradeLevel === 'm4' ? 'ม.4' : 'ม.1'}
-              </Badge>
-              <span className="text-sm font-medium">
-                {registration.gradeLevel === 'm4' ? 'มัธยมศึกษาปีที่ 4' : 'มัธยมศึกษาปีที่ 1'}
-              </span>
-              {registration.isSpecialISM && (
-                <Badge className="bg-amber-600 text-white text-xs">ISM</Badge>
+        <div className="mt-6 space-y-6">
+          {/* ระดับชั้น และข้อมูลส่วนตัว */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-gray-600">ระดับชั้นที่สมัคร</Label>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-blue-600 text-white">
+                  {registration.gradeLevel === 'm4' ? 'ม.4' : 'ม.1'}
+                </span>
+                <span className="font-medium">
+                  {registration.gradeLevel === 'm4' ? 'มัธยมศึกษาปีที่ 4' : 'มัธยมศึกษาปีที่ 1'}
+                </span>
+                {registration.isSpecialISM && (
+                  <span className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-purple-600 text-white">ISM</span>
+                )}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-600">คำนำหน้า</Label>
+              <p className="font-medium">{registration.title}</p>
+            </div>
+            {registration.idCardOrPassport && (
+              <div className="space-y-2">
+                <Label className="text-gray-600">เลขบัตรประชาชน/พาสปอร์ต</Label>
+                <p className="font-medium">{registration.idCardOrPassport}</p>
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label className="text-gray-600">วันเกิด</Label>
+              <p className="font-medium">
+                {new Date(registration.birthDate).toLocaleDateString('th-TH', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </p>
+            </div>
+
+            {/* ชื่อ - แก้ไขได้ */}
+            <div className="space-y-2">
+              <Label className="text-gray-600">ชื่อ</Label>
+              {isEditing ? (
+                <Input
+                  value={editData.firstNameTH || ''}
+                  onChange={(e) => handleInputChange('firstNameTH', e.target.value)}
+                  className="border-amber-200"
+                />
+              ) : (
+                <p className="font-medium">{registration.firstNameTH}</p>
               )}
             </div>
-          </div>
 
-          {/* ข้อมูลส่วนตัว */}
-          <div>
-            <h3 className="font-semibold text-base mb-3 text-amber-900">ข้อมูลส่วนตัว</h3>
-            <div className="space-y-3">
-              {registration.idCardOrPassport && (
-                <div>
-                  <Label className="text-gray-600 text-xs">เลขบัตรประชาชน/พาสปอร์ต</Label>
-                  <p className="text-sm font-medium mt-1">{registration.idCardOrPassport}</p>
-                </div>
+            {/* นามสกุล - แก้ไขได้ */}
+            <div className="space-y-2">
+              <Label className="text-gray-600">นามสกุล</Label>
+              {isEditing ? (
+                <Input
+                  value={editData.lastNameTH || ''}
+                  onChange={(e) => handleInputChange('lastNameTH', e.target.value)}
+                  className="border-amber-200"
+                />
+              ) : (
+                <p className="font-medium">{registration.lastNameTH}</p>
               )}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-gray-600 text-xs">คำนำหน้า</Label>
-                  <p className="text-sm font-medium mt-1">{registration.title}</p>
-                </div>
-                <div>
-                  <Label className="text-gray-600 text-xs">วันเกิด</Label>
-                  <p className="text-sm font-medium mt-1">
-                    {new Date(registration.birthDate).toLocaleDateString('th-TH', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: '2-digit',
-                    })}
-                  </p>
-                </div>
-              </div>
-              
-              {/* ชื่อ - แก้ไขได้ */}
-              <div>
-                <Label className="text-gray-600 text-xs">ชื่อ</Label>
-                {isEditing ? (
-                  <Input
-                    value={editData.firstNameTH || ''}
-                    onChange={(e) => handleInputChange('firstNameTH', e.target.value)}
-                    className="mt-1 h-8 text-sm"
-                  />
-                ) : (
-                  <p className="text-sm font-medium mt-1">{registration.firstNameTH}</p>
-                )}
-              </div>
-              
-              {/* นามสกุล - แก้ไขได้ */}
-              <div>
-                <Label className="text-gray-600 text-xs">นามสกุล</Label>
-                {isEditing ? (
-                  <Input
-                    value={editData.lastNameTH || ''}
-                    onChange={(e) => handleInputChange('lastNameTH', e.target.value)}
-                    className="mt-1 h-8 text-sm"
-                  />
-                ) : (
-                  <p className="text-sm font-medium mt-1">{registration.lastNameTH}</p>
-                )}
-              </div>
+            </div>
 
-              {/* เบอร์โทร - แก้ไขได้ */}
-              <div>
-                <Label className="text-gray-600 text-xs">เบอร์โทรศัพท์</Label>
-                {isEditing ? (
-                  <Input
-                    value={editData.phone || ''}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="mt-1 h-8 text-sm"
-                  />
-                ) : (
-                  <p className="text-sm font-medium mt-1">{registration.phone}</p>
-                )}
-              </div>
+            {/* เบอร์โทร - แก้ไขได้ */}
+            <div className="space-y-2">
+              <Label className="text-gray-600">เบอร์โทรศัพท์</Label>
+              {isEditing ? (
+                <Input
+                  value={editData.phone || ''}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  className="border-amber-200"
+                />
+              ) : (
+                <p className="font-medium">{registration.phone}</p>
+              )}
             </div>
           </div>
 
           {/* ข้อมูลการศึกษา */}
           {(registration.schoolName || registration.educationStatus) && (
-            <div>
-              <h3 className="font-semibold text-base mb-2 text-amber-900">ข้อมูลการศึกษา</h3>
-              <div className="space-y-2">
+            <div className="mt-6 pt-6 border-t">
+              <h3 className="font-semibold mb-4">ข้อมูลการศึกษา</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {registration.schoolName && (
-                  <div>
-                    <Label className="text-gray-600 text-xs">โรงเรียน</Label>
-                    <p className="text-sm font-medium mt-1">{registration.schoolName}</p>
+                  <div className="space-y-2">
+                    <Label className="text-gray-600">โรงเรียน</Label>
+                    <p className="font-medium">{registration.schoolName}</p>
                   </div>
                 )}
                 {registration.schoolProvince && (
-                  <div className="text-xs text-gray-600">
-                    {registration.schoolSubdistrict && `${registration.schoolSubdistrict} `}
-                    {registration.schoolDistrict && `${registration.schoolDistrict} `}
-                    {registration.schoolProvince}
+                  <div className="space-y-2">
+                    <Label className="text-gray-600">ที่อยู่โรงเรียน</Label>
+                    <p className="text-sm">
+                      {registration.schoolSubdistrict && `${registration.schoolSubdistrict} `}
+                      {registration.schoolDistrict && `${registration.schoolDistrict} `}
+                      {registration.schoolProvince}
+                    </p>
                   </div>
                 )}
               </div>
@@ -256,49 +251,47 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
 
           {/* เกรดเฉลี่ยรายวิชา */}
           {registration.gradeLevel === 'm4' ? (
-            // คะแนนสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)
-            (registration.scienceCumulativeM1M3 || registration.mathCumulativeM1M3 || 
-             registration.englishCumulativeM1M3) && (
-              <div>
-                <h3 className="font-semibold text-lg mb-3 text-amber-900">คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน)</h3>
+            (registration.scienceCumulativeM1M3 || registration.mathCumulativeM1M3 ||
+              registration.englishCumulativeM1M3) && (
+              <div className="mt-6 pt-6 border-t">
+                <h3 className="font-semibold mb-4">คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน)</h3>
                 <div className="grid grid-cols-2 gap-4">
                   {registration.scienceCumulativeM1M3 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">กลุ่มสาระวิทยาศาสตร์</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.scienceCumulativeM1M3}</p>
+                    <div>
+                      <Label className="text-gray-600">วิทยาศาสตร์</Label>
+                      <p className="font-bold text-2xl text-green-600 mt-1">{registration.scienceCumulativeM1M3}</p>
                     </div>
                   )}
                   {registration.mathCumulativeM1M3 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">กลุ่มสาระคณิตศาสตร์</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.mathCumulativeM1M3}</p>
+                    <div>
+                      <Label className="text-gray-600">คณิตศาสตร์</Label>
+                      <p className="font-bold text-2xl text-blue-600 mt-1">{registration.mathCumulativeM1M3}</p>
                     </div>
                   )}
                   {registration.englishCumulativeM1M3 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">กลุ่มสาระภาษาอังกฤษ</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.englishCumulativeM1M3}</p>
+                    <div>
+                      <Label className="text-gray-600">ภาษาอังกฤษ</Label>
+                      <p className="font-bold text-2xl text-purple-600 mt-1">{registration.englishCumulativeM1M3}</p>
                     </div>
                   )}
                 </div>
               </div>
             )
           ) : (
-            // เกรดสำหรับ ม.1 (ป.4-5)
             (registration.gradeP4 || registration.gradeP5) && (
-              <div>
-                <h3 className="font-semibold text-lg mb-3 text-amber-900">เกรดเฉลี่ย</h3>
+              <div className="mt-6 pt-6 border-t">
+                <h3 className="font-semibold mb-4">เกรดเฉลี่ย</h3>
                 <div className="grid grid-cols-2 gap-4">
                   {registration.gradeP4 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">ระดับชั้นประถมศึกษาปีที่ 4</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.gradeP4}</p>
+                    <div>
+                      <Label className="text-gray-600">ประถมศึกษาปีที่ 4</Label>
+                      <p className="font-bold text-2xl text-green-600 mt-1">{registration.gradeP4}</p>
                     </div>
                   )}
                   {registration.gradeP5 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">ระดับชั้นประถมศึกษาปีที่ 5</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.gradeP5}</p>
+                    <div>
+                      <Label className="text-gray-600">ประถมศึกษาปีที่ 5</Label>
+                      <p className="font-bold text-2xl text-blue-600 mt-1">{registration.gradeP5}</p>
                     </div>
                   )}
                 </div>
@@ -307,149 +300,200 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
           )}
 
           {/* ที่อยู่ */}
-          <div>
-            <h3 className="font-semibold text-base mb-3 text-amber-900">ที่อยู่ตามทะเบียนบ้าน</h3>
-            <div className="space-y-3">
-              {/* บ้าน เลขที่ - แก้ไขได้ */}
-              <div>
-                <Label className="text-gray-600 text-xs">บ้านเลขที่</Label>
+          <div className="mt-6 pt-6 border-t">
+            <h3 className="font-semibold mb-4">ที่อยู่ตามทะเบียนบ้าน</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-gray-600">บ้านเลขที่</Label>
                 {isEditing ? (
                   <Input
                     value={editData.houseNumber || ''}
                     onChange={(e) => handleInputChange('houseNumber', e.target.value)}
-                    className="mt-1 h-8 text-sm"
+                    className="border-amber-200"
                   />
                 ) : (
-                  <p className="text-sm font-medium mt-1">{registration.houseNumber}</p>
+                  <p className="font-medium">{registration.houseNumber}</p>
                 )}
               </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                {/* หมู่ - แก้ไขได้ */}
-                <div>
-                  <Label className="text-gray-600 text-xs">หมู่</Label>
+              {registration.moo && (
+                <div className="space-y-2">
+                  <Label className="text-gray-600">หมู่</Label>
                   {isEditing ? (
                     <Input
                       value={editData.moo || ''}
                       onChange={(e) => handleInputChange('moo', e.target.value)}
-                      className="mt-1 h-8 text-sm"
+                      className="border-amber-200"
                     />
                   ) : (
-                    <p className="text-sm font-medium mt-1">{registration.moo || '-'}</p>
+                    <p className="font-medium">{registration.moo}</p>
                   )}
                 </div>
-                {/* ซอย - แก้ไขได้ */}
-                <div>
-                  <Label className="text-gray-600 text-xs">ซอย</Label>
+              )}
+              {registration.soi && (
+                <div className="space-y-2">
+                  <Label className="text-gray-600">ซอย</Label>
                   {isEditing ? (
                     <Input
                       value={editData.soi || ''}
                       onChange={(e) => handleInputChange('soi', e.target.value)}
-                      className="mt-1 h-8 text-sm"
+                      className="border-amber-200"
                     />
                   ) : (
-                    <p className="text-sm font-medium mt-1">{registration.soi || '-'}</p>
+                    <p className="font-medium">{registration.soi}</p>
                   )}
                 </div>
-                {/* ถนน - แก้ไขได้ */}
-                <div>
-                  <Label className="text-gray-600 text-xs">ถนน</Label>
+              )}
+              {registration.road && (
+                <div className="space-y-2">
+                  <Label className="text-gray-600">ถนน</Label>
                   {isEditing ? (
                     <Input
                       value={editData.road || ''}
                       onChange={(e) => handleInputChange('road', e.target.value)}
-                      className="mt-1 h-8 text-sm"
+                      className="border-amber-200"
                     />
                   ) : (
-                    <p className="text-sm font-medium mt-1">{registration.road || '-'}</p>
+                    <p className="font-medium">{registration.road}</p>
                   )}
                 </div>
-              </div>
-
-              {/* ตำบล - แก้ไขได้ */}
-              <div>
-                <Label className="text-gray-600 text-xs">ตำบล/แขวง</Label>
+              )}
+              <div className="space-y-2">
+                <Label className="text-gray-600">ตำบล/แขวง</Label>
                 {isEditing ? (
                   <Input
                     value={editData.subdistrict || ''}
                     onChange={(e) => handleInputChange('subdistrict', e.target.value)}
-                    className="mt-1 h-8 text-sm"
+                    className="border-amber-200"
                   />
                 ) : (
-                  <p className="text-sm font-medium mt-1">{registration.subdistrict}</p>
+                  <p className="font-medium">{registration.subdistrict}</p>
                 )}
               </div>
-
-              {/* อำเภอ - แก้ไขได้ */}
-              <div>
-                <Label className="text-gray-600 text-xs">อำเภอ/เขต</Label>
+              <div className="space-y-2">
+                <Label className="text-gray-600">อำเภอ/เขต</Label>
                 {isEditing ? (
                   <Input
                     value={editData.district || ''}
                     onChange={(e) => handleInputChange('district', e.target.value)}
-                    className="mt-1 h-8 text-sm"
+                    className="border-amber-200"
                   />
                 ) : (
-                  <p className="text-sm font-medium mt-1">{registration.district}</p>
+                  <p className="font-medium">{registration.district}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-gray-600">จังหวัด</Label>
+                {isEditing ? (
+                  <Input
+                    value={editData.province || ''}
+                    onChange={(e) => handleInputChange('province', e.target.value)}
+                    className="border-amber-200"
+                  />
+                ) : (
+                  <p className="font-medium">{registration.province}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-gray-600">รหัสไปรษณีย์</Label>
+                {isEditing ? (
+                  <Input
+                    value={editData.postalCode || ''}
+                    onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                    className="border-amber-200"
+                  />
+                ) : (
+                  <p className="font-medium">{registration.postalCode}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* เอกสารประกอบการสมัคร */}
+          <div className="mt-6 pt-6 border-t">
+            <h3 className="font-semibold mb-4">เอกสารประกอบ</h3>
+            <div className="space-y-3">
+              <div>
+                <Label className="text-gray-600">รูปถ่าย</Label>
+                {registration.photoDoc ? (
+                  <a
+                    href={registration.photoDoc}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-blue-600 hover:underline mt-1"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    ดูรูปถ่าย
+                  </a>
+                ) : (
+                  <p className="text-gray-400 text-sm mt-1">ยังไม่ได้อัปโหลด</p>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                {/* จังหวัด - แก้ไขได้ */}
-                <div>
-                  <Label className="text-gray-600 text-xs">จังหวัด</Label>
-                  {isEditing ? (
-                    <Input
-                      value={editData.province || ''}
-                      onChange={(e) => handleInputChange('province', e.target.value)}
-                      className="mt-1 h-8 text-sm"
-                    />
-                  ) : (
-                    <p className="text-sm font-medium mt-1">{registration.province}</p>
-                  )}
-                </div>
-                {/* รหัสไปรษณีย์ - แก้ไขได้ */}
-                <div>
-                  <Label className="text-gray-600 text-xs">รหัสไปรษณีย์</Label>
-                  {isEditing ? (
-                    <Input
-                      value={editData.postalCode || ''}
-                      onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                      className="mt-1 h-8 text-sm"
-                    />
-                  ) : (
-                    <p className="text-sm font-medium mt-1">{registration.postalCode}</p>
-                  )}
-                </div>
+              <div>
+                <Label className="text-gray-600">สำเนาทะเบียนบ้าน</Label>
+                {registration.houseRegistrationDoc ? (
+                  <a
+                    href={registration.houseRegistrationDoc}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-blue-600 hover:underline mt-1"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    ดูทะเบียนบ้าน
+                  </a>
+                ) : (
+                  <p className="text-gray-400 text-sm mt-1">ยังไม่ได้อัปโหลด</p>
+                )}
+              </div>
+
+              <div>
+                <Label className="text-gray-600">หลักฐานแสดงผลการเรียน</Label>
+                {registration.transcriptDoc ? (
+                  <a
+                    href={registration.transcriptDoc}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-blue-600 hover:underline mt-1"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    ดูผลการเรียน
+                  </a>
+                ) : (
+                  <p className="text-gray-400 text-sm mt-1">ยังไม่ได้อัปโหลด</p>
+                )}
               </div>
             </div>
           </div>
 
           {/* สถานะ */}
-          <div className="p-4 bg-gray-50 rounded-lg border">
-            <Label className="text-gray-600 text-sm">สถานะการสมัคร</Label>
-            <div className="mt-2">
-              <Badge
-                variant={
-                  registration.status === 'approved'
-                    ? 'default'
-                    : registration.status === 'rejected'
-                    ? 'destructive'
-                    : 'secondary'
-                }
-                className={
-                  registration.status === 'approved'
-                    ? 'bg-green-500'
-                    : registration.status === 'rejected'
-                    ? ''
-                    : 'bg-yellow-500'
-                }
-              >
-                {registration.status === 'pending' && 'รอดำเนินการ'}
-                {registration.status === 'approved' && 'อนุมัติ'}
-                {registration.status === 'rejected' && 'ปฏิเสธ'}
-              </Badge>
-              <p className="text-sm text-gray-600 mt-2">
+          <div className="mt-6 pt-6 border-t">
+            <h3 className="font-semibold mb-4">สถานะการสมัคร</h3>
+            <div className="space-y-2">
+              <div>
+                {registration.status === 'approved' && (
+                  <div className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-green-500 text-white">
+                    อนุมัติ
+                  </div>
+                )}
+                {registration.status === 'rejected' && (
+                  <div className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-red-500 text-white">
+                    ปฏิเสธ
+                  </div>
+                )}
+                {registration.status === 'pending' && (
+                  <div className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-yellow-400 text-gray-900">
+                    รอดำเนินการ
+                  </div>
+                )}
+              </div>
+              <p className="text-sm text-gray-600">
                 สมัครเมื่อ: {new Date(registration.createdAt).toLocaleDateString('th-TH', {
                   year: 'numeric',
                   month: 'long',
@@ -462,7 +506,7 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
           </div>
 
           {/* ปุ่มปิด */}
-          <div className="flex justify-end pt-4 border-t">
+          <div className="flex justify-end pt-6 border-t">
             <Button
               variant="outline"
               onClick={() => onOpenChange(false)}

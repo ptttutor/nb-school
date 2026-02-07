@@ -7,91 +7,121 @@ import { GraduationCap } from "lucide-react";
 
 export function GradeSelection() {
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 py-4 md:py-6">
       {/* Title Card */}
-      <Card className="shadow-xl border-amber-200 bg-white/95 backdrop-blur">
-        <CardHeader className="text-center pb-6">
-          <div className="flex justify-center mb-4">
-            <div className="p-4 bg-amber-100 rounded-full">
-              <GraduationCap className="w-12 h-12 text-amber-700" />
-            </div>
-          </div>
-          <CardTitle className="text-3xl text-amber-900">
+      <Card className="mb-4 md:mb-6">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl md:text-3xl">
             เลือกระดับชั้นที่ต้องการสมัคร
           </CardTitle>
-          <CardDescription className="text-lg mt-2">
+          <CardDescription className="text-base md:text-lg">
             โรงเรียนหนองบัว อำเภอหนองบัว จังหวัดนครสวรรค์
           </CardDescription>
         </CardHeader>
       </Card>
 
-      {/* Grade Selection */}
-      <div className="grid md:grid-cols-2 gap-6">
+      {/* Grade Selection - Horizontal on ALL screen sizes */}
+      <div className="grid grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
         {/* ม.1 */}
-        <Link href="/register/m1">
-          <Card className="border-2 border-amber-200 hover:border-amber-400 hover:shadow-xl transition-all cursor-pointer group h-full">
-            <CardContent className="pt-8 pb-8 px-6">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4 group-hover:bg-blue-200 transition-colors">
-                  <span className="text-4xl font-bold text-blue-700">1</span>
-                </div>
-                <h3 className="text-2xl font-bold text-amber-900 mb-2">
-                  มัธยมศึกษาปีที่ ๑
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  ห้องเรียนพิเศษ ISM / ห้องเรียนทั่วไป
-                </p>
-                <ul className="text-sm text-gray-600 text-left space-y-2 mb-6">
-                  <li>• สำหรับผู้จบ ป.6 หรือเทียบเท่า</li>
-                  <li>• เลือกห้องเรียนได้ตามความต้องการ</li>
-                  <li>• เน้นวิทยาศาสตร์และคณิตศาสตร์</li>
-                </ul>
-                <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
-                  สมัครเรียน ม.1
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="text-center pb-3">
+            <div className="mx-auto w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-full flex items-center justify-center mb-3">
+              <span className="text-2xl md:text-4xl font-bold text-primary">1</span>
+            </div>
+            <CardTitle className="text-lg md:text-xl">มัธยมศึกษาปีที่ 1</CardTitle>
+            <CardDescription className="text-sm md:text-base">
+              ห้องเรียนพิเศษ ISM / ห้องเรียนทั่วไป
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ul className="space-y-1.5 text-xs md:text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>สำหรับผู้จบ ป.6 หรือเทียบเท่า</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>เลือกห้องเรียนได้ตามความต้องการ</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>เน้นวิทยาศาสตร์และคณิตศาสตร์</span>
+              </li>
+            </ul>
+            <Link href="/register/grade7" className="block">
+              <Button className="w-full" size="lg">
+                <GraduationCap className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                สมัครเรียน ม.1
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
 
         {/* ม.4 */}
-        <Link href="/register/m4">
-          <Card className="border-2 border-amber-200 hover:border-amber-400 hover:shadow-xl transition-all cursor-pointer group h-full">
-            <CardContent className="pt-8 pb-8 px-6">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4 group-hover:bg-green-200 transition-colors">
-                  <span className="text-4xl font-bold text-green-700">4</span>
-                </div>
-                <h3 className="text-2xl font-bold text-amber-900 mb-2">
-                  มัธยมศึกษาปีที่ ๔
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  ห้องเรียนพิเศษ ISM / ห้องเรียนทั่วไป
-                </p>
-                <ul className="text-sm text-gray-600 text-left space-y-2 mb-6">
-                  <li>• สำหรับผู้จบ ม.3 หรือเทียบเท่า</li>
-                  <li>• เลือกห้องเรียนได้ตามความต้องการ</li>
-                  <li>• เตรียมความพร้อมสู่มหาวิทยาลัย</li>
-                </ul>
-                <Button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-                  สมัครเรียน ม.4
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="text-center pb-3">
+            <div className="mx-auto w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-full flex items-center justify-center mb-3">
+              <span className="text-2xl md:text-4xl font-bold text-primary">4</span>
+            </div>
+            <CardTitle className="text-lg md:text-xl">มัธยมศึกษาปีที่ 4</CardTitle>
+            <CardDescription className="text-sm md:text-base">
+              ห้องเรียนพิเศษ ISM / ห้องเรียนทั่วไป
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ul className="space-y-1.5 text-xs md:text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>สำหรับผู้จบ ม.3 หรือเทียบเท่า</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>เลือกห้องเรียนได้ตามความต้องการ</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>เตรียมความพร้อมสู่มหาวิทยาลัย</span>
+              </li>
+            </ul>
+            <Link href="/register/grade10" className="block">
+              <Button className="w-full" size="lg">
+                <GraduationCap className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                สมัครเรียน ม.4
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Information */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardContent className="pt-6 pb-6 px-6">
-          <h3 className="font-semibold text-blue-900 mb-3">ข้อมูลสำคัญ:</h3>
-          <ul className="text-sm text-blue-800 space-y-2">
-            <li>• กรุณาเตรียมเลขบัตรประชาชน</li>
-            <li>• เตรียมไฟล์ ใบทะเบียนบ้าน ,หลักฐานแสดงผลการเรียน (ปพ.๑ ป) , รูปถ่ายขนาด 1.5 นิ้ว หรือ 1 นิ้ว สำหรับการ Upload เข้าระบบ</li>
-            <li>• ต้องมีผลการเรียนเฉลี่ยวิชาวิทยาศาสตร์ คณิตศาสตร์ ภาษาอังกฤษ</li>
-            <li>• สามารถกลับมาแก้ไขข้อมูลได้ภายหลัง</li>
-            <li>• หลังสมัครเสร็จ สามารถดาวน์โหลดใบสมัครเพื่อพิมพ์และนำมายื่นที่โรงเรียน</li>
+      <Card className="bg-muted/50">
+        <CardHeader>
+          <CardTitle className="text-lg md:text-xl">ข้อมูลสำคัญ:</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-1.5 text-xs md:text-sm">
+            <li className="flex items-start gap-2">
+              <span className="text-primary mt-0.5">•</span>
+              <span>กรุณาเตรียมเลขบัตรประชาชน</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary mt-0.5">•</span>
+              <span>
+                เตรียมไฟล์ ใบทะเบียนบ้าน ,หลักฐานแสดงผลการเรียน (ปพ.1 ป) , รูปถ่ายขนาด 1.5 นิ้ว หรือ 1 นิ้ว สำหรับการ Upload เข้าระบบ
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary mt-0.5">•</span>
+              <span>ต้องมีผลการเรียนเฉลี่ยวิชาวิทยาศาสตร์ คณิตศาสตร์ ภาษาอังกฤษ</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary mt-0.5">•</span>
+              <span>สามารถกลับมาแก้ไขข้อมูลได้ภายหลัง</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary mt-0.5">•</span>
+              <span>หลังสมัครเสร็จ สามารถดาวน์โหลดใบสมัครเพื่อพิมพ์และนำมายื่นที่โรงเรียน</span>
+            </li>
           </ul>
         </CardContent>
       </Card>

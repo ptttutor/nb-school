@@ -10,8 +10,8 @@ export default function RegisterSelectPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 py-8 px-4 md:py-12 md:px-8">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <main className="flex-grow bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 py-6 px-3 sm:py-8 sm:px-6 md:py-12 md:px-8 lg:py-16">
+        <div className="max-w-6xl mx-auto space-y-8">
           <div>
             <Link href="/">
               <Button variant="outline" size="sm">

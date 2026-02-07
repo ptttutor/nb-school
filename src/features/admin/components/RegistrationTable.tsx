@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { 
   Table, 
@@ -171,11 +170,11 @@ export function RegistrationTable({
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1">
-                      <Badge className="bg-blue-100 text-blue-800 w-fit">
+                      <div className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 w-fit">
                         {reg.gradeLevel === 'm4' ? 'ม.4' : 'ม.1'}
-                      </Badge>
+                      </div>
                       {reg.isSpecialISM && (
-                        <Badge className="bg-amber-100 text-amber-800 w-fit">ISM</Badge>
+                        <div className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-amber-100 text-amber-800 w-fit">ISM</div>
                       )}
                     </div>
                   </TableCell>
@@ -185,26 +184,21 @@ export function RegistrationTable({
                   <TableCell>{reg.phone}</TableCell>
                   <TableCell>{reg.province}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        reg.status === 'approved'
-                          ? 'default'
-                          : reg.status === 'rejected'
-                          ? 'destructive'
-                          : 'secondary'
-                      }
-                      className={
-                        reg.status === 'approved'
-                          ? 'bg-green-100 text-green-900 hover:bg-green-200 hover:text-green-950'
-                          : reg.status === 'rejected'
-                          ? ''
-                          : 'bg-amber-100 text-amber-900 hover:bg-amber-200 hover:text-amber-950'
-                      }
-                    >
-                      {reg.status === 'pending' && 'รอดำเนินการ'}
-                      {reg.status === 'approved' && 'อนุมัติ'}
-                      {reg.status === 'rejected' && 'ปฏิเสธ'}
-                    </Badge>
+                    {reg.status === 'approved' && (
+                      <div className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-green-100 text-green-900">
+                        อนุมัติ
+                      </div>
+                    )}
+                    {reg.status === 'rejected' && (
+                      <div className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-red-100 text-red-900">
+                        ปฏิเสธ
+                      </div>
+                    )}
+                    {reg.status === 'pending' && (
+                      <div className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-amber-100 text-amber-900">
+                        รอดำเนินการ
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell>
                     {new Date(reg.createdAt).toLocaleDateString('th-TH')}

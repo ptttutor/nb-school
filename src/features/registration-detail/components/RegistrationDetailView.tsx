@@ -55,8 +55,8 @@ export function RegistrationDetailView({ id }: RegistrationDetailViewProps) {
   }
 
   const gradeText = registration.gradeLevel === "m4" 
-    ? "มัธยมศึกษาปีที่ ๔" 
-    : "มัธยมศึกษาปีที่ ๑";
+    ? "มัธยมศึกษาปีที่ 4" 
+    : "มัธยมศึกษาปีที่ 1";
 
   return (
     <div className="min-h-screen flex flex-col">
