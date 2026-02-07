@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, ChevronLeft, ChevronRight, Download, FileText } from "lucide-react";
 import type { News } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,6 +29,7 @@ interface NewsFormData {
   title: string;
   content: string;
   imageUrl: string;
+  fileUrl: string;
 }
 
 interface NewsManagementProps {
@@ -43,8 +44,11 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
     title: '',
     content: '',
     imageUrl: '',
+    fileUrl: '',
   });
   const [uploading, setUploading] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [saving, setSaving] = useState(false);
   const { toast } = useToast();
   
   // Pagination & Filter states
@@ -98,7 +102,17 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
       if (!response.ok) throw new Error("Upload failed");
 
       const data = await response.json();
-      setNewsForm({ ...newsForm, imageUrl: data.fileUrl });
+      console.log('Image upload response:', data);
+      
+      if (!data.url) {
+        throw new Error('No url in response');
+      }
+      
+      setNewsForm(prev => {
+        const updated = { ...prev, imageUrl: data.url };
+        console.log('After image upload, newsForm will be:', updated);
+        return updated;
+      });
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -108,6 +122,60 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
       });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "ไฟล์ใหญ่เกินไป",
+        description: "กรุณาเลือกไฟล์ที่มีขนาดไม่เกิน 10 MB",
+      });
+      return;
+    }
+
+    setUploadingFile(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      const data = await response.json();
+      console.log('File upload response:', data);
+      
+      if (!data.url) {
+        throw new Error('No url in response');
+      }
+      
+      setNewsForm(prev => {
+        const updated = { ...prev, fileUrl: data.url };
+        console.log('After file upload, newsForm will be:', updated);
+        return updated;
+      });
+      toast({
+        title: "อัพโหลดสำเร็จ",
+        description: "อัพโหลดไฟล์เรียบร้อยแล้ว",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการอัพโหลดไฟล์",
+      });
+    } finally {
+      setUploadingFile(false);
     }
   };
 
@@ -121,12 +189,17 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
       return;
     }
 
+    setSaving(true);
     try {
       const res = await fetch('/api/news', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...newsForm,
+          title: newsForm.title,
+          content: newsForm.content,
+          imageUrl: newsForm.imageUrl,
+          fileUrl: newsForm.fileUrl || null,
+          published: false,
           adminId,
         }),
       });
@@ -136,7 +209,7 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
           title: "สร้างข่าวสำเร็จ",
           description: "เพิ่มข่าวใหม่เรียบร้อยแล้ว",
         });
-        setNewsForm({ title: '', content: '', imageUrl: '' });
+        setNewsForm({ title: '', content: '', imageUrl: '', fileUrl: '' });
         setIsDialogOpen(false);
         setEditingNewsId(null);
         fetchNews();
@@ -148,18 +221,35 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
         title: "ข้อผิดพลาด",
         description: "ไม่สามารถสร้างข่าวได้",
       });
+    } finally {
+      setSaving(false);
     }
   };
 
   const updateNews = async (id: string) => {
+    console.log('updateNews called with newsForm:', newsForm);
+    setSaving(true);
     try {
+      const payload: any = {
+        id,
+        title: newsForm.title,
+        content: newsForm.content,
+      };
+      
+      // Only include imageUrl and fileUrl if they have values
+      if (newsForm.imageUrl) {
+        payload.imageUrl = newsForm.imageUrl;
+      }
+      if (newsForm.fileUrl) {
+        payload.fileUrl = newsForm.fileUrl;
+      }
+      
+      console.log('Updating news with payload:', payload);
+      
       const res = await fetch('/api/news', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          ...newsForm,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
@@ -167,7 +257,7 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
           title: "แก้ไขสำเร็จ",
           description: "อัพเดทข่าวเรียบร้อยแล้ว",
         });
-        setNewsForm({ title: '', content: '', imageUrl: '' });
+        setNewsForm({ title: '', content: '', imageUrl: '', fileUrl: '' });
         setEditingNewsId(null);
         setIsDialogOpen(false);
         fetchNews();
@@ -179,6 +269,8 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
         title: "ข้อผิดพลาด",
         description: "ไม่สามารถแก้ไขข่าวได้",
       });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -239,23 +331,26 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
 
   const startEditNews = (item: News) => {
     setEditingNewsId(item.id);
-    setNewsForm({
+    const formData = {
       title: item.title,
       content: item.content,
       imageUrl: item.imageUrl || '',
-    });
+      fileUrl: item.fileUrl || '',
+    };
+    console.log('Starting edit with form data:', formData);
+    setNewsForm(formData);
     setIsDialogOpen(true);
   };
 
   const cancelNewsForm = () => {
     setIsDialogOpen(false);
     setEditingNewsId(null);
-    setNewsForm({ title: '', content: '', imageUrl: '' });
+    setNewsForm({ title: '', content: '', imageUrl: '', fileUrl: '' });
   };
 
   const openCreateDialog = () => {
     setEditingNewsId(null);
-    setNewsForm({ title: '', content: '', imageUrl: '' });
+    setNewsForm({ title: '', content: '', imageUrl: '', fileUrl: '' });
     setIsDialogOpen(true);
   };
 
@@ -313,10 +408,15 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  disabled={uploading}
+                  disabled={uploading || saving}
                   className="border-amber-200"
                 />
-                {uploading && <p className="text-sm text-gray-500">กำลังอัพโหลด...</p>}
+                {uploading && (
+                  <div className="flex items-center gap-2 text-sm text-blue-600">
+                    <span className="animate-spin">⏳</span>
+                    <span>กำลังอัพโหลดรูปภาพ...</span>
+                  </div>
+                )}
                 {newsForm.imageUrl && (
                   <div className="relative w-full h-48 border border-amber-200 rounded-md overflow-hidden">
                     <img
@@ -328,12 +428,50 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
                 )}
               </div>
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="news-file">ไฟล์แนบ (ไม่บังคับ)</Label>
+              <div className="space-y-2">
+                <Input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.zip"
+                  onChange={handleFileUpload}
+                  disabled={uploadingFile || saving}
+                  className="border-amber-200"
+                />
+                <p className="text-xs text-amber-600">
+                  รองรับไฟล์: PDF, DOC, DOCX, XLS, XLSX, ZIP (ขนาดไม่เกิน 10 MB)
+                </p>
+                {uploadingFile && (
+                  <div className="flex items-center gap-2 text-sm text-blue-600">
+                    <span className="animate-spin">⏳</span>
+                    <span>กำลังอัพโหลดไฟล์...</span>
+                  </div>
+                )}
+                {newsForm.fileUrl && (
+                  <div className="flex items-center gap-2 p-2 border border-amber-200 rounded-md bg-amber-50">
+                    <FileText className="w-4 h-4 text-amber-600" />
+                    <span className="text-sm text-amber-700 flex-1 truncate">
+                      {newsForm.fileUrl.split('/').pop()}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setNewsForm(prev => ({ ...prev, fileUrl: '' }))}
+                      className="h-6 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
           
           <DialogFooter>
             <Button
               variant="outline"
               onClick={cancelNewsForm}
+              disabled={uploading || uploadingFile || saving}
               className="border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900"
             >
               <X className="w-4 h-4 mr-2" />
@@ -341,10 +479,20 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
             </Button>
             <Button
               onClick={() => editingNewsId ? updateNews(editingNewsId) : createNews()}
+              disabled={uploading || uploadingFile || saving}
               className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700"
             >
-              <Save className="w-4 h-4 mr-2" />
-              {editingNewsId ? 'บันทึกการแก้ไข' : 'สร้างข่าว'}
+              {saving ? (
+                <>
+                  <span className="animate-spin mr-2">⏳</span>
+                  กำลังบันทึก...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  {editingNewsId ? 'บันทึกการแก้ไข' : 'สร้างข่าว'}
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -413,6 +561,19 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
                         <p className="text-xs text-amber-500 mb-2">
                           รูปภาพ: {item.imageUrl}
                         </p>
+                      )}
+                      {item.fileUrl && (
+                        <div className="flex items-center gap-2 mb-2">
+                          <a
+                            href={item.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            <Download className="w-3 h-3" />
+                            ดาวน์โหลดไฟล์แนบ
+                          </a>
+                        </div>
                       )}
                       <p className="text-xs text-amber-600">
                         เผยแพร่เมื่อ: {new Date(item.createdAt).toLocaleDateString('th-TH', {

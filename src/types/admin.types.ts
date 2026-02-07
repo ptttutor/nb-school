@@ -25,6 +25,7 @@ export interface News {
   title: string;
   content: string;
   imageUrl?: string;
+  fileUrl?: string;
   published: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -38,6 +39,7 @@ export interface NewsFormData {
   title: string;
   content: string;
   imageUrl: string;
+  fileUrl?: string;
 }
 
 export interface CreateNewsData extends NewsFormData {
@@ -48,5 +50,6 @@ export interface UpdateNewsData {
   title?: string;
   content?: string;
   imageUrl?: string;
+  fileUrl?: string;
   published?: boolean;
 }

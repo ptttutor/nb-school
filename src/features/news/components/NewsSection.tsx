@@ -1,11 +1,13 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Download } from "lucide-react";
 
 interface News {
   id: number;
   title: string;
   content: string;
   imageUrl?: string;
+  fileUrl?: string;
   createdAt: string;
 }
 
@@ -72,6 +74,19 @@ export async function NewsSection() {
                 <CardDescription className="line-clamp-3">
                   {item.content}
                 </CardDescription>
+                {item.fileUrl && (
+                  <div className="mt-3">
+                    <a
+                      href={item.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    >
+                      <Download className="w-4 h-4" />
+                      ดาวน์โหลดเอกสารแนบ
+                    </a>
+                  </div>
+                )}
               </CardHeader>
             </Card>
           ))}

@@ -87,6 +87,7 @@ model News {
   title       String
   content     String   @db.Text
   imageUrl    String?
+  fileUrl     String?  // ไฟล์แนบสำหรับดาวน์โหลด
   published   Boolean  @default(false)
   adminId     String
   admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)

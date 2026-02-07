@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, content, imageUrl, published, adminId } = body;
+    const { title, content, imageUrl, fileUrl, published, adminId } = body;
 
     if (!title || !content || !adminId) {
       return NextResponse.json(
@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
         title,
         content,
         imageUrl: imageUrl || null,
+        fileUrl: fileUrl || null,
         published: published || false,
         adminId,
       },
@@ -133,7 +134,9 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, title, content, imageUrl, published } = body;
+    const { id, title, content, imageUrl, fileUrl, published } = body;
+
+    console.log('PUT /api/news - Received body:', { id, title, content, imageUrl, fileUrl, published });
 
     if (!id) {
       return NextResponse.json(
@@ -142,15 +145,21 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const updateData: any = {};
+    if (title !== undefined) updateData.title = title;
+    if (content !== undefined) updateData.content = content;
+    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+    if (fileUrl !== undefined) updateData.fileUrl = fileUrl;
+    if (published !== undefined) updateData.published = published;
+
+    console.log('PUT /api/news - Update data:', updateData);
+
     const news = await prisma.news.update({
       where: { id },
-      data: {
-        ...(title && { title }),
-        ...(content && { content }),
-        ...(imageUrl !== undefined && { imageUrl }),
-        ...(published !== undefined && { published }),
-      },
+      data: updateData,
     });
+
+    console.log('PUT /api/news - Updated news:', news);
 
     return NextResponse.json(
       {
