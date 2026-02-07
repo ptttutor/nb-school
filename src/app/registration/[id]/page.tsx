@@ -360,7 +360,7 @@ export default function RegistrationViewPage({
               <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
               <div className="text-sm text-blue-800">
                 <p className="font-semibold mb-1">คำแนะนำ: การดาวน์โหลดใบสมัคร</p>
-                <p>กดปุ่ม "ดาวน์โหลดใบสมัคร" เพื่อดาวน์โหลดแบบฟอร์มใบสมัครอย่างเป็นทางการ</p>
+                <p>กดปุ่ม &ldquo;ดาวน์โหลดใบสมัคร&rdquo; เพื่อดาวน์โหลดแบบฟอร์มใบสมัครอย่างเป็นทางการ</p>
                 <p className="mt-1">กรุณาพิมพ์และกรอกข้อมูลตามรายละเอียดด้านล่าง จากนั้นนำมายื่นที่โรงเรียน</p>
               </div>
             </div>

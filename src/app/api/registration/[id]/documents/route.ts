@@ -51,9 +51,9 @@ export async function POST(
 
     // ถ้าเป็นรูปภาพ แปลงเป็น WebP
     if (file.type.startsWith("image/")) {
-      buffer = await sharp(buffer)
+      buffer = Buffer.from(await sharp(buffer)
         .webp({ quality: 85 })
-        .toBuffer();
+        .toBuffer());
       
       // เปลี่ยนนามสกุลไฟล์เป็น .webp
       const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
