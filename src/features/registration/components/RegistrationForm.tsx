@@ -203,7 +203,7 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
           </div>
         )}
 
-        <Card className="shadow-xl border-amber-200 bg-white/95 backdrop-blur mb-4 flex flex-col">
+        <Card className="shadow-xl border-amber-200 bg-white/95 backdrop-blur mb-4">
           <CardHeader className="flex-shrink-0">
             <div className="mb-4">
               <Link href="/register" className="text-amber-700 hover:text-amber-900 text-sm font-medium transition-colors inline-flex items-center gap-2">
@@ -262,10 +262,9 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
             </div>
           </div>
 
-          {/* Scrollable Form Content */}
-          <div className="overflow-y-auto max-h-[calc(100vh-400px)] md:max-h-[calc(100vh-380px)] lg:max-h-[calc(100vh-360px)]">
-            <CardContent className="py-6 px-4 sm:px-6 lg:px-8">
-              <form id="registration-form" onSubmit={(e) => handleSubmit(e, validateForm)} className="space-y-8 pb-4">
+          {/* Form Content */}
+          <CardContent className="py-6 px-4 sm:px-6 lg:px-8">
+            <form id="registration-form" onSubmit={(e) => handleSubmit(e, validateForm)} className="space-y-8 pb-4">
                 {currentStep === 1 && (
                   <StudentInfoStep
                     formData={formData}
@@ -333,10 +332,9 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
                 )}
               </form>
             </CardContent>
-          </div>
 
-          {/* Navigation Buttons - Fixed at bottom */}
-          <div className="flex-shrink-0 border-t border-amber-200 p-4 sm:p-5 lg:p-6 bg-white/95">
+          {/* Navigation Buttons */}
+          <div className="border-t border-amber-200 p-4 sm:p-5 lg:p-6 bg-white/95">
             <div className="flex justify-between items-center">
               <Button
                 type="button"
