@@ -150,7 +150,7 @@ export function DocumentList({ registration }: DocumentListProps) {
               uploading={uploading === 'transcriptDoc'}
             />
             <DocumentStatusItem 
-              label="รูปถ่าย (1.5 หรือ 2 นิ้ว)"
+              label="รูปถ่าย 1.5 หรือ 1 นิ้ว"
               hasDocument={!!registration.photoDoc}
               docType="photoDoc"
               onUpload={triggerFileInput}
@@ -178,7 +178,7 @@ export function DocumentList({ registration }: DocumentListProps) {
             )}
             {registration.photoDoc && (
               <DocumentLink 
-                label="รูปถ่าย (1.5 / 2 นิ้ว)"
+                label="รูปถ่าย 1.5 หรือ 1 นิ้ว"
                 url={registration.photoDoc}
               />
             )}

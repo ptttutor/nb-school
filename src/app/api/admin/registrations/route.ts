@@ -125,6 +125,13 @@ export async function PATCH(request: NextRequest) {
       'district',
       'subdistrict',
       'postalCode',
+      // เกรด
+      'gradeP4',
+      'gradeP5',
+      'cumulativeGPAM1M3',
+      'scienceCumulativeM1M3',
+      'mathCumulativeM1M3',
+      'englishCumulativeM1M3',
     ];
 
     const dataToUpdate: Record<string, any> = {};

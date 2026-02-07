@@ -43,6 +43,13 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
       district: registration.district,
       subdistrict: registration.subdistrict,
       postalCode: registration.postalCode,
+      // เกรด
+      gradeP4: registration.gradeP4,
+      gradeP5: registration.gradeP5,
+      cumulativeGPAM1M3: registration.cumulativeGPAM1M3,
+      scienceCumulativeM1M3: registration.scienceCumulativeM1M3,
+      mathCumulativeM1M3: registration.mathCumulativeM1M3,
+      englishCumulativeM1M3: registration.englishCumulativeM1M3,
     });
     setIsEditing(true);
   };
@@ -252,49 +259,139 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
 
           {/* เกรดเฉลี่ยรายวิชา */}
           {registration.gradeLevel === 'm4' ? (
-            (registration.scienceCumulativeM1M3 || registration.mathCumulativeM1M3 ||
-              registration.englishCumulativeM1M3) && (
+            (registration.cumulativeGPAM1M3 || registration.scienceCumulativeM1M3 || registration.mathCumulativeM1M3 ||
+              registration.englishCumulativeM1M3 || isEditing) && (
               <div className="mt-6 pt-6 border-t">
                 <h3 className="font-semibold mb-4">ระดับคะแนนเฉลี่ยสะสม ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {registration.scienceCumulativeM1M3 && (
-                    <div>
-                      <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาวิทยาศาสตร์</Label>
-                      <p className="font-bold text-2xl text-green-600 mt-1">{registration.scienceCumulativeM1M3}</p>
-                    </div>
-                  )}
-                  {registration.mathCumulativeM1M3 && (
-                    <div>
-                      <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาคณิตศาสตร์</Label>
-                      <p className="font-bold text-2xl text-blue-600 mt-1">{registration.mathCumulativeM1M3}</p>
-                    </div>
-                  )}
-                  {registration.englishCumulativeM1M3 && (
-                    <div>
-                      <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาภาษาอังกฤษ</Label>
-                      <p className="font-bold text-2xl text-purple-600 mt-1">{registration.englishCumulativeM1M3}</p>
-                    </div>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2 md:col-span-2">
+                    <Label className="text-gray-600">GPA รวมทุกวิชา</Label>
+                    {isEditing ? (
+                      <Input
+                        type="text"
+                        value={editData.cumulativeGPAM1M3 || ''}
+                        onChange={(e) => handleInputChange('cumulativeGPAM1M3', e.target.value)}
+                        onInput={(e) => {
+                          const value = e.currentTarget.value;
+                          if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                            e.currentTarget.value = value.slice(0, -1);
+                          }
+                        }}
+                        placeholder="0.00"
+                        className="border-amber-200"
+                      />
+                    ) : (
+                      <p className="font-bold text-2xl text-purple-600 mt-1">{registration.cumulativeGPAM1M3 || '-'}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาวิทยาศาสตร์</Label>
+                    {isEditing ? (
+                      <Input
+                        type="text"
+                        value={editData.scienceCumulativeM1M3 || ''}
+                        onChange={(e) => handleInputChange('scienceCumulativeM1M3', e.target.value)}
+                        onInput={(e) => {
+                          const value = e.currentTarget.value;
+                          if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                            e.currentTarget.value = value.slice(0, -1);
+                          }
+                        }}
+                        placeholder="0.00"
+                        className="border-amber-200"
+                      />
+                    ) : (
+                      <p className="font-bold text-2xl text-green-600 mt-1">{registration.scienceCumulativeM1M3 || '-'}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาคณิตศาสตร์</Label>
+                    {isEditing ? (
+                      <Input
+                        type="text"
+                        value={editData.mathCumulativeM1M3 || ''}
+                        onChange={(e) => handleInputChange('mathCumulativeM1M3', e.target.value)}
+                        onInput={(e) => {
+                          const value = e.currentTarget.value;
+                          if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                            e.currentTarget.value = value.slice(0, -1);
+                          }
+                        }}
+                        placeholder="0.00"
+                        className="border-amber-200"
+                      />
+                    ) : (
+                      <p className="font-bold text-2xl text-blue-600 mt-1">{registration.mathCumulativeM1M3 || '-'}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาภาษาอังกฤษ</Label>
+                    {isEditing ? (
+                      <Input
+                        type="text"
+                        value={editData.englishCumulativeM1M3 || ''}
+                        onChange={(e) => handleInputChange('englishCumulativeM1M3', e.target.value)}
+                        onInput={(e) => {
+                          const value = e.currentTarget.value;
+                          if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                            e.currentTarget.value = value.slice(0, -1);
+                          }
+                        }}
+                        placeholder="0.00"
+                        className="border-amber-200"
+                      />
+                    ) : (
+                      <p className="font-bold text-2xl text-purple-600 mt-1">{registration.englishCumulativeM1M3 || '-'}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             )
           ) : (
-            (registration.gradeP4 || registration.gradeP5) && (
+            (registration.gradeP4 || registration.gradeP5 || isEditing) && (
               <div className="mt-6 pt-6 border-t">
                 <h3 className="font-semibold mb-4">เกรดเฉลี่ย</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {registration.gradeP4 && (
-                    <div>
-                      <Label className="text-gray-600">ประถมศึกษาปีที่ 4</Label>
-                      <p className="font-bold text-2xl text-green-600 mt-1">{registration.gradeP4}</p>
-                    </div>
-                  )}
-                  {registration.gradeP5 && (
-                    <div>
-                      <Label className="text-gray-600">ประถมศึกษาปีที่ 5</Label>
-                      <p className="font-bold text-2xl text-blue-600 mt-1">{registration.gradeP5}</p>
-                    </div>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-gray-600">ประถมศึกษาปีที่ 4</Label>
+                    {isEditing ? (
+                      <Input
+                        type="text"
+                        value={editData.gradeP4 || ''}
+                        onChange={(e) => handleInputChange('gradeP4', e.target.value)}
+                        onInput={(e) => {
+                          const value = e.currentTarget.value;
+                          if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                            e.currentTarget.value = value.slice(0, -1);
+                          }
+                        }}
+                        placeholder="0.00"
+                        className="border-amber-200"
+                      />
+                    ) : (
+                      <p className="font-bold text-2xl text-green-600 mt-1">{registration.gradeP4 || '-'}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-600">ประถมศึกษาปีที่ 5</Label>
+                    {isEditing ? (
+                      <Input
+                        type="text"
+                        value={editData.gradeP5 || ''}
+                        onChange={(e) => handleInputChange('gradeP5', e.target.value)}
+                        onInput={(e) => {
+                          const value = e.currentTarget.value;
+                          if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                            e.currentTarget.value = value.slice(0, -1);
+                          }
+                        }}
+                        placeholder="0.00"
+                        className="border-amber-200"
+                      />
+                    ) : (
+                      <p className="font-bold text-2xl text-blue-600 mt-1">{registration.gradeP5 || '-'}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             )

@@ -82,7 +82,7 @@ export function DocumentStep({
 
         {/* เอกสารแนบ */}
         <div>
-          <h4 className="font-semibold text-amber-900 mb-3">เอกสารแนบ (ไม่บังคับ)</h4>
+          <h4 className="font-semibold text-amber-900 mb-3">เอกสารแนบ</h4>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
             <p className="text-sm text-blue-800 mb-2">
@@ -91,7 +91,7 @@ export function DocumentStep({
             <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
               <li>สำเนาทะเบียนบ้าน</li>
               <li>หลักฐานแสดงผลการเรียน (ปพ.1)</li>
-              <li>รูปถ่าย ขนาด 1.5 x 1 นิ้ว</li>
+              <li>รูปถ่าย ขนาด 1.5 หรือ 1 นิ้ว</li>
             </ul>
             <p className="text-xs text-blue-600 mt-2">
               * ขนาดไฟล์แต่ละไฟล์ไม่เกิน 5MB
@@ -144,7 +144,7 @@ export function DocumentStep({
             {/* รูปถ่าย */}
             <div className="space-y-4">
               <Label htmlFor="photo" className="flex items-center gap-2">
-                รูปถ่าย ขนาด 1.5 x 1 นิ้ว
+                รูปถ่าย ขนาด 1.5 หรือ 1 นิ้ว
                 {photoFile && <CheckCircle className="w-4 h-4 text-green-600" />}
               </Label>
               <Input

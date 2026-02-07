@@ -39,6 +39,7 @@ export interface Registration {
   gradeP5?: string;
   
   // คะแนนสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)
+  cumulativeGPAM1M3?: string;
   scienceCumulativeM1M3?: string;
   mathCumulativeM1M3?: string;
   englishCumulativeM1M3?: string;
@@ -89,6 +90,7 @@ export interface RegistrationFormData {
   gradeP4: string;
   gradeP5: string;
   // คะแนนสำหรับ ม.4
+  cumulativeGPAM1M3: string;
   scienceCumulativeM1M3: string;
   mathCumulativeM1M3: string;
   englishCumulativeM1M3: string;

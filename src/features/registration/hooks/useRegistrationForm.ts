@@ -65,6 +65,7 @@ export function useRegistrationForm(grade: string) {
     gradeP4: "",
     gradeP5: "",
     // คะแนนสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)
+    cumulativeGPAM1M3: "",
     scienceCumulativeM1M3: "",
     mathCumulativeM1M3: "",
     englishCumulativeM1M3: "",

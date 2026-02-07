@@ -27,6 +27,27 @@ export function GradeStep({
           <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             {isM4 ? (
               <>
+                <div className="space-y-4 md:col-span-2">
+                  <Label htmlFor="cumulativeGPAM1M3">ระดับคะแนนเฉลี่ยสะสม ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน (GPA รวมทุกวิชา)</Label>
+                  <Input
+                    type="text"
+                    id="cumulativeGPAM1M3"
+                    name="cumulativeGPAM1M3"
+                    value={formData.cumulativeGPAM1M3}
+                    onChange={handleChange}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                        e.currentTarget.value = value.slice(0, -1);
+                      }
+                    }}
+                    placeholder="0.00"
+                    className="border-amber-200"
+                    pattern="[0-4](\.[0-9]{1,2})?"
+                  />
+                  <p className="text-xs text-gray-500">ระบุคะแนนเฉลี่ย 0.00 - 4.00</p>
+                </div>
+
                 <div className="space-y-4">
                   <Label htmlFor="scienceCumulativeM1M3">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาวิทยาศาสตร์ ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน</Label>
                   <Input

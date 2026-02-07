@@ -27,7 +27,7 @@ export function WelcomeSection() {
               className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg"
             >
               <GraduationCap className="w-6 h-6 mr-2" />
-              สมัคร ม.1
+              สมัครเรียนชั้นมัธยมศึกษาปีที่ 1
               <ArrowRight className="w-6 h-6 ml-2" />
             </Button>
           </Link>
@@ -38,7 +38,7 @@ export function WelcomeSection() {
               className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg"
             >
               <GraduationCap className="w-6 h-6 mr-2" />
-              สมัคร ม.4
+              สมัครเรียนชั้นมัธยมศึกษาปีที่ 4
               <ArrowRight className="w-6 h-6 ml-2" />
             </Button>
           </Link>
@@ -50,7 +50,7 @@ export function WelcomeSection() {
               className="border-2 border-amber-600 text-amber-700 hover:bg-amber-600 hover:text-white shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg"
             >
               <Search className="w-6 h-6 mr-2" />
-              ตรวจสอบการสมัคร
+              ตรวจสอบการสมัครจากหมายเลขบัตรประชาชน
             </Button>
           </Link>
         </div>

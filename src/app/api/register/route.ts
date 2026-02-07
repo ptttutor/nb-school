@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
       gradeP4,
       gradeP5,
       // คะแนนสำหรับ ม.4 (ม.1-3)
+      cumulativeGPAM1M3,
       scienceCumulativeM1M3,
       mathCumulativeM1M3,
       englishCumulativeM1M3,
@@ -108,6 +109,7 @@ export async function POST(request: NextRequest) {
         gradeP4,
         gradeP5,
         // คะแนนสำหรับ ม.4
+        cumulativeGPAM1M3,
         scienceCumulativeM1M3,
         mathCumulativeM1M3,
         englishCumulativeM1M3,

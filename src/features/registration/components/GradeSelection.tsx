@@ -107,7 +107,7 @@ export function GradeSelection() {
             <li className="flex items-start gap-2">
               <span className="text-primary mt-0.5">•</span>
               <span>
-                เตรียมไฟล์ ใบทะเบียนบ้าน ,หลักฐานแสดงผลการเรียน (ปพ.1 ป) , รูปถ่ายขนาด 1.5 นิ้ว หรือ 1 นิ้ว สำหรับการ Upload เข้าระบบ
+                เตรียมไฟล์ ใบทะเบียนบ้าน ,หลักฐานแสดงผลการเรียน (ปพ.1 ป) , รูปถ่ายขนาด 1.5 หรือ 1 นิ้ว สำหรับการ Upload เข้าระบบ
               </span>
             </li>
             <li className="flex items-start gap-2">
