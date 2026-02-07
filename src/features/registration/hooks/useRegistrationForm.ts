@@ -61,7 +61,7 @@ export function useRegistrationForm(grade: string) {
     district: "",
     subdistrict: "",
     postalCode: "",
-    // เกรดสำหรับ ม.1 (ป.4-5)
+    // เกรดสำหรับ ม.1 (ระดับชั้นประถมศึกษาปีที่ 4-5)
     gradeP4: "",
     gradeP5: "",
     // คะแนนสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)

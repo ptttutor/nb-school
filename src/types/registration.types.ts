@@ -34,7 +34,7 @@ export interface Registration {
   subdistrict: string;
   postalCode: string;
   
-  // เกรดสำหรับ ม.1 (ป.4-5)
+  // เกรดสำหรับ ม.1 (ระดับชั้นประถมศึกษาปีที่ 4-5)
   gradeP4?: string;
   gradeP5?: string;
   

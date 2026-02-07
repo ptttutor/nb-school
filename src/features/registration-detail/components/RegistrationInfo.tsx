@@ -150,7 +150,7 @@ export function RegistrationInfo({ registration, gradeText }: RegistrationInfoPr
           </div>
           {registration.idCardOrPassport && (
             <div className="space-y-2">
-              <Label className="text-gray-600">เลขบัตรประชาชน/พาสปอร์ต</Label>
+              <Label className="text-gray-600">เลขบัตรประชาชน</Label>
               <Input
                 value={registration.idCardOrPassport}
                 disabled
@@ -387,12 +387,12 @@ function M4GradesSection({
   return (
     <div className="mt-4 pt-4 border-t">
       <h4 className="font-semibold mb-3 text-green-700">
-        คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน)
+        ระดับคะแนนเฉลี่ยสะสม ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน
       </h4>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {registration.scienceCumulativeM1M3 && (
           <div className="space-y-2">
-            <Label className="text-gray-600">วิทยาศาสตร์</Label>
+            <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาวิทยาศาสตร์</Label>
             {isEditing ? (
               <Input
                 type="number"
@@ -417,7 +417,7 @@ function M4GradesSection({
         )}
         {registration.mathCumulativeM1M3 && (
           <div className="space-y-2">
-            <Label className="text-gray-600">คณิตศาสตร์</Label>
+            <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาคณิตศาสตร์</Label>
             {isEditing ? (
               <Input
                 type="number"
@@ -442,7 +442,7 @@ function M4GradesSection({
         )}
         {registration.englishCumulativeM1M3 && (
           <div className="space-y-2">
-            <Label className="text-gray-600">ภาษาอังกฤษ</Label>
+            <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาภาษาอังกฤษ</Label>
             {isEditing ? (
               <Input
                 type="number"

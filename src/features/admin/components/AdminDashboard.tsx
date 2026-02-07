@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Shield, ArrowLeft, Newspaper, Image, LogOut, Settings } from "lucide-react";
+import { Shield, ArrowLeft, Newspaper, Image, LogOut, Settings, BarChart3 } from "lucide-react";
 import { RegistrationTable } from "./RegistrationTable";
 import { RegistrationDrawer } from "./RegistrationDrawer";
+import { RegistrationStats } from "./RegistrationStats";
 import { NewsManagement } from "./NewsManagement";
 import { HeroImageManagement } from "./HeroImageManagement";
 import { AdmissionManagement } from "./AdmissionManagement";
@@ -18,10 +19,11 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
-  const [activeTab, setActiveTab] = useState<'registrations' | 'news' | 'hero' | 'admission'>('registrations');
+  const [allRegistrations, setAllRegistrations] = useState<Registration[]>([]);
+  const [activeTab, setActiveTab] = useState<'registrations' | 'stats' | 'news' | 'hero' | 'admission'>('registrations');
   const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  
+
   // Pagination & Filter states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -32,6 +34,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
 
   useEffect(() => {
     fetchRegistrations();
+    fetchAllRegistrations();
   }, [currentPage, statusFilter, gradeLevelFilter, searchQuery]);
 
   const fetchRegistrations = async () => {
@@ -43,7 +46,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
         gradeLevel: gradeLevelFilter,
         search: searchQuery,
       });
-      
+
       const res = await fetch(`/api/admin/registrations?${params}`);
       if (res.ok) {
         const data = await res.json();
@@ -57,6 +60,27 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
     }
   };
 
+  const fetchAllRegistrations = async () => {
+    try {
+      const params = new URLSearchParams({
+        page: "1",
+        limit: "1000",
+        status: "all",
+        gradeLevel: "all",
+        search: "",
+      });
+
+      const res = await fetch(`/api/admin/registrations?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAllRegistrations(Array.isArray(data.registrations) ? data.registrations : []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch all registrations:', err);
+      setAllRegistrations([]);
+    }
+  };
+
   const updateStatus = async (id: string, status: string) => {
     try {
       const res = await fetch('/api/admin/registrations', {
@@ -67,15 +91,39 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
 
       if (res.ok) {
         fetchRegistrations();
+        fetchAllRegistrations();
       }
     } catch (err) {
       console.error('Failed to update status:', err);
     }
   };
 
+  const deleteRegistration = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/registrations?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        fetchRegistrations();
+        fetchAllRegistrations();
+      } else {
+        alert('เกิดข้อผิดพลาดในการลบข้อมูล');
+      }
+    } catch (err) {
+      console.error('Failed to delete registration:', err);
+      alert('เกิดข้อผิดพลาดในการลบข้อมูล');
+    }
+  };
+
   const handleViewDetails = (registration: Registration) => {
     setSelectedRegistration(registration);
     setIsDrawerOpen(true);
+  };
+
+  const refreshAllData = () => {
+    fetchRegistrations();
+    fetchAllRegistrations();
   };
 
   return (
@@ -87,8 +135,8 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             <p className="text-amber-700">โรงเรียนหนองบัว จ.นครสวรรค์</p>
           </div>
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="border-red-300 text-red-700 hover:bg-red-50"
               onClick={onLogout}
             >
@@ -107,19 +155,29 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
         {/* Tabs */}
         <div className="flex gap-2 mb-6">
           <Button
+            variant={activeTab === 'stats' ? 'default' : 'outline'}
+            className={activeTab === 'stats'
+              ? 'bg-gradient-to-r from-amber-500 to-yellow-600'
+              : 'border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900'}
+            onClick={() => setActiveTab('stats')}
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            สถิติ
+          </Button> <Button
             variant={activeTab === 'registrations' ? 'default' : 'outline'}
-            className={activeTab === 'registrations' 
-              ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
+            className={activeTab === 'registrations'
+              ? 'bg-gradient-to-r from-amber-500 to-yellow-600'
               : 'border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900'}
             onClick={() => setActiveTab('registrations')}
           >
             <Shield className="w-4 h-4 mr-2" />
             การสมัครเรียน ({totalCount})
           </Button>
+
           <Button
             variant={activeTab === 'news' ? 'default' : 'outline'}
-            className={activeTab === 'news' 
-              ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
+            className={activeTab === 'news'
+              ? 'bg-gradient-to-r from-amber-500 to-yellow-600'
               : 'border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900'}
             onClick={() => setActiveTab('news')}
           >
@@ -128,8 +186,8 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
           </Button>
           <Button
             variant={activeTab === 'hero' ? 'default' : 'outline'}
-            className={activeTab === 'hero' 
-              ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
+            className={activeTab === 'hero'
+              ? 'bg-gradient-to-r from-amber-500 to-yellow-600'
               : 'border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900'}
             onClick={() => setActiveTab('hero')}
           >
@@ -138,8 +196,8 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
           </Button>
           <Button
             variant={activeTab === 'admission' ? 'default' : 'outline'}
-            className={activeTab === 'admission' 
-              ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
+            className={activeTab === 'admission'
+              ? 'bg-gradient-to-r from-amber-500 to-yellow-600'
               : 'border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900'}
             onClick={() => setActiveTab('admission')}
           >
@@ -154,6 +212,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             registrations={registrations}
             onViewDetails={handleViewDetails}
             onStatusChange={updateStatus}
+            onDelete={deleteRegistration}
             totalCount={totalCount}
             currentPage={currentPage}
             totalPages={totalPages}
@@ -164,6 +223,14 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             onGradeLevelFilterChange={setGradeLevelFilter}
             searchQuery={searchQuery}
             onSearchQueryChange={setSearchQuery}
+          />
+        )}
+
+        {/* Stats Tab */}
+        {activeTab === 'stats' && (
+          <RegistrationStats
+            totalCount={totalCount}
+            registrations={allRegistrations}
           />
         )}
 
@@ -188,7 +255,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
         registration={selectedRegistration}
         open={isDrawerOpen}
         onOpenChange={setIsDrawerOpen}
-        onUpdate={fetchRegistrations}
+        onUpdate={refreshAllData}
       />
     </div>
   );

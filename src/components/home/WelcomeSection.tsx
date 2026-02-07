@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GraduationCap, ArrowRight, Clock, Search } from "lucide-react";
+import { GraduationCap, ArrowRight, Clock, Search, Users } from "lucide-react";
 
 export function WelcomeSection() {
   return (
@@ -53,7 +53,19 @@ export function WelcomeSection() {
               ตรวจสอบการสมัคร
             </Button>
           </Link>
-        
+        </div>
+
+        <div className="mt-6 flex justify-center">
+          <Link href="/applicants">
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="border-2 border-purple-600 text-purple-700 hover:bg-purple-600 hover:text-white shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg"
+            >
+              <Users className="w-6 h-6 mr-2" />
+              ตรวจสอบรายชื่อผู้สมัคร
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

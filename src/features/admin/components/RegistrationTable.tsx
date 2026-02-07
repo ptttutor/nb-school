@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,13 +19,24 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { FileText, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import type { Registration } from "@/types";
 
 interface RegistrationTableProps {
   registrations: Registration[];
   onViewDetails: (registration: Registration) => void;
   onStatusChange: (id: string, status: string) => void;
+  onDelete: (id: string) => void;
   totalCount: number;
   currentPage: number;
   totalPages: number;
@@ -41,6 +53,7 @@ export function RegistrationTable({
   registrations, 
   onViewDetails, 
   onStatusChange,
+  onDelete,
   totalCount,
   currentPage,
   totalPages,
@@ -52,6 +65,15 @@ export function RegistrationTable({
   searchQuery,
   onSearchQueryChange,
 }: RegistrationTableProps) {
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const handleDeleteConfirm = () => {
+    if (deleteId && onDelete) {
+      onDelete(deleteId);
+      setDeleteId(null);
+    }
+  };
+
   if (!Array.isArray(registrations) || registrations.length === 0) {
     return (
       <Card className="shadow-xl border-amber-200 bg-white/90 backdrop-blur">
@@ -103,6 +125,7 @@ export function RegistrationTable({
   }
 
   return (
+    <>
     <Card className="shadow-xl border-amber-200 bg-white/90 backdrop-blur">
       <CardHeader>
         <CardTitle className="text-amber-900">รายการสมัครเรียน</CardTitle>
@@ -153,6 +176,7 @@ export function RegistrationTable({
                 <TableHead>ระดับชั้น</TableHead>
                 <TableHead>วันเกิด</TableHead>
                 <TableHead>เบอร์โทร</TableHead>
+                <TableHead>โรงเรียน</TableHead>
                 <TableHead>จังหวัด</TableHead>
                 <TableHead>สถานะ</TableHead>
                 <TableHead>วันที่สมัคร</TableHead>
@@ -182,6 +206,9 @@ export function RegistrationTable({
                     {reg.birthDate ? new Date(reg.birthDate).toLocaleDateString('th-TH') : '-'}
                   </TableCell>
                   <TableCell>{reg.phone}</TableCell>
+                  <TableCell className="max-w-[200px] truncate">
+                    {reg.schoolName || '-'}
+                  </TableCell>
                   <TableCell>{reg.province}</TableCell>
                   <TableCell>
                     {reg.status === 'approved' && (
@@ -227,6 +254,14 @@ export function RegistrationTable({
                           <SelectItem value="rejected">ปฏิเสธ</SelectItem>
                         </SelectContent>
                       </Select>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDeleteId(reg.id)}
+                        className="border-red-300 text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -268,5 +303,28 @@ export function RegistrationTable({
         </div>
       </CardContent>
     </Card>
+
+    <AlertDialog open={!!deleteId} onOpenChange={(open: boolean) => !open && setDeleteId(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>ยืนยันการลบข้อมูล</AlertDialogTitle>
+          <AlertDialogDescription>
+            คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้? 
+            <br />
+            <span className="text-red-600 font-semibold">ข้อมูลจะถูกลบออกจากฐานข้อมูลถาวรและไม่สามารถกู้คืนได้</span>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+          <AlertDialogAction 
+            onClick={handleDeleteConfirm}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            ลบข้อมูล
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

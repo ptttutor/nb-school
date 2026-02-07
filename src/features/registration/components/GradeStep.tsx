@@ -22,13 +22,13 @@ export function GradeStep({
       <div className="space-y-4">
         <div className="space-y-4">
           <Label className="text-base font-medium">
-            {isM4 ? "คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน) *" : "เกรดเฉลี่ยรายวิชา *"}
+            {isM4 ? "ระดับคะแนนเฉลี่ยสะสม ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน" : "เกรดเฉลี่ยรายวิชา *"}
           </Label>
           <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             {isM4 ? (
               <>
                 <div className="space-y-4">
-                  <Label htmlFor="scienceCumulativeM1M3">วิทยาศาสตร์ (คะแนนเฉลี่ยสะสม ม.1-3)</Label>
+                  <Label htmlFor="scienceCumulativeM1M3">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาวิทยาศาสตร์ ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน</Label>
                   <Input
                     type="text"
                     id="scienceCumulativeM1M3"
@@ -49,7 +49,7 @@ export function GradeStep({
                 </div>
 
                 <div className="space-y-4">
-                  <Label htmlFor="mathCumulativeM1M3">คณิตศาสตร์ (คะแนนเฉลี่ยสะสม ม.1-3)</Label>
+                  <Label htmlFor="mathCumulativeM1M3">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาคณิตศาสตร์ ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน</Label>
                   <Input
                     type="text"
                     id="mathCumulativeM1M3"
@@ -70,7 +70,7 @@ export function GradeStep({
                 </div>
 
                 <div className="space-y-4">
-                  <Label htmlFor="englishCumulativeM1M3">ภาษาอังกฤษ (คะแนนเฉลี่ยสะสม ม.1-3)</Label>
+                  <Label htmlFor="englishCumulativeM1M3">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาภาษาอังกฤษ ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน</Label>
                   <Input
                     type="text"
                     id="englishCumulativeM1M3"
@@ -93,7 +93,7 @@ export function GradeStep({
             ) : (
               <>
                 <div className="space-y-4">
-                  <Label htmlFor="gradeP4">เกรดเฉลี่ย ป.4</Label>
+                  <Label htmlFor="gradeP4">เกรดเฉลี่ย ระดับชั้นประถมศึกษาปีที่ 4</Label>
                   <Input
                     type="text"
                     id="gradeP4"
@@ -114,7 +114,7 @@ export function GradeStep({
                 </div>
 
                 <div className="space-y-4">
-                  <Label htmlFor="gradeP5">เกรดเฉลี่ย ป.5</Label>
+                  <Label htmlFor="gradeP5">เกรดเฉลี่ย ระดับชั้นประถมศึกษาปีที่ 5</Label>
                   <Input
                     type="text"
                     id="gradeP5"

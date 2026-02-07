@@ -72,6 +72,7 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
         setIsEditing(false);
         setEditData({});
         if (onUpdate) onUpdate();
+        onOpenChange(false);
       } else {
         toast({
           variant: "destructive",
@@ -166,7 +167,7 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
             </div>
             {registration.idCardOrPassport && (
               <div className="space-y-2">
-                <Label className="text-gray-600">เลขบัตรประชาชน/พาสปอร์ต</Label>
+                <Label className="text-gray-600">เลขบัตรประชาชน</Label>
                 <p className="font-medium">{registration.idCardOrPassport}</p>
               </div>
             )}
@@ -254,23 +255,23 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
             (registration.scienceCumulativeM1M3 || registration.mathCumulativeM1M3 ||
               registration.englishCumulativeM1M3) && (
               <div className="mt-6 pt-6 border-t">
-                <h3 className="font-semibold mb-4">คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน)</h3>
+                <h3 className="font-semibold mb-4">ระดับคะแนนเฉลี่ยสะสม ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน</h3>
                 <div className="grid grid-cols-2 gap-4">
                   {registration.scienceCumulativeM1M3 && (
                     <div>
-                      <Label className="text-gray-600">วิทยาศาสตร์</Label>
+                      <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาวิทยาศาสตร์</Label>
                       <p className="font-bold text-2xl text-green-600 mt-1">{registration.scienceCumulativeM1M3}</p>
                     </div>
                   )}
                   {registration.mathCumulativeM1M3 && (
                     <div>
-                      <Label className="text-gray-600">คณิตศาสตร์</Label>
+                      <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาคณิตศาสตร์</Label>
                       <p className="font-bold text-2xl text-blue-600 mt-1">{registration.mathCumulativeM1M3}</p>
                     </div>
                   )}
                   {registration.englishCumulativeM1M3 && (
                     <div>
-                      <Label className="text-gray-600">ภาษาอังกฤษ</Label>
+                      <Label className="text-gray-600">กลุ่มสาระการเรียนรู้วิชาภาษาอังกฤษ</Label>
                       <p className="font-bold text-2xl text-purple-600 mt-1">{registration.englishCumulativeM1M3}</p>
                     </div>
                   )}

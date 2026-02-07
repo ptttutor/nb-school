@@ -22,7 +22,7 @@ export function SearchForm() {
 
     // Validate ID card
     if (!idCard || idCard.trim().length === 0) {
-      setMessage("กรุณากรอกเลขบัตรประชาชน/พาสปอร์ต");
+      setMessage("กรุณากรอกเลขบัตรประชาชน");
       setLoading(false);
       return;
     }
@@ -35,7 +35,7 @@ export function SearchForm() {
         // พบข้อมูลการสมัคร redirect ไปหน้ารายละเอียด
         router.push(`/registration/${data.id}`);
       } else {
-        setMessage(data.error || "ไม่พบข้อมูลการสมัครด้วยเลขบัตรประชาชน/พาสปอร์ตนี้");
+        setMessage(data.error || "ไม่พบข้อมูลการสมัครด้วยเลขบัตรประชาชนนี้");
       }
     } catch (error) {
       console.error("Search error:", error);
@@ -57,7 +57,7 @@ export function SearchForm() {
               ตรวจสอบการสมัคร
             </CardTitle>
             <CardDescription className="text-base mt-1">
-              ค้นหาข้อมูลการสมัครด้วยเลขบัตรประชาชน/พาสปอร์ต
+              ค้นหาข้อมูลการสมัครด้วยเลขบัตรประชาชน
             </CardDescription>
           </div>
         </div>
@@ -66,7 +66,7 @@ export function SearchForm() {
         <form onSubmit={handleSearch} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="idCard" className="text-base">
-              เลขบัตรประชาชน/พาสปอร์ต *
+              เลขบัตรประชาชน *
             </Label>
             <Input
               type="text"
@@ -78,7 +78,7 @@ export function SearchForm() {
               required
             />
             <p className="text-sm text-gray-600">
-              กรุณากรอกเลขบัตรประชาชน/พาสปอร์ตที่ใช้ในการสมัคร
+              กรุณากรอกเลขบัตรประชาชนที่ใช้ในการสมัคร
             </p>
           </div>
 
@@ -113,7 +113,7 @@ export function SearchForm() {
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h3 className="font-semibold text-blue-900 mb-2">หมายเหตุ:</h3>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>• กรอกเลขบัตรประชาชน/พาสปอร์ตที่ใช้สมัครเท่านั้น</li>
+            <li>• กรอกเลขบัตรประชาชนที่ใช้สมัครเท่านั้น</li>
             <li>• หากไม่พบข้อมูล แสดงว่ายังไม่ได้ทำการสมัครหรือกรอกข้อมูลไม่ถูกต้อง</li>
             <li>• สามารถกลับมาตรวจสอบได้ตลอดเวลา</li>
           </ul>

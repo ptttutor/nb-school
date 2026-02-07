@@ -154,3 +154,32 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "กรุณาระบุ ID" },
+        { status: 400 }
+      );
+    }
+
+    await prisma.registration.delete({
+      where: { id },
+    });
+
+    return NextResponse.json(
+      { message: "ลบข้อมูลสำเร็จ" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting registration:", error);
+    return NextResponse.json(
+      { error: "เกิดข้อผิดพลาดในการลบข้อมูล" },
+      { status: 500 }
+    );
+  }
+}
