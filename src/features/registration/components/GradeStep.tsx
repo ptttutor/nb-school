@@ -24,10 +24,10 @@ export function GradeStep({
           <Label className="text-base font-medium">
             {isM4 ? "คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน) *" : "เกรดเฉลี่ยรายวิชา *"}
           </Label>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             {isM4 ? (
               <>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <Label htmlFor="scienceCumulativeM1M3">วิทยาศาสตร์ (คะแนนเฉลี่ยสะสม ม.1-3)</Label>
                   <Input
                     type="text"
@@ -42,7 +42,7 @@ export function GradeStep({
                   <p className="text-xs text-gray-500">ระบุคะแนนเฉลี่ย 0.00 - 4.00</p>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <Label htmlFor="mathCumulativeM1M3">คณิตศาสตร์ (คะแนนเฉลี่ยสะสม ม.1-3)</Label>
                   <Input
                     type="text"
@@ -57,7 +57,7 @@ export function GradeStep({
                   <p className="text-xs text-gray-500">ระบุคะแนนเฉลี่ย 0.00 - 4.00</p>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <Label htmlFor="englishCumulativeM1M3">ภาษาอังกฤษ (คะแนนเฉลี่ยสะสม ม.1-3)</Label>
                   <Input
                     type="text"
@@ -74,7 +74,7 @@ export function GradeStep({
               </>
             ) : (
               <>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <Label htmlFor="gradeP4">เกรดเฉลี่ย ป.4</Label>
                   <Input
                     type="text"
@@ -88,7 +88,7 @@ export function GradeStep({
                   <p className="text-xs text-gray-500">ระบุเกรดเฉลี่ย 0.00 - 4.00</p>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <Label htmlFor="gradeP5">เกรดเฉลี่ย ป.5</Label>
                   <Input
                     type="text"

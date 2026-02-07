@@ -115,8 +115,8 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
 
   if (loadingSettings) {
     return (
-      <div className="min-h-screen p-2 sm:p-4 md:p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
-        <div className="max-w-5xl mx-auto py-2 sm:py-4 w-full">
+      <div className="min-h-screen p-3 sm:p-6 md:p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+        <div className="max-w-6xl mx-auto py-4 sm:py-6 w-full">
           <Card className="shadow-xl border-amber-200 bg-white/95 backdrop-blur">
             <CardContent className="py-12 text-center">
               <p className="text-gray-600">กำลังโหลดข้อมูล...</p>
@@ -129,8 +129,8 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
 
   if (!admissionSettings?.isOpen) {
     return (
-      <div className="min-h-screen p-2 sm:p-4 md:p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
-        <div className="max-w-5xl mx-auto py-2 sm:py-4 w-full">
+      <div className="min-h-screen p-3 sm:p-6 md:p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+        <div className="max-w-6xl mx-auto py-4 sm:py-6 w-full">
           <Card className="shadow-xl border-red-200 bg-white/95 backdrop-blur">
             <CardHeader>
               <div className="mb-4">
@@ -182,8 +182,8 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
   }
 
   return (
-    <div className="min-h-screen p-2 sm:p-4 md:p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
-      <div className="max-w-5xl mx-auto py-2 sm:py-4 w-full">
+    <div className="min-h-screen p-3 sm:p-6 md:p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+      <div className="max-w-6xl mx-auto py-4 sm:py-6 w-full">
         {/* แสดงประกาศสำคัญ */}
         {admissionSettings?.announcement && (
           <div className="space-y-4 mb-4">
@@ -223,9 +223,9 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
           </CardHeader>
           
           {/* Step Indicator */}
-          <div className="px-6 pb-4 flex-shrink-0 border-b border-amber-100">
-            <div className="overflow-x-auto pb-2">
-              <div className="flex items-center justify-between min-w-[600px] sm:min-w-0">
+          <div className="px-4 sm:px-6 lg:px-8 pb-4 flex-shrink-0 border-b border-amber-100">
+            <div className="overflow-x-auto pb-2 -mx-2 px-2">
+              <div className="flex items-center justify-between min-w-[650px] md:min-w-0">
                 {[1, 2, 3, 4, 5, 6].map((step) => (
                   <div key={step} className="flex items-center flex-1 min-w-0">
                     <div className="flex flex-col items-center flex-1">
@@ -240,13 +240,13 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
                       >
                         {step < currentStep ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : step}
                       </div>
-                      <p className={`text-[10px] sm:text-xs mt-1 sm:mt-2 text-center px-1 ${step === currentStep ? "font-semibold text-amber-900" : "text-gray-500"}`}>
-                        {step === 1 && "ข้อมูล"}
-                        {step === 2 && "ที่อยู่"}
-                        {step === 3 && "การศึกษา"}
-                        {step === 4 && "ผลเรียน"}
-                        {step === 5 && "ปกครอง"}
-                        {step === 6 && "เอกสาร"}
+                      <p className={`text-[10px] sm:text-xs lg:text-sm mt-1 sm:mt-2 text-center px-1 ${step === currentStep ? "font-semibold text-amber-900" : "text-gray-500"}`}>
+                        {step === 1 && "ข้อมูลส่วนตัว"}
+                        {step === 2 && "ข้อมูลที่อยู่"}
+                        {step === 3 && "ข้อมูลการศึกษา"}
+                        {step === 4 && "ข้อมูลผลการเรียน"}
+                        {step === 5 && "ข้อมูลผู้ปกครอง"}
+                        {step === 6 && "ข้อมูลเอกสาร"}
                       </p>
                     </div>
                     {step < 6 && (
@@ -263,8 +263,8 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
           </div>
 
           {/* Scrollable Form Content */}
-          <div className="overflow-y-auto max-h-[calc(100vh-280px)] sm:max-h-[calc(100vh-320px)]">
-            <CardContent>
+          <div className="overflow-y-auto max-h-[calc(100vh-400px)] md:max-h-[calc(100vh-380px)] lg:max-h-[calc(100vh-360px)]">
+            <CardContent className="py-6 px-4 sm:px-6 lg:px-8">
               <form id="registration-form" onSubmit={(e) => handleSubmit(e, validateForm)} className="space-y-8 pb-4">
                 {currentStep === 1 && (
                   <StudentInfoStep
@@ -336,7 +336,7 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
           </div>
 
           {/* Navigation Buttons - Fixed at bottom */}
-          <div className="flex-shrink-0 border-t border-amber-200 p-4 sm:p-6 bg-white/95">
+          <div className="flex-shrink-0 border-t border-amber-200 p-4 sm:p-5 lg:p-6 bg-white/95">
             <div className="flex justify-between items-center">
               <Button
                 type="button"

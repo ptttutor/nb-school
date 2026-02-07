@@ -113,7 +113,11 @@ export function EducationStep({
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="pt-4 pb-2">
+          <h4 className="text-base font-semibold text-amber-900">ข้อมูลที่อยู่ของสถานศึกษา</h4>
+        </div>
+
+        <div className="space-y-4">
           <Label htmlFor="schoolProvince">จังหวัด *</Label>
           <Select
             value={formData.schoolProvince}
@@ -138,8 +142,8 @@ export function EducationStep({
           )}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-2">
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+          <div className="space-y-4">
             <Label htmlFor="schoolDistrict">เขต/อำเภอ *</Label>
             {schoolProvince && availableDistricts.length > 0 ? (
               <Select
@@ -180,7 +184,7 @@ export function EducationStep({
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-4">
             <Label htmlFor="schoolSubdistrict">แขวง/ตำบล *</Label>
             {schoolDistrict && availableSubdistricts.length > 0 ? (
               <Select
@@ -230,7 +234,7 @@ export function EducationStep({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="schoolName">โรงเรียน * <span className="text-xs text-gray-500">(ไม่ต้องใส่คำว่าโรงเรียน)</span></Label>
           {isNongbuaDistrict ? (
             <Select

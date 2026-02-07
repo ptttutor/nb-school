@@ -26,12 +26,12 @@ export function StudentInfoStep({
         <h3 className="text-xl font-bold text-amber-900">ข้อมูลผู้สมัคร (นักเรียน)</h3>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         <Label htmlFor="idCardOrPassport">
           เลขบัตรประจำตัวประชาชน *
         </Label>
         <Input
-          type="text"
+          type="number"
           id="idCardOrPassport"
           name="idCardOrPassport"
           value={formData.idCardOrPassport}
@@ -51,7 +51,7 @@ export function StudentInfoStep({
         <p className="text-xs text-gray-500">กรุณากรอกเลขบัตรประชาชนไทย 13 หลัก ตัวอย่าง: 1234567891234 (ข้อมูลนี้ช่วยป้องกันการสมัครซ้ำ)</p>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         <Label htmlFor="isSpecialISM">ประเภทห้องเรียน *</Label>
         {(!admissionSettings?.allowISM && !admissionSettings?.allowRegular) ? (
           <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
@@ -98,8 +98,8 @@ export function StudentInfoStep({
         )}
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="space-y-2">
+      <div className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="space-y-4">
           <Label htmlFor="title">คำนำหน้า *</Label>
           <Select value={formData.title} onValueChange={(val) => handleSelectChange("title", val)} required>
             <SelectTrigger className={cn("border-amber-200", errors?.title && "border-red-500")}>
@@ -121,7 +121,7 @@ export function StudentInfoStep({
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="firstNameTH">ชื่อ (ภาษาไทย) *</Label>
           <Input
             type="text"
@@ -141,7 +141,7 @@ export function StudentInfoStep({
           <p className="text-xs text-gray-500">ไม่ต้องใส่คำนำหน้า</p>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="lastNameTH">นามสกุล (ภาษาไทย) *</Label>
           <Input
             type="text"
@@ -161,7 +161,7 @@ export function StudentInfoStep({
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         <Label htmlFor="birthDate">วันเกิด *</Label>
         <DatePicker
           date={formData.birthDate ? new Date(formData.birthDate) : undefined}
@@ -186,8 +186,8 @@ export function StudentInfoStep({
         <p className="text-xs text-gray-500">ระบบจะแปลงเป็น พ.ศ. ให้อัตโนมัติ</p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="space-y-2">
+      <div className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="space-y-4">
           <Label htmlFor="phone">โทรศัพท์เคลื่อนที่ *</Label>
           <Input
             type="tel"
@@ -206,7 +206,7 @@ export function StudentInfoStep({
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="siblings">จำนวนพี่น้อง (คน) *<span className="text-xs"> **ไม่รวมตนเอง</span></Label>
           <Input
             type="number"
@@ -226,7 +226,7 @@ export function StudentInfoStep({
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="siblingsInSchool">มีพี่น้องเรียนที่โรงเรียนหนองบัว (คน) *</Label>
           <Input
             type="number"
@@ -241,8 +241,8 @@ export function StudentInfoStep({
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="space-y-2">
+      <div className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="space-y-4">
           <Label htmlFor="ethnicity">เชื้อชาติ *</Label>
           <Select
             value={formData.ethnicity}
@@ -271,7 +271,7 @@ export function StudentInfoStep({
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="nationality">สัญชาติ *</Label>
           <Select
             value={formData.nationality}
@@ -299,7 +299,7 @@ export function StudentInfoStep({
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="religion">ศาสนา *</Label>
           <Select
             value={formData.religion}

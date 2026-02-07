@@ -44,8 +44,8 @@ export function AddressStep({
         <h3 className="text-xl font-bold text-amber-900">ที่อยู่ตามทะเบียนบ้าน (นักเรียน)</h3>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-2">
+      <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+        <div className="space-y-4">
           <Label htmlFor="villageName">ชื่อหมู่บ้าน *</Label>
           <Input
             type="text"
@@ -57,7 +57,7 @@ export function AddressStep({
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="houseNumber">บ้านเลขที่ *</Label>
           <Input
             type="text"
@@ -77,11 +77,11 @@ export function AddressStep({
         </div>
       </div>
 
-      <div className="grid md:grid-cols-4 gap-6">
-        <div className="space-y-2">
+      <div className="grid md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+        <div className="space-y-4">
           <Label htmlFor="moo">หมู่ที่ *</Label>
           <Input
-            type="text"
+            type="number"
             id="moo"
             name="moo"
             value={formData.moo}
@@ -90,7 +90,7 @@ export function AddressStep({
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="road">ถนน</Label>
           <Input
             type="text"
@@ -102,7 +102,7 @@ export function AddressStep({
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="soi">ซอย</Label>
           <Input
             type="text"
@@ -115,8 +115,8 @@ export function AddressStep({
         </div>
       </div>
 
-      <div className="grid md:grid-cols-4 gap-6">
-        <div className="space-y-2">
+      <div className="grid md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+        <div className="space-y-4">
           <Label htmlFor="province">จังหวัด *</Label>
           <Select
             value={formData.province}
@@ -141,7 +141,7 @@ export function AddressStep({
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="district">เขต/อำเภอ *</Label>
           {province && availableDistricts.length > 0 ? (
             <Select
@@ -182,7 +182,7 @@ export function AddressStep({
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="subdistrict">แขวง/ตำบล *</Label>
           {district && availableSubdistricts.length > 0 ? (
             <Select
@@ -223,7 +223,7 @@ export function AddressStep({
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="postalCode">รหัสไปรษณีย์ *</Label>
           <Input
             type="text"

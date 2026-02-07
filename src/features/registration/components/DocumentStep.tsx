@@ -43,7 +43,7 @@ export function DocumentStep({
             <CheckCircle className="w-5 h-5" />
             สถานะเอกสารที่แนบ
           </h4>
-          <div className="space-y-2">
+          <div className="space-y-4">
             <div className="flex items-center justify-between py-2 px-3 bg-white rounded">
               <span className="text-sm">สำเนาทะเบียนบ้าน</span>
               {houseRegistrationFile ? (
@@ -100,7 +100,7 @@ export function DocumentStep({
 
           <div className="space-y-4">
             {/* สำเนาทะเบียนบ้าน */}
-            <div className="space-y-2">
+            <div className="space-y-4">
               <Label htmlFor="houseRegistration" className="flex items-center gap-2">
                 สำเนาทะเบียนบ้าน
                 {houseRegistrationFile && <CheckCircle className="w-4 h-4 text-green-600" />}
@@ -121,7 +121,7 @@ export function DocumentStep({
             </div>
 
             {/* หลักฐานแสดงผลการเรียน */}
-            <div className="space-y-2">
+            <div className="space-y-4">
               <Label htmlFor="transcript" className="flex items-center gap-2">
                 หลักฐานแสดงผลการเรียน (ปพ.1)
                 {transcriptFile && <CheckCircle className="w-4 h-4 text-green-600" />}
@@ -142,7 +142,7 @@ export function DocumentStep({
             </div>
 
             {/* รูปถ่าย */}
-            <div className="space-y-2">
+            <div className="space-y-4">
               <Label htmlFor="photo" className="flex items-center gap-2">
                 รูปถ่าย ขนาด 1.5 x 1 นิ้ว
                 {photoFile && <CheckCircle className="w-4 h-4 text-green-600" />}
@@ -188,7 +188,7 @@ export function DocumentStep({
               </Button>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-4">
               <Input
                 type="text"
                 id="captcha"
