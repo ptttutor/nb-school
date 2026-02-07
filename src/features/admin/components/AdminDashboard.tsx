@@ -18,38 +18,42 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
-  const [news, setNews] = useState<News[]>([]);
   const [activeTab, setActiveTab] = useState<'registrations' | 'news' | 'hero' | 'admission'>('registrations');
   const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
+  // Pagination & Filter states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [gradeLevelFilter, setGradeLevelFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchRegistrations();
-    fetchNews();
-  }, []);
+  }, [currentPage, statusFilter, gradeLevelFilter, searchQuery]);
 
   const fetchRegistrations = async () => {
     try {
-      const res = await fetch('/api/admin/registrations');
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: "10",
+        status: statusFilter,
+        gradeLevel: gradeLevelFilter,
+        search: searchQuery,
+      });
+      
+      const res = await fetch(`/api/admin/registrations?${params}`);
       if (res.ok) {
         const data = await res.json();
-        setRegistrations(Array.isArray(data) ? data : []);
+        setRegistrations(Array.isArray(data.registrations) ? data.registrations : []);
+        setTotalCount(data.pagination.total);
+        setTotalPages(data.pagination.totalPages);
       }
     } catch (err) {
       console.error('Failed to fetch registrations:', err);
       setRegistrations([]);
-    }
-  };
-
-  const fetchNews = async () => {
-    try {
-      const res = await fetch('/api/news?admin=true');
-      if (res.ok) {
-        const data = await res.json();
-        setNews(data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch news:', err);
     }
   };
 
@@ -110,7 +114,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             onClick={() => setActiveTab('registrations')}
           >
             <Shield className="w-4 h-4 mr-2" />
-            การสมัครเรียน ({registrations.length})
+            การสมัครเรียน ({totalCount})
           </Button>
           <Button
             variant={activeTab === 'news' ? 'default' : 'outline'}
@@ -120,7 +124,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             onClick={() => setActiveTab('news')}
           >
             <Newspaper className="w-4 h-4 mr-2" />
-            จัดการข่าว ({news.length})
+            จัดการข่าว
           </Button>
           <Button
             variant={activeTab === 'hero' ? 'default' : 'outline'}
@@ -150,16 +154,22 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             registrations={registrations}
             onViewDetails={handleViewDetails}
             onStatusChange={updateStatus}
+            totalCount={totalCount}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            gradeLevelFilter={gradeLevelFilter}
+            onGradeLevelFilterChange={setGradeLevelFilter}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
           />
         )}
 
         {/* News Tab */}
         {activeTab === 'news' && (
-          <NewsManagement
-            news={news}
-            adminId={adminId}
-            onRefresh={fetchNews}
-          />
+          <NewsManagement adminId={adminId} />
         )}
 
         {/* Hero Images Tab */}

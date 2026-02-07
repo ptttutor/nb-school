@@ -3,13 +3,54 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const status = searchParams.get("status") || "all";
+    const gradeLevel = searchParams.get("gradeLevel") || "all";
+    const search = searchParams.get("search") || "";
+
+    // Build where clause for filtering
+    const where: any = {};
+    
+    if (status !== "all") {
+      where.status = status;
+    }
+    
+    if (gradeLevel !== "all") {
+      where.gradeLevel = gradeLevel;
+    }
+    
+    if (search) {
+      where.OR = [
+        { firstNameTH: { contains: search, mode: 'insensitive' } },
+        { lastNameTH: { contains: search, mode: 'insensitive' } },
+        { phone: { contains: search } },
+      ];
+    }
+
+    // Get total count
+    const total = await prisma.registration.count({ where });
+
+    // Get paginated registrations
     const registrations = await prisma.registration.findMany({
+      where,
       orderBy: {
         createdAt: "desc",
       },
+      skip: (page - 1) * limit,
+      take: limit,
     });
 
-    return NextResponse.json(registrations);
+    return NextResponse.json({
+      registrations,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error("Error fetching registrations:", error);
     return NextResponse.json(

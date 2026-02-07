@@ -107,17 +107,21 @@ export function AdmissionManagement() {
   const currentSettings = activeTab === "m1" ? m1Settings : m4Settings;
 
   if (loading) {
-    return <div className="p-6">กำลังโหลด...</div>;
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-amber-700">กำลังโหลด...</div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="shadow-xl border-amber-200 bg-white/90 backdrop-blur">
         <CardHeader>
           <div className="flex items-center gap-3">
             <Settings className="w-6 h-6 text-amber-700" />
             <div>
-              <CardTitle className="text-2xl">การจัดการรับสมัคร</CardTitle>
+              <CardTitle className="text-2xl text-amber-900">การจัดการรับสมัคร</CardTitle>
               <CardDescription>ตั้งค่าการเปิด-ปิดรับสมัคร กำหนดการ และข้อกำหนดต่างๆ</CardDescription>
             </div>
           </div>
@@ -129,14 +133,18 @@ export function AdmissionManagement() {
         <Button
           variant={activeTab === "m1" ? "default" : "outline"}
           onClick={() => setActiveTab("m1")}
-          className={activeTab === "m1" ? "bg-blue-600" : ""}
+          className={activeTab === "m1" 
+            ? "bg-gradient-to-r from-blue-500 to-blue-600" 
+            : "border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900"}
         >
           มัธยมศึกษาปีที่ 1
         </Button>
         <Button
           variant={activeTab === "m4" ? "default" : "outline"}
           onClick={() => setActiveTab("m4")}
-          className={activeTab === "m4" ? "bg-green-600" : ""}
+          className={activeTab === "m4" 
+            ? "bg-gradient-to-r from-green-500 to-green-600" 
+            : "border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900"}
         >
           มัธยมศึกษาปีที่ 4
         </Button>
@@ -145,9 +153,9 @@ export function AdmissionManagement() {
       {currentSettings && (
         <div className="space-y-6">
           {/* สถานะการรับสมัคร */}
-          <Card>
+          <Card className="shadow-xl border-amber-200 bg-white/90 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
+              <CardTitle className="text-lg flex items-center gap-2 text-amber-900">
                 {currentSettings.isOpen ? (
                   <CheckCircle className="w-5 h-5 text-green-600" />
                 ) : (
@@ -161,18 +169,18 @@ export function AdmissionManagement() {
                 <Button
                   variant={currentSettings.isOpen ? "default" : "outline"}
                   onClick={() => updateSettings(activeTab, "isOpen", true)}
-                  className={currentSettings.isOpen ? "bg-green-600" : ""}
+                  className={currentSettings.isOpen ? "bg-green-600 hover:bg-green-700" : "border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900"}
                 >
                   เปิดรับสมัคร
                 </Button>
                 <Button
                   variant={!currentSettings.isOpen ? "default" : "outline"}
                   onClick={() => updateSettings(activeTab, "isOpen", false)}
-                  className={!currentSettings.isOpen ? "bg-red-600" : ""}
+                  className={!currentSettings.isOpen ? "bg-red-600 hover:bg-red-700" : "border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900"}
                 >
                   ปิดรับสมัคร
                 </Button>
-                <Badge variant={currentSettings.isOpen ? "default" : "secondary"}>
+                <Badge variant={currentSettings.isOpen ? "default" : "secondary"} className={currentSettings.isOpen ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
                   {currentSettings.isOpen ? "เปิดรับสมัคร" : "ปิดรับสมัคร"}
                 </Badge>
               </div>
@@ -180,17 +188,17 @@ export function AdmissionManagement() {
           </Card>
 
           {/* ช่วงเวลารับสมัคร */}
-          <Card>
+          <Card className="shadow-xl border-amber-200 bg-white/90 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
+              <CardTitle className="text-lg flex items-center gap-2 text-amber-900">
+                <Calendar className="w-5 h-5 text-amber-700" />
                 ช่วงเวลารับสมัคร
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="startDate">วันเริ่มรับสมัคร</Label>
+                  <Label htmlFor="startDate" className="text-amber-900">วันเริ่มรับสมัคร</Label>
                   <DateTimePicker
                     date={currentSettings.startDate ? new Date(currentSettings.startDate) : undefined}
                     setDate={(date) => updateSettings(activeTab, "startDate", date?.toISOString())}
@@ -198,7 +206,7 @@ export function AdmissionManagement() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="endDate">วันปิดรับสมัคร</Label>
+                  <Label htmlFor="endDate" className="text-amber-900">วันปิดรับสมัคร</Label>
                   <DateTimePicker
                     date={currentSettings.endDate ? new Date(currentSettings.endDate) : undefined}
                     setDate={(date) => updateSettings(activeTab, "endDate", date?.toISOString())}
@@ -210,9 +218,9 @@ export function AdmissionManagement() {
           </Card>
 
           {/* ประเภทห้องเรียนที่อนุญาต */}
-          <Card>
+          <Card className="shadow-xl border-amber-200 bg-white/90 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-lg">ประเภทห้องเรียนที่เปิดรับ</CardTitle>
+              <CardTitle className="text-lg text-amber-900">ประเภทห้องเรียนที่เปิดรับ</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -220,9 +228,9 @@ export function AdmissionManagement() {
                   type="checkbox"
                   checked={currentSettings.allowISM}
                   onChange={(e) => updateSettings(activeTab, "allowISM", e.target.checked)}
-                  className="w-4 h-4"
+                  className="w-4 h-4 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
                 />
-                <span>ห้องเรียนพิเศษ ISM (Intensive Science and Mathematics)</span>
+                <span className="text-amber-900">ห้องเรียนพิเศษ ISM (Intensive Science and Mathematics)</span>
                 <Badge className="bg-amber-600">ISM</Badge>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
@@ -230,25 +238,25 @@ export function AdmissionManagement() {
                   type="checkbox"
                   checked={currentSettings.allowRegular}
                   onChange={(e) => updateSettings(activeTab, "allowRegular", e.target.checked)}
-                  className="w-4 h-4"
+                  className="w-4 h-4 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
                 />
-                <span>ห้องเรียนทั่วไป</span>
+                <span className="text-amber-900">ห้องเรียนทั่วไป</span>
               </label>
             </CardContent>
           </Card>
 
           {/* กำหนดการ */}
-          <Card>
+          <Card className="shadow-xl border-amber-200 bg-white/90 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
+              <CardTitle className="text-lg flex items-center gap-2 text-amber-900">
+                <Calendar className="w-5 h-5 text-amber-700" />
                 กำหนดการ
               </CardTitle>
             </CardHeader>
             <CardContent>
               <textarea
                 rows={6}
-                className="w-full p-3 border rounded-md"
+                className="w-full p-3 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400"
                 placeholder="เช่น:&#10;- รับสมัคร: 4-12 กุมภาพันธ์ 2569&#10;- ประกาศผล: 16 กุมภาพันธ์ 2569&#10;- สอบคัดเลือก: 22 กุมภาพันธ์ 2569"
                 value={currentSettings.schedule || ""}
                 onChange={(e) => updateSettings(activeTab, "schedule", e.target.value)}
@@ -257,17 +265,17 @@ export function AdmissionManagement() {
           </Card>
 
           {/* ข้อกำหนด */}
-          <Card>
+          <Card className="shadow-xl border-amber-200 bg-white/90 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <FileText className="w-5 h-5" />
+              <CardTitle className="text-lg flex items-center gap-2 text-amber-900">
+                <FileText className="w-5 h-5 text-amber-700" />
                 ข้อกำหนด/คุณสมบัติผู้สมัคร
               </CardTitle>
             </CardHeader>
             <CardContent>
               <textarea
                 rows={6}
-                className="w-full p-3 border rounded-md"
+                className="w-full p-3 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400"
                 placeholder="เช่น:&#10;- สำเร็จการศึกษาชั้น ป.6 หรือเทียบเท่า&#10;- มีเกรดเฉลี่ยวิชาคณิตศาสตร์และวิทยาศาสตร์ไม่ต่ำกว่า 3.00"
                 value={currentSettings.requirements || ""}
                 onChange={(e) => updateSettings(activeTab, "requirements", e.target.value)}
@@ -276,17 +284,17 @@ export function AdmissionManagement() {
           </Card>
 
           {/* ประกาศ/รายละเอียด */}
-          <Card>
+          <Card className="shadow-xl border-amber-200 bg-white/90 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Bell className="w-5 h-5" />
+              <CardTitle className="text-lg flex items-center gap-2 text-amber-900">
+                <Bell className="w-5 h-5 text-amber-700" />
                 ประกาศ/รายละเอียดเพิ่มเติม
               </CardTitle>
             </CardHeader>
             <CardContent>
               <textarea
                 rows={6}
-                className="w-full p-3 border rounded-md"
+                className="w-full p-3 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400"
                 placeholder="ข้อมูลเพิ่มเติมหรือประกาศสำคัญที่ต้องการแจ้งผู้สมัคร"
                 value={currentSettings.announcement || ""}
                 onChange={(e) => updateSettings(activeTab, "announcement", e.target.value)}
@@ -299,7 +307,7 @@ export function AdmissionManagement() {
             <Button
               onClick={() => handleSave(activeTab)}
               disabled={saving}
-              className="bg-amber-600 hover:bg-amber-700"
+              className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700"
             >
               {saving ? "กำลังบันทึก..." : "บันทึกการตั้งค่า"}
             </Button>

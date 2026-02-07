@@ -3,12 +3,61 @@ import { prisma } from "@/lib/prisma";
 import { del } from "@vercel/blob";
 
 // GET - ดึงรูป Hero ทั้งหมดที่ active
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const isAdmin = searchParams.get("admin") === "true";
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const activeFilter = searchParams.get("active") || "all";
+    const search = searchParams.get("search") || "";
+
+    // Build where clause for filtering
+    const where: any = {};
+    
+    if (!isAdmin) {
+      // For public, only show active images
+      where.active = true;
+    } else {
+      // Admin filters
+      if (activeFilter !== "all") {
+        where.active = activeFilter === "active";
+      }
+      
+      if (search) {
+        where.title = { contains: search, mode: 'insensitive' };
+      }
+    }
+
+    // For admin, return paginated data
+    if (isAdmin) {
+      // Get total count
+      const total = await prisma.heroImage.count({ where });
+
+      // Get paginated images
+      const heroImages = await prisma.heroImage.findMany({
+        where,
+        orderBy: {
+          order: 'asc',
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+
+      return NextResponse.json({
+        heroImages,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      });
+    }
+
+    // For public, return all active images without pagination
     const heroImages = await prisma.heroImage.findMany({
-      where: {
-        active: true,
-      },
+      where,
       orderBy: {
         order: 'asc',
       },

@@ -6,9 +6,67 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const isAdmin = searchParams.get("admin") === "true";
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const published = searchParams.get("published") || "all";
+    const search = searchParams.get("search") || "";
 
+    // Build where clause for filtering
+    const where: any = {};
+    
+    if (!isAdmin) {
+      where.published = true;
+    } else {
+      // Admin filters
+      if (published !== "all") {
+        where.published = published === "published";
+      }
+      
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: 'insensitive' } },
+          { content: { contains: search, mode: 'insensitive' } },
+        ];
+      }
+    }
+
+    // For admin, return paginated data
+    if (isAdmin) {
+      // Get total count
+      const total = await prisma.news.count({ where });
+
+      // Get paginated news
+      const news = await prisma.news.findMany({
+        where,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          admin: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+
+      return NextResponse.json({
+        news,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      }, { status: 200 });
+    }
+
+    // For public, return all published news without pagination
     const news = await prisma.news.findMany({
-      where: isAdmin ? {} : { published: true },
+      where,
       orderBy: {
         createdAt: "desc",
       },
