@@ -15,10 +15,21 @@ export default function ApplicantsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [gradeLevelFilter, setGradeLevelFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      setCurrentPage(1); // Reset to first page when searching
+      fetchRegistrations();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, gradeLevelFilter]);
 
   useEffect(() => {
     fetchRegistrations();
-  }, [currentPage, gradeLevelFilter]);
+  }, [currentPage]);
 
   const fetchRegistrations = async () => {
     setLoading(true);
@@ -26,12 +37,11 @@ export default function ApplicantsPage() {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: "20",
-        status: "all",
         gradeLevel: gradeLevelFilter,
-        search: "",
+        search: searchQuery,
       });
 
-      const res = await fetch(`/api/admin/registrations?${params}`);
+      const res = await fetch(`/api/applicants?${params}`);
       if (res.ok) {
         const data = await res.json();
         setRegistrations(Array.isArray(data.registrations) ? data.registrations : []);
@@ -77,6 +87,8 @@ export default function ApplicantsPage() {
             onPageChange={setCurrentPage}
             gradeLevelFilter={gradeLevelFilter}
             onGradeLevelFilterChange={setGradeLevelFilter}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
           />
         </Card>
       </div>

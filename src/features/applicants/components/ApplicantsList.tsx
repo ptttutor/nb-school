@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -17,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, FileCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, FileCheck, Search } from "lucide-react";
 import type { Registration } from "@/types";
 
 interface ApplicantsListProps {
@@ -29,6 +30,8 @@ interface ApplicantsListProps {
   onPageChange: (page: number) => void;
   gradeLevelFilter: string;
   onGradeLevelFilterChange: (gradeLevel: string) => void;
+  searchQuery: string;
+  onSearchQueryChange: (search: string) => void;
 }
 
 export function ApplicantsList({
@@ -40,6 +43,8 @@ export function ApplicantsList({
   onPageChange,
   gradeLevelFilter,
   onGradeLevelFilterChange,
+  searchQuery,
+  onSearchQueryChange,
 }: ApplicantsListProps) {
   const hasAllDocuments = (reg: Registration) => {
     return reg.photoDoc && reg.houseRegistrationDoc && reg.transcriptDoc;
@@ -53,29 +58,26 @@ export function ApplicantsList({
     return missing;
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <div className="text-amber-700">กำลังโหลดข้อมูล...</div>
-      </div>
-    );
-  }
-
-  if (!registrations.length) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-amber-600">ไม่พบข้อมูลผู้สมัคร</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      {/* Filter */}
-      <div className="flex items-center justify-between">
+      {/* Search and Filter */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="ค้นหาจากชื่อหรือนามสกุล..."
+              value={searchQuery}
+              onChange={(e) => onSearchQueryChange(e.target.value)}
+              className="pl-10 border-amber-200"
+              disabled={loading}
+            />
+          </div>
+        </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">กรองตามระดับชั้น:</span>
-          <Select value={gradeLevelFilter} onValueChange={onGradeLevelFilterChange}>
+          <span className="text-sm text-gray-600 whitespace-nowrap">ระดับชั้น:</span>
+          <Select value={gradeLevelFilter} onValueChange={onGradeLevelFilterChange} disabled={loading}>
             <SelectTrigger className="w-[180px] border-amber-200">
               <SelectValue placeholder="ทุกระดับชั้น" />
             </SelectTrigger>
@@ -86,11 +88,23 @@ export function ApplicantsList({
             </SelectContent>
           </Select>
         </div>
-        <div className="text-sm text-gray-600">
-          ทั้งหมด {totalCount} รายการ
-        </div>
       </div>
 
+      {/* Total Count */}
+      <div className="text-sm text-gray-600">
+        ทั้งหมด {totalCount} รายการ
+      </div>
+
+  {loading ? (
+    <div className="flex justify-center items-center py-12">
+      <div className="text-amber-700">กำลังโหลดข้อมูล...</div>
+    </div>
+  ) : !registrations.length ? (
+    <div className="text-center py-12">
+      <p className="text-amber-600">ไม่พบข้อมูลผู้สมัคร</p>
+    </div>
+  ) : (
+    <>
       {/* Table */}
       <div className="overflow-x-auto">
         <Table>
@@ -101,7 +115,6 @@ export function ApplicantsList({
               <TableHead>ระดับชั้น</TableHead>
               <TableHead>โรงเรียน</TableHead>
               <TableHead>จังหวัด</TableHead>
-              <TableHead>เบอร์โทร</TableHead>
               <TableHead>สถานะเอกสาร</TableHead>
               <TableHead>วันที่สมัคร</TableHead>
             </TableRow>
@@ -136,7 +149,6 @@ export function ApplicantsList({
                     {reg.schoolName || "-"}
                   </TableCell>
                   <TableCell>{reg.province}</TableCell>
-                  <TableCell>{reg.phone}</TableCell>
                   <TableCell>
                     {hasAllDocs ? (
                       <div className="flex items-center gap-2 text-green-600">
@@ -199,6 +211,8 @@ export function ApplicantsList({
           </div>
         </div>
       )}
+    </>
+  )}
 
       {/* Summary */}
       <Card className="bg-amber-50 border-amber-200">
@@ -210,13 +224,13 @@ export function ApplicantsList({
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
-                {registrations.filter(hasAllDocuments).length}
+                {loading ? '-' : registrations.filter(hasAllDocuments).length}
               </div>
               <div className="text-sm text-gray-600">เอกสารครบถ้วน</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-red-600">
-                {registrations.filter((r) => !hasAllDocuments(r)).length}
+                {loading ? '-' : registrations.filter((r) => !hasAllDocuments(r)).length}
               </div>
               <div className="text-sm text-gray-600">เอกสารไม่ครบ</div>
             </div>

@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { MapPin, Phone, Printer, Calendar, Award } from "lucide-react";
+import Link from "next/link";
+import { MapPin, Phone, Printer, Calendar, Award, Shield } from "lucide-react";
 
 export function Footer() {
   return (
@@ -64,7 +65,16 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-amber-700 pt-6 mt-6 text-center">
+        <div className="border-t border-amber-700 pt-6 mt-6 text-center space-y-3">
+          <div className="flex items-center justify-center gap-4 text-sm">
+            <Link 
+              href="/privacy-policy" 
+              className="text-amber-200 hover:text-amber-100 transition-colors flex items-center gap-1"
+            >
+              <Shield className="h-4 w-4" />
+              นโยบายความเป็นส่วนตัว
+            </Link>
+          </div>
           <p className="text-sm text-amber-200">
             © 2026 โรงเรียนหนองบัว อำเภอหนองบัว จังหวัดนครสวรรค์ | สงวนลิขสิทธิ์
           </p>

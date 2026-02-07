@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import PrivacyPolicyDialog from "@/components/PrivacyPolicyDialog";
 
 export const metadata: Metadata = {
   title: "โรงเรียนหนองบัว จังหวัดนครสวรรค์",
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body className="overflow-y-scroll">
         {children}
         <Toaster />
+        <PrivacyPolicyDialog />
       </body>
     </html>
   );
