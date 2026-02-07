@@ -475,7 +475,7 @@ export default function PrintPage({ params }: { params: Promise<{ id: string }> 
             {/* Footer */}
             <div className="text-center border-t border-gray-300 mt-8 pt-3 text-xs text-gray-600">
               <p className="mb-0">
-                โรงเรียนหนองบัว ต.หนองบัว อ.หนองบัว จ.นครสวรรค์ 60110 • โทร. 056-291-234
+                โรงเรียน 1 อำเภอ 1 โรงเรียนคุณภาพ
               </p>
             </div>
 
