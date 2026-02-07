@@ -103,3 +103,31 @@ export interface GradeData {
   mathGradeM2?: string;
   mathGradeM3?: string;
 }
+
+export type EducationStatus = 
+  | 'กำลังศึกษาอยู่ชั้นประถมศึกษาปีที่ 6'
+  | 'จบการศึกษาชั้นประถมศึกษาปีที่ 6'
+  | 'กำลังศึกษาอยู่ชั้นมัธยมศึกษาปีที่ 3'
+  | 'จบการศึกษาชั้นมัธยมศึกษาปีที่ 3';
+
+export interface AdmissionSettings {
+  id?: string;
+  gradeLevel: GradeLevel;
+  isOpen: boolean;
+  allowISM: boolean;
+  allowRegular: boolean;
+  announcement?: string | null;
+  startDate?: Date | null;
+  endDate?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface RegistrationStepProps {
+  formData: RegistrationFormData & { isSpecialISM: boolean };
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSelectChange: (name: string, value: string | boolean) => void;
+  isM4: boolean;
+  admissionSettings?: AdmissionSettings | null;
+  errors?: { [key: string]: string };
+}
