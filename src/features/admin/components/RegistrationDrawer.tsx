@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Save, X } from "lucide-react";
 import type { Registration } from "@/types";
+import { useToast } from "@/hooks/use-toast";
 
 interface RegistrationDrawerProps {
   registration: Registration | null;
@@ -26,6 +27,7 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editData, setEditData] = useState<Partial<Registration>>({});
+  const { toast } = useToast();
 
   if (!registration) return null;
 
@@ -64,15 +66,27 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
       });
 
       if (response.ok) {
+        toast({
+          title: "บันทึกสำเร็จ",
+          description: "แก้ไขข้อมูลการสมัครเรียบร้อยแล้ว",
+        });
         setIsEditing(false);
         setEditData({});
         if (onUpdate) onUpdate();
       } else {
-        alert('เกิดข้อผิดพลาดในการบันทึก');
+        toast({
+          variant: "destructive",
+          title: "ข้อผิดพลาด",
+          description: "เกิดข้อผิดพลาดในการบันทึก",
+        });
       }
     } catch (error) {
       console.error('Error saving:', error);
-      alert('เกิดข้อผิดพลาดในการบันทึก');
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการเชื่อมต่อ",
+      });
     } finally {
       setIsSaving(false);
     }

@@ -17,6 +17,7 @@ import {
   ArrowDown
 } from "lucide-react";
 import type { HeroImage } from "@/types/hero.types";
+import { useToast } from "@/hooks/use-toast";
 
 export function HeroImageManagement() {
   const [heroImages, setHeroImages] = useState<HeroImage[]>([]);
@@ -28,6 +29,7 @@ export function HeroImageManagement() {
     order: 0,
   });
   const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchHeroImages();
@@ -66,7 +68,11 @@ export function HeroImageManagement() {
       setNewImage({ ...newImage, imageUrl: data.fileUrl });
     } catch (error) {
       console.error("Error:", error);
-      alert("เกิดข้อผิดพลาดในการอัพโหลดรูป");
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการอัพโหลดรูป",
+      });
     } finally {
       setUploading(false);
     }
@@ -74,7 +80,11 @@ export function HeroImageManagement() {
 
   const handleAddImage = async () => {
     if (!newImage.imageUrl) {
-      alert("กรุณาอัพโหลดรูปภาพ");
+      toast({
+        variant: "destructive",
+        title: "ข้อมูลไม่ครบถ้วน",
+        description: "กรุณาอัพโหลดรูปภาพ",
+      });
       return;
     }
 
@@ -87,12 +97,20 @@ export function HeroImageManagement() {
 
       if (!response.ok) throw new Error("Failed to add");
 
+      toast({
+        title: "เพิ่มรูปสำเร็จ",
+        description: "เพิ่มรูปภาพเรียบร้อยแล้ว",
+      });
       setNewImage({ imageUrl: "", title: "", order: 0 });
       setShowAddForm(false);
       fetchHeroImages();
     } catch (error) {
       console.error("Error:", error);
-      alert("เกิดข้อผิดพลาดในการเพิ่มรูปภาพ");
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการเพิ่มรูปภาพ",
+      });
     }
   };
 
@@ -105,10 +123,18 @@ export function HeroImageManagement() {
       });
 
       if (!response.ok) throw new Error("Failed to update");
+      toast({
+        title: "อัพเดทสำเร็จ",
+        description: currentActive ? "ซ่อนรูปภาพแล้ว" : "แสดงรูปภาพแล้ว",
+      });
       fetchHeroImages();
     } catch (error) {
       console.error("Error:", error);
-      alert("เกิดข้อผิดพลาดในการอัพเดท");
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการอัพเดท",
+      });
     }
   };
 
@@ -121,10 +147,18 @@ export function HeroImageManagement() {
       });
 
       if (!response.ok) throw new Error("Failed to delete");
+      toast({
+        title: "ลบสำเร็จ",
+        description: "ลบรูปภาพเรียบร้อยแล้ว",
+      });
       fetchHeroImages();
     } catch (error) {
       console.error("Error:", error);
-      alert("เกิดข้อผิดพลาดในการลบรูป");
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการลบรูป",
+      });
     }
   };
 
@@ -137,10 +171,18 @@ export function HeroImageManagement() {
       });
 
       if (!response.ok) throw new Error("Failed to update");
+      toast({
+        title: "อัพเดทลำดับสำเร็จ",
+        description: "เปลี่ยนลำดับรูปภาพแล้ว",
+      });
       fetchHeroImages();
     } catch (error) {
       console.error("Error:", error);
-      alert("เกิดข้อผิดพลาดในการอัพเดท");
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการอัพเดทลำดับ",
+      });
     }
   };
 

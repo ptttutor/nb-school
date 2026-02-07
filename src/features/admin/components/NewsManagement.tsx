@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, Eye, EyeOff, Save, X } from "lucide-react";
 import type { News } from "@/types";
+import { useToast } from "@/hooks/use-toast";
 
 interface NewsFormData {
   title: string;
@@ -30,6 +31,7 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
     imageUrl: '',
   });
   const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,7 +53,11 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
       setNewsForm({ ...newsForm, imageUrl: data.fileUrl });
     } catch (error) {
       console.error("Error:", error);
-      alert("เกิดข้อผิดพลาดในการอัพโหลดรูป");
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการอัพโหลดรูป",
+      });
     } finally {
       setUploading(false);
     }
@@ -59,7 +65,11 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
 
   const createNews = async () => {
     if (!adminId || !newsForm.title.trim() || !newsForm.content.trim() || !newsForm.imageUrl.trim()) {
-      alert('กรุณากรอกข้อมูลให้ครบถ้วนและอัพโหลดรูปภาพ');
+      toast({
+        variant: "destructive",
+        title: "ข้อมูลไม่ครบถ้วน",
+        description: "กรุณากรอกข้อมูลให้ครบถ้วนและอัพโหลดรูปภาพ",
+      });
       return;
     }
 
@@ -74,12 +84,21 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
       });
 
       if (res.ok) {
+        toast({
+          title: "สร้างข่าวสำเร็จ",
+          description: "เพิ่มข่าวใหม่เรียบร้อยแล้ว",
+        });
         setNewsForm({ title: '', content: '', imageUrl: '' });
         setIsCreatingNews(false);
         onRefresh();
       }
     } catch (err) {
       console.error('Failed to create news:', err);
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "ไม่สามารถสร้างข่าวได้",
+      });
     }
   };
 
@@ -95,12 +114,21 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
       });
 
       if (res.ok) {
+        toast({
+          title: "แก้ไขสำเร็จ",
+          description: "อัพเดทข่าวเรียบร้อยแล้ว",
+        });
         setNewsForm({ title: '', content: '', imageUrl: '' });
         setEditingNewsId(null);
         onRefresh();
       }
     } catch (err) {
       console.error('Failed to update news:', err);
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "ไม่สามารถแก้ไขข่าวได้",
+      });
     }
   };
 
@@ -116,10 +144,19 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
       });
 
       if (res.ok) {
+        toast({
+          title: "อัพเดทสำเร็จ",
+          description: currentStatus ? "ซ่อนข่าวแล้ว" : "เผยแพร่ข่าวแล้ว",
+        });
         onRefresh();
       }
     } catch (err) {
       console.error('Failed to toggle publish:', err);
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "ไม่สามารถเปลี่ยนสถานะได้",
+      });
     }
   };
 
@@ -134,10 +171,19 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
       });
 
       if (res.ok) {
+        toast({
+          title: "ลบสำเร็จ",
+          description: "ลบข่าวเรียบร้อยแล้ว",
+        });
         onRefresh();
       }
     } catch (err) {
       console.error('Failed to delete news:', err);
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "ไม่สามารถลบข่าวได้",
+      });
     }
   };
 

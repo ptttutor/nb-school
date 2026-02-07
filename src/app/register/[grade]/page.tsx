@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, CheckCircle, AlertCircle, RefreshCw, Upload, Bell } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertCircle, RefreshCw, Upload, Bell, ChevronRight, ChevronLeft, Check } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { PROVINCES, DISTRICTS, SUBDISTRICTS, NONGBUA_SCHOOLS } from "@/lib/thailand-data";
 
 export default function RegisterPage({
   params,
@@ -19,10 +21,12 @@ export default function RegisterPage({
 }) {
   const { grade } = use(params);
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [captcha, setCaptcha] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 6;
   
   // States สำหรับเอกสารแนบ
   const [houseRegistrationFile, setHouseRegistrationFile] = useState<File | null>(null);
@@ -115,13 +119,96 @@ export default function RegisterPage({
     });
   };
 
+  const handleSchoolSelect = (schoolName: string) => {
+    const school = NONGBUA_SCHOOLS.find(s => s.name === schoolName);
+    setFormData({
+      ...formData,
+      schoolName: schoolName,
+      schoolSubdistrict: school?.subdistrict || "",
+    });
+  };
+
+  const isNongbuaDistrict = formData.schoolProvince === "นครสวรรค์" && formData.schoolDistrict === "หนองบัว";
+
+  // ฟังก์ชันสำหรับจัดการการเปลี่ยนจังหวัด
+  const handleProvinceChange = (province: string) => {
+    setFormData({
+      ...formData,
+      schoolProvince: province,
+      schoolDistrict: "",
+      schoolSubdistrict: "",
+      schoolName: "",
+    });
+  };
+
+  // ฟังก์ชันสำหรับจัดการการเปลี่ยนอำเภอ
+  const handleDistrictChange = (district: string) => {
+    setFormData({
+      ...formData,
+      schoolDistrict: district,
+      schoolSubdistrict: "",
+      schoolName: "",
+    });
+  };
+
+  // ฟังก์ชันสำหรับจัดการการเปลี่ยนตำบล
+  const handleSubdistrictChange = (subdistrict: string) => {
+    setFormData({
+      ...formData,
+      schoolSubdistrict: subdistrict,
+    });
+  };
+
+  // ดึงรายการอำเภอตามจังหวัดที่เลือก (โรงเรียน)
+  const availableDistricts = formData.schoolProvince ? DISTRICTS[formData.schoolProvince] || [] : [];
+
+  // ดึงรายการตำบลตามจังหวัดและอำเภอที่เลือก (โรงเรียน)
+  const subdistrictKey = `${formData.schoolProvince}-${formData.schoolDistrict}`;
+  const availableSubdistricts = subdistrictKey && SUBDISTRICTS[subdistrictKey] ? SUBDISTRICTS[subdistrictKey] : [];
+
+  // ฟังก์ชันสำหรับจัดการที่อยู่นักเรียน
+  const handleStudentProvinceChange = (province: string) => {
+    setFormData({
+      ...formData,
+      province: province,
+      district: "",
+      subdistrict: "",
+    });
+  };
+
+  const handleStudentDistrictChange = (district: string) => {
+    setFormData({
+      ...formData,
+      district: district,
+      subdistrict: "",
+    });
+  };
+
+  const handleStudentSubdistrictChange = (subdistrict: string) => {
+    setFormData({
+      ...formData,
+      subdistrict: subdistrict,
+    });
+  };
+
+  // ดึงรายการอำเภอตามจังหวัดที่เลือก (นักเรียน)
+  const availableStudentDistricts = formData.province ? DISTRICTS[formData.province] || [] : [];
+
+  // ดึงรายการตำบลตามจังหวัดและอำเภอที่เลือก (นักเรียน)
+  const studentSubdistrictKey = `${formData.province}-${formData.district}`;
+  const availableStudentSubdistricts = studentSubdistrictKey && SUBDISTRICTS[studentSubdistrictKey] ? SUBDISTRICTS[studentSubdistrictKey] : [];
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'house' | 'transcript' | 'photo') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     // ตรวจสอบขนาดไฟล์ (ไม่เกิน 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setMessage("ขนาดไฟล์ต้องไม่เกิน 5MB");
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "ขนาดไฟล์ต้องไม่เกิน 5MB",
+      });
       return;
     }
 
@@ -161,21 +248,14 @@ export default function RegisterPage({
   };
 
   const validateForm = (): string | null => {
-    // Validate ID Card or Passport (Required)
+    // Validate Thai National ID Card (Required)
     if (!formData.idCardOrPassport.trim()) {
-      return "กรุณากรอกเลขบัตรประชาชน/หนังสือเดินทาง";
+      return "กรุณากรอกเลขบัตรประชาชน";
     }
     
-    // If it's all digits, should be 13 digits (Thai ID)
-    if (/^\d+$/.test(formData.idCardOrPassport)) {
-      if (formData.idCardOrPassport.length !== 13) {
-        return "เลขบัตรประชาชนต้องเป็น 13 หลัก";
-      }
-    } else {
-      // Passport should have at least 6 characters
-      if (formData.idCardOrPassport.length < 6) {
-        return "หมายเลข Passport ต้องมีอย่างน้อย 6 ตัวอักษร";
-      }
+    // Must be exactly 13 digits (Thai ID)
+    if (!/^\d{13}$/.test(formData.idCardOrPassport)) {
+      return "เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก";
     }
 
     // Validate title
@@ -286,22 +366,100 @@ export default function RegisterPage({
     return null; // No errors
   };
 
+  // Validate specific step
+  const validateStep = (step: number): string | null => {
+    switch (step) {
+      case 1: // Student Info
+        if (!formData.idCardOrPassport.trim()) return "กรุณากรอกเลขบัตรประชาชน";
+        if (!/^\d{13}$/.test(formData.idCardOrPassport)) return "เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก";
+        if (!formData.title) return "กรุณาเลือกคำนำหน้าชื่อ";
+        if (!formData.firstNameTH.trim()) return "กรุณากรอกชื่อภาษาไทย";
+        if (!formData.lastNameTH.trim()) return "กรุณากรอกนามสกุลภาษาไทย";
+        if (!formData.birthDate) return "กรุณาเลือกวันเกิด";
+        if (!formData.ethnicity.trim()) return "กรุณากรอกเชื้อชาติ";
+        if (!formData.nationality.trim()) return "กรุณากรอกสัญชาติ";
+        if (!formData.religion.trim()) return "กรุณากรอกศาสนา";
+        if (!formData.phone.trim()) return "กรุณากรอกเบอร์โทรศัพท์";
+        if (!/^0\d{9}$/.test(formData.phone)) return "เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลัก เริ่มต้นด้วย 0";
+        return null;
+      
+      case 2: // Address
+        if (!formData.houseNumber.trim()) return "กรุณากรอกบ้านเลขที่";
+        if (!formData.province.trim()) return "กรุณากรอกจังหวัด";
+        if (!formData.district.trim()) return "กรุณากรอกอำเภอ/เขต";
+        if (!formData.subdistrict.trim()) return "กรุณากรอกตำบล/แขวง";
+        if (!formData.postalCode.trim()) return "กรุณากรอกรหัสไปรษณีย์";
+        if (!/^\d{5}$/.test(formData.postalCode)) return "รหัสไปรษณีย์ต้องเป็นตัวเลข 5 หลัก";
+        return null;
+      
+      case 3: // Education
+        if (!formData.educationStatus) return "กรุณาเลือกสถานะการศึกษา";
+        if (!formData.schoolName.trim()) return "กรุณากรอกชื่อโรงเรียน";
+        if (!formData.schoolProvince.trim()) return "กรุณากรอกจังหวัดของโรงเรียน";
+        if (!formData.schoolDistrict.trim()) return "กรุณากรอกอำเภอ/เขตของโรงเรียน";
+        if (!formData.schoolSubdistrict.trim()) return "กรุณากรอกตำบล/แขวงของโรงเรียน";
+        return null;
+      
+      case 4: // Grades (skip validation, will be done in final submit)
+        return null;
+      
+      case 5: // Parent Info (skip validation for now, will add when we implement parent fields)
+        return null;
+      
+      case 6: // Documents
+        return null;
+      
+      default:
+        return null;
+    }
+  };
+
+  const handleNext = () => {
+    const error = validateStep(currentStep);
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "กรุณาตรวจสอบข้อมูล",
+        description: error,
+      });
+      return;
+    }
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     // Validate form fields
     const validationError = validateForm();
     if (validationError) {
-      setMessage(validationError);
+      toast({
+        variant: "destructive",
+        title: "กรุณาตรวจสอบข้อมูล",
+        description: validationError,
+      });
       setLoading(false);
       return;
     }
 
     // Validate CAPTCHA
     if (captchaInput !== captcha) {
-      setMessage("รหัสป้องกัน bot ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+      toast({
+        variant: "destructive",
+        title: "รหัสไม่ถูกต้อง",
+        description: "รหัสป้องกัน bot ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
+      });
       setLoading(false);
       generateCaptcha();
       return;
@@ -317,7 +475,11 @@ export default function RegisterPage({
       if (houseRegistrationFile) {
         houseRegistrationUrl = await uploadFile(houseRegistrationFile);
         if (!houseRegistrationUrl) {
-          setMessage("เกิดข้อผิดพลาดในการอัปโหลดสำเนาทะเบียนบ้าน");
+          toast({
+            variant: "destructive",
+            title: "ข้อผิดพลาดในการอัปโหลด",
+            description: "เกิดข้อผิดพลาดในการอัปโหลดสำเนาทะเบียนบ้าน",
+          });
           setLoading(false);
           setUploadingFiles(false);
           return;
@@ -327,7 +489,11 @@ export default function RegisterPage({
       if (transcriptFile) {
         transcriptUrl = await uploadFile(transcriptFile);
         if (!transcriptUrl) {
-          setMessage("เกิดข้อผิดพลาดในการอัปโหลดหลักฐานแสดงผลการเรียน");
+          toast({
+            variant: "destructive",
+            title: "ข้อผิดพลาดในการอัปโหลด",
+            description: "เกิดข้อผิดพลาดในการอัปโหลดหลักฐานแสดงผลการเรียน",
+          });
           setLoading(false);
           setUploadingFiles(false);
           return;
@@ -337,7 +503,11 @@ export default function RegisterPage({
       if (photoFile) {
         photoUrl = await uploadFile(photoFile);
         if (!photoUrl) {
-          setMessage("เกิดข้อผิดพลาดในการอัปโหลดรูปถ่าย");
+          toast({
+            variant: "destructive",
+            title: "ข้อผิดพลาดในการอัปโหลด",
+            description: "เกิดข้อผิดพลาดในการอัปโหลดรูปถ่าย",
+          });
           setLoading(false);
           setUploadingFiles(false);
           return;
@@ -363,13 +533,27 @@ export default function RegisterPage({
       const data = await response.json();
 
       if (response.ok) {
+        toast({
+          title: "สมัครเรียนสำเร็จ",
+          description: "กำลังนำคุณไปยังหน้ารายละเอียดการสมัคร",
+        });
         // Redirect to registration details page
-        router.push(`/registration/${data.registration.id}`);
+        setTimeout(() => {
+          router.push(`/registration/${data.registration.id}`);
+        }, 1000);
       } else {
-        setMessage(data.error || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+        toast({
+          variant: "destructive",
+          title: "ไม่สามารถสมัครได้",
+          description: data.error || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+        });
       }
     } catch (error) {
-      setMessage("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการเชื่อมต่อ",
+      });
     } finally {
       setLoading(false);
       setUploadingFiles(false);
@@ -377,33 +561,8 @@ export default function RegisterPage({
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
-      {/* Fixed notification at top right */}
-      {message && (
-        <div
-          className={`fixed top-4 right-4 max-w-md z-50 p-4 rounded-lg shadow-2xl flex items-start gap-3 animate-in slide-in-from-top-5 ${
-            message.includes("สำเร็จ")
-              ? "bg-green-100 text-green-800 border-2 border-green-300"
-              : "bg-red-100 text-red-800 border-2 border-red-300"
-          }`}
-        >
-          {message.includes("สำเร็จ") ? (
-            <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-          ) : (
-            <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-          )}
-          <div className="flex-1">
-            <p className="font-medium">{message}</p>
-          </div>
-          <button
-            onClick={() => setMessage("")}
-            className="text-gray-500 hover:text-gray-700 ml-2"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-      <div className="max-w-5xl mx-auto">
+    <div className="p-2 sm:p-4 md:p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 overflow-x-hidden">
+      <div className="max-w-5xl mx-auto py-2 sm:py-4 w-full">
         {loadingSettings ? (
           <Card className="shadow-xl border-amber-200 bg-white/95 backdrop-blur">
             <CardContent className="py-12 text-center">
@@ -476,8 +635,8 @@ export default function RegisterPage({
                 </Card>
               </div>
             )}
-        <Card className="shadow-xl border-amber-200 bg-white/95 backdrop-blur mb-4">
-          <CardHeader>
+        <Card className="shadow-xl border-amber-200 bg-white/95 backdrop-blur mb-4 max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)] flex flex-col">
+          <CardHeader className="flex-shrink-0">
             <div className="mb-4">
               <Link href="/register" className="text-amber-700 hover:text-amber-900 text-sm font-medium transition-colors inline-flex items-center gap-2">
                 <ArrowLeft className="w-4 h-4" />
@@ -495,19 +654,61 @@ export default function RegisterPage({
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* ส่วนที่ 1: ข้อมูลผู้สมัคร */}
+          {/* Step Indicator */}
+          <div className="px-6 pb-4 flex-shrink-0 border-b border-amber-100">
+            <div className="overflow-x-auto pb-2">
+              <div className="flex items-center justify-between min-w-[600px] sm:min-w-0">
+                {[1, 2, 3, 4, 5, 6].map((step) => (
+                  <div key={step} className="flex items-center flex-1 min-w-0">
+                    <div className="flex flex-col items-center flex-1">
+                      <div
+                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold transition-all text-sm sm:text-base ${
+                          step < currentStep
+                            ? "bg-green-500 text-white"
+                            : step === currentStep
+                            ? "bg-amber-600 text-white ring-4 ring-amber-200"
+                            : "bg-gray-200 text-gray-500"
+                        }`}
+                      >
+                        {step < currentStep ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : step}
+                      </div>
+                      <p className={`text-[10px] sm:text-xs mt-1 sm:mt-2 text-center px-1 ${step === currentStep ? "font-semibold text-amber-900" : "text-gray-500"}`}>
+                        {step === 1 && "ข้อมูล"}
+                        {step === 2 && "ที่อยู่"}
+                        {step === 3 && "การศึกษา"}
+                        {step === 4 && "ผลเรียน"}
+                        {step === 5 && "ปกครอง"}
+                        {step === 6 && "เอกสาร"}
+                      </p>
+                    </div>
+                    {step < 6 && (
+                      <div
+                        className={`h-1 flex-1 transition-all ${
+                          step < currentStep ? "bg-green-500" : "bg-gray-200"
+                        }`}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Scrollable Form Content */}
+          <div className="flex-1 overflow-y-auto">
+            <CardContent>
+              <form id="registration-form" onSubmit={handleSubmit} className="space-y-8 pb-4">
+              {/* Step 1: ข้อมูลผู้สมัคร */}
+              {currentStep === 1 && (
               <div className="space-y-6">
-                <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
+                <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200 mt-4">
                   <Badge className="bg-amber-600 text-white text-base px-3 py-1">1</Badge>
                   <h3 className="text-xl font-bold text-amber-900">ข้อมูลผู้สมัคร (นักเรียน)</h3>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="idCardOrPassport">
-                    เลขบัตรประจำตัวประชาชน / Passport Number *
-                    <span className="text-amber-600 text-xs ml-2">(ไม่ต้องใส่เครื่องหมาย -)</span>
+                    เลขบัตรประจำตัวประชาชน *
                   </Label>
                   <Input
                     type="text"
@@ -515,11 +716,13 @@ export default function RegisterPage({
                     name="idCardOrPassport"
                     value={formData.idCardOrPassport}
                     onChange={handleChange}
-                    placeholder="Ex. 1234567891234"
+                    placeholder="กรอกเลข 13 หลัก (ไม่ต้องใส่เครื่องหมาย -)"
+                    pattern="[0-9]{13}"
+                    maxLength={13}
                     className="border-amber-200"
                     required
                   />
-                  <p className="text-xs text-gray-500">ข้อมูลนี้ช่วยป้องกันการสมัครซ้ำและรักษาความปลอดภัยในการจัดเก็บข้อมูล กรุณากรอกให้ถูกต้องเหมือนบัตรของตัวนักเรียน</p>
+                  <p className="text-xs text-gray-500">กรุณากรอกเลขบัตรประชาชนไทย 13 หลัก ตัวอย่าง: 1234567891234 (ข้อมูลนี้ช่วยป้องกันการสมัครซ้ำ)</p>
                 </div>
 
                 <div className="space-y-2">
@@ -743,8 +946,10 @@ export default function RegisterPage({
                   </div>
                 </div>
               </div>
+              )}
 
-              {/* ส่วนที่ 2: ที่อยู่ */}
+              {/* Step 2: ที่อยู่ตามทะเบียนบ้าน */}
+              {currentStep === 2 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
                   <Badge className="bg-amber-600 text-white text-base px-3 py-1">2</Badge>
@@ -819,44 +1024,91 @@ export default function RegisterPage({
                 <div className="grid md:grid-cols-4 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="province">จังหวัด *</Label>
-                    <Input
-                      type="text"
-                      id="province"
-                      name="province"
-                      required
+                    <Select
                       value={formData.province}
-                      onChange={handleChange}
-                      placeholder="กรอกจังหวัด"
-                      className="border-amber-200"
-                    />
+                      onValueChange={handleStudentProvinceChange}
+                    >
+                      <SelectTrigger className="border-amber-200">
+                        <SelectValue placeholder="เลือกจังหวัด" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PROVINCES.map((province) => (
+                          <SelectItem key={province} value={province}>
+                            {province}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="district">เขต/อำเภอ *</Label>
-                    <Input
-                      type="text"
-                      id="district"
-                      name="district"
-                      required
-                      value={formData.district}
-                      onChange={handleChange}
-                      placeholder="กรอกอำเภอ"
-                      className="border-amber-200"
-                    />
+                    {formData.province && availableStudentDistricts.length > 0 ? (
+                      <Select
+                        value={formData.district}
+                        onValueChange={handleStudentDistrictChange}
+                      >
+                        <SelectTrigger className="border-amber-200">
+                          <SelectValue placeholder="เลือกอำเภอ" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableStudentDistricts.map((district) => (
+                            <SelectItem key={district} value={district}>
+                              {district}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input
+                        type="text"
+                        id="district"
+                        name="district"
+                        value={formData.district}
+                        onChange={handleChange}
+                        placeholder={formData.province ? "กรอกอำเภอ" : "เลือกจังหวัดก่อน"}
+                        className="border-amber-200"
+                        disabled={!formData.province}
+                      />
+                    )}
+                    {formData.province && availableStudentDistricts.length === 0 && (
+                      <p className="text-xs text-amber-600">ไม่มีข้อมูลในระบบ กรุณากรอกด้วยตนเอง</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="subdistrict">แขวง/ตำบล *</Label>
-                    <Input
-                      type="text"
-                      id="subdistrict"
-                      name="subdistrict"
-                      required
-                      value={formData.subdistrict}
-                      onChange={handleChange}
-                      placeholder="กรอกตำบล"
-                      className="border-amber-200"
-                    />
+                    {formData.district && availableStudentSubdistricts.length > 0 ? (
+                      <Select
+                        value={formData.subdistrict}
+                        onValueChange={handleStudentSubdistrictChange}
+                      >
+                        <SelectTrigger className="border-amber-200">
+                          <SelectValue placeholder="เลือกตำบล" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableStudentSubdistricts.map((subdistrict) => (
+                            <SelectItem key={subdistrict} value={subdistrict}>
+                              {subdistrict}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input
+                        type="text"
+                        id="subdistrict"
+                        name="subdistrict"
+                        value={formData.subdistrict}
+                        onChange={handleChange}
+                        placeholder={formData.district ? "กรอกตำบล" : "เลือกอำเภอก่อน"}
+                        className="border-amber-200"
+                        disabled={!formData.district}
+                      />
+                    )}
+                    {formData.district && availableStudentSubdistricts.length === 0 && (
+                      <p className="text-xs text-amber-600">ไม่มีข้อมูลในระบบ กรุณากรอกด้วยตนเอง</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -874,8 +1126,10 @@ export default function RegisterPage({
                   </div>
                 </div>
               </div>
+              )}
 
-              {/* ส่วนที่ 3: ข้อมูลการศึกษา */}
+              {/* Step 3: ข้อมูลการศึกษา */}
+              {currentStep === 3 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
                   <Badge className="bg-amber-600 text-white text-base px-3 py-1">3</Badge>
@@ -940,9 +1194,124 @@ export default function RegisterPage({
                     </div>
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="schoolProvince">จังหวัด *</Label>
+                    <Select
+                      value={formData.schoolProvince}
+                      onValueChange={handleProvinceChange}
+                    >
+                      <SelectTrigger className="border-amber-200">
+                        <SelectValue placeholder="เลือกจังหวัด" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PROVINCES.map((province) => (
+                          <SelectItem key={province} value={province}>
+                            {province}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="schoolName">โรงเรียน * <span className="text-xs text-gray-500">(ไม่ต้องใส่คำว่าโรงเรียน)</span></Label>
+                      <Label htmlFor="schoolDistrict">เขต/อำเภอ *</Label>
+                      {formData.schoolProvince && availableDistricts.length > 0 ? (
+                        <Select
+                          value={formData.schoolDistrict}
+                          onValueChange={handleDistrictChange}
+                        >
+                          <SelectTrigger className="border-amber-200">
+                            <SelectValue placeholder="เลือกอำเภอ" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableDistricts.map((district) => (
+                              <SelectItem key={district} value={district}>
+                                {district}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          type="text"
+                          id="schoolDistrict"
+                          name="schoolDistrict"
+                          value={formData.schoolDistrict}
+                          onChange={handleChange}
+                          placeholder={formData.schoolProvince ? "กรอกอำเภอ" : "เลือกจังหวัดก่อน"}
+                          className="border-amber-200"
+                          disabled={!formData.schoolProvince}
+                        />
+                      )}
+                      {formData.schoolProvince && availableDistricts.length === 0 && (
+                        <p className="text-xs text-amber-600">ไม่มีข้อมูลในระบบ กรุณากรอกด้วยตนเอง</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="schoolSubdistrict">แขวง/ตำบล *</Label>
+                      {formData.schoolDistrict && availableSubdistricts.length > 0 ? (
+                        <Select
+                          value={formData.schoolSubdistrict}
+                          onValueChange={handleSubdistrictChange}
+                          disabled={isNongbuaDistrict && formData.schoolName !== ""}
+                        >
+                          <SelectTrigger className="border-amber-200">
+                            <SelectValue placeholder={
+                              isNongbuaDistrict && formData.schoolName 
+                                ? "ตำบลถูกกรอกอัตโนมัติ" 
+                                : "เลือกตำบล"
+                            } />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableSubdistricts.map((subdistrict) => (
+                              <SelectItem key={subdistrict} value={subdistrict}>
+                                {subdistrict}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          type="text"
+                          id="schoolSubdistrict"
+                          name="schoolSubdistrict"
+                          value={formData.schoolSubdistrict}
+                          onChange={handleChange}
+                          placeholder={formData.schoolDistrict ? "กรอกตำบล" : "เลือกอำเภอก่อน"}
+                          className="border-amber-200"
+                          disabled={!formData.schoolDistrict || (isNongbuaDistrict && formData.schoolName !== "")}
+                        />
+                      )}
+                      {isNongbuaDistrict && formData.schoolName && (
+                        <p className="text-xs text-green-600">✓ ตำบลถูกกรอกอัตโนมัติจากการเลือกโรงเรียน</p>
+                      )}
+                      {formData.schoolDistrict && availableSubdistricts.length === 0 && !isNongbuaDistrict && (
+                        <p className="text-xs text-amber-600">ไม่มีข้อมูลในระบบ กรุณากรอกด้วยตนเอง</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="schoolName">โรงเรียน * <span className="text-xs text-gray-500">(ไม่ต้องใส่คำว่าโรงเรียน)</span></Label>
+                    {isNongbuaDistrict ? (
+                      <Select
+                        value={formData.schoolName}
+                        onValueChange={(value) => handleSchoolSelect(value)}
+                      >
+                        <SelectTrigger className="border-amber-200">
+                          <SelectValue placeholder="เลือกโรงเรียน" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {NONGBUA_SCHOOLS.map((school) => (
+                            <SelectItem key={school.name} value={school.name}>
+                              โรงเรียน{school.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
                       <Input
                         type="text"
                         id="schoolName"
@@ -952,52 +1321,23 @@ export default function RegisterPage({
                         placeholder="Ex. หนองบัว"
                         className="border-amber-200"
                       />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="schoolProvince">จังหวัด *</Label>
-                      <Input
-                        type="text"
-                        id="schoolProvince"
-                        name="schoolProvince"
-                        value={formData.schoolProvince}
-                        onChange={handleChange}
-                        placeholder="กรอกจังหวัด"
-                        className="border-amber-200"
-                      />
-                    </div>
+                    )}
                   </div>
+                </div>
+              </div>
+              )}
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="schoolDistrict">เขต/อำเภอ *</Label>
-                      <Input
-                        type="text"
-                        id="schoolDistrict"
-                        name="schoolDistrict"
-                        value={formData.schoolDistrict}
-                        onChange={handleChange}
-                        placeholder="กรอกอำเภอ"
-                        className="border-amber-200"
-                      />
-                    </div>
+              {/* Step 4: ผลการเรียน */}
+              {currentStep === 4 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
+                  <Badge className="bg-amber-600 text-white text-base px-3 py-1">4</Badge>
+                  <h3 className="text-xl font-bold text-amber-900">ผลการเรียน</h3>
+                </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="schoolSubdistrict">แขวง/ตำบล *</Label>
-                      <Input
-                        type="text"
-                        id="schoolSubdistrict"
-                        name="schoolSubdistrict"
-                        value={formData.schoolSubdistrict}
-                        onChange={handleChange}
-                        placeholder="กรอกตำบล"
-                        className="border-amber-200"
-                      />
-                    </div>
-                  </div>
-
+                <div className="space-y-4">
                   {/* ฟิลด์เกรดเฉลี่ย */}
-                  <div className="space-y-4 pt-4 border-t border-amber-200">
+                  <div className="space-y-4">
                     <Label className="text-base font-medium">
                       {isM4 ? "คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน) *" : "เกรดเฉลี่ยรายวิชา *"}
                     </Label>
@@ -1084,13 +1424,80 @@ export default function RegisterPage({
                   </div>
                 </div>
               </div>
+              )}
 
-              {/* ส่วนที่ 4: เอกสารแนบ */}
+              {/* Step 5: ข้อมูลผู้ปกครอง */}
+              {currentStep === 5 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
-                  <Badge className="bg-amber-600 text-white text-base px-3 py-1">4</Badge>
-                  <h3 className="text-xl font-bold text-amber-900">เอกสารแนบ (ไม่บังคับ)</h3>
+                  <Badge className="bg-amber-600 text-white text-base px-3 py-1">5</Badge>
+                  <h3 className="text-xl font-bold text-amber-900">ข้อมูลผู้ปกครอง</h3>
                 </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-blue-800">
+                    📌 ระบบจะเพิ่มข้อมูลผู้ปกครองในเวอร์ชันต่อไป สามารถข้ามขั้นตอนนี้ได้
+                  </p>
+                </div>
+              </div>
+              )}
+
+              {/* Step 6: เอกสารและยืนยัน */}
+              {currentStep === 6 && (
+              <>
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
+                  <Badge className="bg-amber-600 text-white text-base px-3 py-1">6</Badge>
+                  <h3 className="text-xl font-bold text-amber-900">เอกสารและยืนยัน</h3>
+                </div>
+
+                <div className="space-y-6">
+                  {/* สรุปเอกสารที่แนบ */}
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5" />
+                      สถานะเอกสารที่แนบ
+                    </h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between py-2 px-3 bg-white rounded">
+                        <span className="text-sm text-gray-700">สำเนาทะเบียนบ้าน</span>
+                        {houseRegistrationFile ? (
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                            <span className="text-xs text-green-600 font-medium">แนบแล้ว</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-400">ยังไม่แนบ</span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between py-2 px-3 bg-white rounded">
+                        <span className="text-sm text-gray-700">หลักฐานผลการเรียน</span>
+                        {transcriptFile ? (
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                            <span className="text-xs text-green-600 font-medium">แนบแล้ว</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-400">ยังไม่แนบ</span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between py-2 px-3 bg-white rounded">
+                        <span className="text-sm text-gray-700">รูปถ่าย</span>
+                        {photoFile ? (
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                            <span className="text-xs text-green-600 font-medium">แนบแล้ว</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-400">ยังไม่แนบ</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* เอกสารแนบ */}
+                  <div>
+                    <h4 className="font-semibold text-amber-900 mb-3">เอกสารแนบ (ไม่บังคับ)</h4>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                   <p className="text-sm text-blue-800 mb-2">
@@ -1109,8 +1516,11 @@ export default function RegisterPage({
                 <div className="space-y-4">
                   {/* สำเนาทะเบียนบ้าน */}
                   <div className="space-y-2">
-                    <Label htmlFor="houseRegistration">
+                    <Label htmlFor="houseRegistration" className="flex items-center gap-2">
                       สำเนาทะเบียนบ้าน
+                      {houseRegistrationFile && (
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                      )}
                     </Label>
                     <Input
                       type="file"
@@ -1120,16 +1530,22 @@ export default function RegisterPage({
                       className="border-amber-200"
                     />
                     {houseRegistrationFile && (
-                      <p className="text-xs text-green-600">
-                        ✓ เลือกไฟล์: {houseRegistrationFile.name}
-                      </p>
+                      <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded px-3 py-2">
+                        <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                        <p className="text-sm text-green-700 truncate">
+                          {houseRegistrationFile.name}
+                        </p>
+                      </div>
                     )}
                   </div>
 
                   {/* หลักฐานแสดงผลการเรียน */}
                   <div className="space-y-2">
-                    <Label htmlFor="transcript">
+                    <Label htmlFor="transcript" className="flex items-center gap-2">
                       หลักฐานแสดงผลการเรียน (ปพ.1 หรือ ปพ.7)
+                      {transcriptFile && (
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                      )}
                     </Label>
                     <Input
                       type="file"
@@ -1139,16 +1555,22 @@ export default function RegisterPage({
                       className="border-amber-200"
                     />
                     {transcriptFile && (
-                      <p className="text-xs text-green-600">
-                        ✓ เลือกไฟล์: {transcriptFile.name}
-                      </p>
+                      <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded px-3 py-2">
+                        <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                        <p className="text-sm text-green-700 truncate">
+                          {transcriptFile.name}
+                        </p>
+                      </div>
                     )}
                   </div>
 
                   {/* รูปถ่าย */}
                   <div className="space-y-2">
-                    <Label htmlFor="photo">
+                    <Label htmlFor="photo" className="flex items-center gap-2">
                       รูปถ่าย (ขนาด 1.5 นิ้ว หรือ 2 นิ้ว)
+                      {photoFile && (
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                      )}
                     </Label>
                     <Input
                       type="file"
@@ -1158,20 +1580,20 @@ export default function RegisterPage({
                       className="border-amber-200"
                     />
                     {photoFile && (
-                      <p className="text-xs text-green-600">
-                        ✓ เลือกไฟล์: {photoFile.name}
-                      </p>
+                      <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded px-3 py-2">
+                        <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                        <p className="text-sm text-green-700 truncate">
+                          {photoFile.name}
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
-              </div>
+                  </div>
 
-              {/* ส่วนที่ 5: จำนวนต้องใส่ */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
-                  <Badge className="bg-amber-600 text-white text-base px-3 py-1">5</Badge>
-                  <h3 className="text-xl font-bold text-amber-900">ยืนยันตัวตน (ป้องกัน Bot)</h3>
-                </div>
+                  {/* CAPTCHA Verification */}
+                  <div>
+                    <h4 className="font-semibold text-amber-900 mb-3">ยืนยันว่าไม่ใช่โปรแกรมอัตโนมัติ</h4>
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
@@ -1212,29 +1634,69 @@ export default function RegisterPage({
                     />
                   </div>
                 </div>
+                  </div>
+                </div>
               </div>
+              </>
+              )}
+              </form>
+            </CardContent>
+          </div>
 
-              <Button
-                type="submit"
-                disabled={loading || uploadingFiles}
-                className="w-full bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white shadow-lg hover:shadow-xl transition-all text-lg py-6"
-              >
-                {uploadingFiles ? (
-                  <>
-                    <Upload className="w-5 h-5 mr-2 animate-pulse" />
-                    กำลังอัปโหลดเอกสาร...
-                  </>
-                ) : loading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                    กำลังส่งข้อมูล...
-                  </>
+          {/* Navigation Buttons - Fixed at bottom */}
+          <div className="flex-shrink-0 border-t border-amber-200 p-4 sm:p-6 bg-white/95">
+            <div className="flex justify-between items-center">
+                <Button
+                  type="button"
+                  onClick={handlePrevious}
+                  disabled={currentStep === 1}
+                  variant="outline"
+                  className="border-amber-300 text-amber-700 hover:bg-amber-50 disabled:opacity-50"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  ย้อนกลับ
+                </Button>
+
+                <div className="text-sm text-gray-500">
+                  ขั้นตอนที่ {currentStep} จาก {totalSteps}
+                </div>
+
+                {currentStep < totalSteps ? (
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                    className="bg-amber-600 hover:bg-amber-700 text-white"
+                  >
+                    ถัดไป
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
                 ) : (
-                  "บันทึกข้อมูลการสมัครเรียน"
+                  <Button
+                    type="submit"
+                    form="registration-form"
+                    disabled={loading || uploadingFiles}
+                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all"
+                  >
+                    {uploadingFiles ? (
+                      <>
+                        <Upload className="w-5 h-5 mr-2 animate-pulse" />
+                        กำลังอัปโหลด...
+                      </>
+                    ) : loading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        กำลังส่ง...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        ส่งใบสมัคร
+                      </>
+                    )}
+                  </Button>
                 )}
-              </Button>
-            </form>
-          </CardContent>
+              </div>
+            </div>
         </Card>
           </>
         )}

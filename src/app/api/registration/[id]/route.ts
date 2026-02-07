@@ -39,33 +39,23 @@ export async function PATCH(
     const body = await request.json();
     const { 
       // เกรดสำหรับ ม.1
-      scienceGradeP5, 
-      scienceGradeP6, 
-      mathGradeP5, 
-      mathGradeP6,
+      gradeP4,
+      gradeP5,
       // เกรดสำหรับ ม.4
-      scienceGradeM1, 
-      scienceGradeM2, 
-      scienceGradeM3,
-      mathGradeM1, 
-      mathGradeM2,
-      mathGradeM3,
+      scienceCumulativeM1M3,
+      mathCumulativeM1M3,
+      englishCumulativeM1M3,
     } = body;
 
     const registration = await prisma.registration.update({
       where: { id },
       data: { 
         // อัพเดททุกฟิลด์ที่ส่งมา
-        scienceGradeP5,
-        scienceGradeP6,
-        mathGradeP5,
-        mathGradeP6,
-        scienceGradeM1,
-        scienceGradeM2,
-        scienceGradeM3,
-        mathGradeM1,
-        mathGradeM2,
-        mathGradeM3,
+        gradeP4,
+        gradeP5,
+        scienceCumulativeM1M3,
+        mathCumulativeM1M3,
+        englishCumulativeM1M3,
       },
     });
 

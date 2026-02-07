@@ -11,11 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Header, Footer } from "@/components/layout";
 import {
   ArrowLeft,
-  Printer,
   Edit,
-  Upload,
   FileText,
-  Trash2,
   CheckCircle,
   Clock,
   XCircle,
@@ -51,19 +48,18 @@ interface Registration {
   district: string;
   subdistrict: string;
   postalCode: string;
-  // เกรดสำหรับ ม.1
-  scienceGradeP5?: string;
-  scienceGradeP6?: string;
-  mathGradeP5?: string;
-  mathGradeP6?: string;
-  // เกรดสำหรับ ม.4
-  scienceGradeM1?: string;
-  scienceGradeM2?: string;
-  scienceGradeM3?: string;
-  mathGradeM1?: string;
-  mathGradeM2?: string;
-  mathGradeM3?: string;
-  documents: string[];
+  // เกรดสำหรับ ม.1 (ป.4-5)
+  gradeP4?: string;
+  gradeP5?: string;
+  // คะแนนเฉลี่ยสะสมสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)
+  scienceCumulativeM1M3?: string;
+  mathCumulativeM1M3?: string;
+  englishCumulativeM1M3?: string;
+  // เอกสารแนบ (field แยก)
+  houseRegistrationDoc?: string;
+  transcriptDoc?: string;
+  photoDoc?: string;
+  documents: string[]; // legacy
   status: string;
   createdAt: string;
 }
@@ -77,23 +73,6 @@ export default function RegistrationViewPage({
   const router = useRouter();
   const [registration, setRegistration] = useState<Registration | null>(null);
   const [loading, setLoading] = useState(true);
-  const [editingGPA, setEditingGPA] = useState(false);
-  const [grades, setGrades] = useState({
-    // สำหรับ ม.1
-    scienceGradeP5: "",
-    scienceGradeP6: "",
-    mathGradeP5: "",
-    mathGradeP6: "",
-    // สำหรับ ม.4
-    scienceGradeM1: "",
-    scienceGradeM2: "",
-    scienceGradeM3: "",
-    mathGradeM1: "",
-    mathGradeM2: "",
-    mathGradeM3: "",
-  });
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetchRegistration();
@@ -105,109 +84,16 @@ export default function RegistrationViewPage({
       if (!response.ok) throw new Error("Failed to fetch");
       const data = await response.json();
       setRegistration(data);
-      setGrades({
-        // สำหรับ ม.1
-        scienceGradeP5: data.scienceGradeP5 || "",
-        scienceGradeP6: data.scienceGradeP6 || "",
-        mathGradeP5: data.mathGradeP5 || "",
-        mathGradeP6: data.mathGradeP6 || "",
-        // สำหรับ ม.4
-        scienceGradeM1: data.scienceGradeM1 || "",
-        scienceGradeM2: data.scienceGradeM2 || "",
-        scienceGradeM3: data.scienceGradeM3 || "",
-        mathGradeM1: data.mathGradeM1 || "",
-        mathGradeM2: data.mathGradeM2 || "",
-        mathGradeM3: data.mathGradeM3 || "",
-      });
     } catch (error) {
       console.error("Error:", error);
-      setMessage("ไม่พบข้อมูลการสมัคร");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateGPA = async () => {
-    try {
-      const response = await fetch(`/api/registration/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(grades),
-      });
-
-      if (!response.ok) throw new Error("Failed to update");
-
-      setMessage("อัปเดตเกรดเฉลี่ยสำเร็จ");
-      setEditingGPA(false);
-      fetchRegistration();
-    } catch (error) {
-      console.error("Error:", error);
-      setMessage("เกิดข้อผิดพลาดในการอัปเดตเกรดเฉลี่ย");
-    }
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch(
-        `/api/registration/${id}/documents`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error);
-      }
-
-      setMessage("อัพโหลดเอกสารสำเร็จ");
-      fetchRegistration();
-    } catch (error: any) {
-      console.error("Error:", error);
-      setMessage(error.message || "เกิดข้อผิดพลาดในการอัพโหลดเอกสาร");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleDeleteDocument = async (documentUrl: string) => {
-    if (!confirm("ต้องการลบเอกสารนี้ใช่หรือไม่?")) return;
-
-    try {
-      const response = await fetch(
-        `/api/registration/${id}/documents?url=${encodeURIComponent(
-          documentUrl
-        )}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to delete");
-
-      setMessage("ลบเอกสารสำเร็จ");
-      fetchRegistration();
-    } catch (error) {
-      console.error("Error:", error);
-      setMessage("เกิดข้อผิดพลาดในการลบเอกสาร");
-    }
-  };
-
   const handlePrint = () => {
-    // ดาวน์โหลดไฟล์ PDF แบบฟอร์มใบสมัคร
-    if (!registration) return;
-    const link = document.createElement('a');
-    link.href = '/ใบสมัครเข้าศึกษา.pdf';
-    link.download = `ใบสมัครเข้าศึกษา-${registration.firstNameTH}-${registration.lastNameTH}.pdf`;
-    link.click();
+    // เปิดหน้าพิมพ์ใบสมัครที่มีข้อมูลเต็ม
+    window.open(`/registration/${id}/print`, '_blank');
   };
 
   if (loading) {
@@ -227,7 +113,7 @@ export default function RegistrationViewPage({
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
-            <div className="text-center text-red-600">{message}</div>
+            <div className="text-center text-red-600">ไม่พบข้อมูลการสมัคร</div>
             <div className="mt-4 text-center">
               <Link href="/">
                 <Button variant="outline">
@@ -317,39 +203,11 @@ export default function RegistrationViewPage({
           </CardHeader>
         </Card>
 
-        {/* Message */}
-        {message && (
-          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-            {message}
-          </div>
-        )}
-
         {/* Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="mb-6">
           <Button onClick={handlePrint} className="w-full">
             <Download className="mr-2 h-4 w-4" />
             ดาวน์โหลดใบสมัคร
-          </Button>
-          <Button
-            onClick={() => setEditingGPA(!editingGPA)}
-            variant="outline"
-            className="w-full"
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            {editingGPA ? "ยกเลิกแก้ไข" : "แก้ไขเกรดเฉลี่ย"}
-          </Button>
-          <Button variant="outline" className="w-full" asChild>
-            <label>
-              <Upload className="mr-2 h-4 w-4" />
-              {uploading ? "กำลังอัพโหลด..." : "แนบเอกสาร"}
-              <input
-                type="file"
-                className="hidden"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={handleFileUpload}
-                disabled={uploading}
-              />
-            </label>
           </Button>
         </div>
 
@@ -367,157 +225,153 @@ export default function RegistrationViewPage({
           </CardContent>
         </Card>
 
-        {/* GPA Section */}
-        {editingGPA && (
-          <Card className="mb-6">
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  {registration?.gradeLevel === "m4" ? (
-                    // เกรดสำหรับ ม.4 (ม.1-3)
-                    <>
-                      <div>
-                        <Label>เกรดเฉลี่ยวิทยาศาสตร์ ม.1</Label>
-                        <Input
-                          type="text"
-                          value={grades.scienceGradeM1}
-                          onChange={(e) => setGrades({...grades, scienceGradeM1: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                      <div>
-                        <Label>เกรดเฉลี่ยวิทยาศาสตร์ ม.2</Label>
-                        <Input
-                          type="text"
-                          value={grades.scienceGradeM2}
-                          onChange={(e) => setGrades({...grades, scienceGradeM2: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                      <div>
-                        <Label>เกรดเฉลี่ยวิทยาศาสตร์ ม.3</Label>
-                        <Input
-                          type="text"
-                          value={grades.scienceGradeM3}
-                          onChange={(e) => setGrades({...grades, scienceGradeM3: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                      <div>
-                        <Label>เกรดเฉลี่ยคณิตศาสตร์ ม.1</Label>
-                        <Input
-                          type="text"
-                          value={grades.mathGradeM1}
-                          onChange={(e) => setGrades({...grades, mathGradeM1: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                      <div>
-                        <Label>เกรดเฉลี่ยคณิตศาสตร์ ม.2</Label>
-                        <Input
-                          type="text"
-                          value={grades.mathGradeM2}
-                          onChange={(e) => setGrades({...grades, mathGradeM2: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                      <div>
-                        <Label>เกรดเฉลี่ยคณิตศาสตร์ ม.3</Label>
-                        <Input
-                          type="text"
-                          value={grades.mathGradeM3}
-                          onChange={(e) => setGrades({...grades, mathGradeM3: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    // เกรดสำหรับ ม.1 (ป.5-6)
-                    <>
-                      <div>
-                        <Label>เกรดเฉลี่ยวิทยาศาสตร์ ป.5</Label>
-                        <Input
-                          type="text"
-                          value={grades.scienceGradeP5}
-                          onChange={(e) => setGrades({...grades, scienceGradeP5: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                      <div>
-                        <Label>เกรดเฉลี่ยวิทยาศาสตร์ ป.6</Label>
-                        <Input
-                          type="text"
-                          value={grades.scienceGradeP6}
-                          onChange={(e) => setGrades({...grades, scienceGradeP6: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                      <div>
-                        <Label>เกรดเฉลี่ยคณิตศาสตร์ ป.5</Label>
-                        <Input
-                          type="text"
-                          value={grades.mathGradeP5}
-                          onChange={(e) => setGrades({...grades, mathGradeP5: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                      <div>
-                        <Label>เกรดเฉลี่ยคณิตศาสตร์ ป.6</Label>
-                        <Input
-                          type="text"
-                          value={grades.mathGradeP6}
-                          onChange={(e) => setGrades({...grades, mathGradeP6: e.target.value})}
-                          placeholder="0.00"
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-                <Button onClick={handleUpdateGPA} className="w-full">
-                  บันทึกเกรดเฉลี่ย
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Documents Section */}
-        {registration.documents.length > 0 && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="text-lg">เอกสารแนบ</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">เอกสารแนบ</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* สรุปสถานะเอกสาร */}
+            <div className="bg-gradient-to-r from-blue-50 to-sky-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+              <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                สถานะเอกสารที่ควรแนบ
+              </h4>
               <div className="space-y-2">
-                {registration.documents.map((doc, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                  >
+                <div className="flex items-center justify-between py-2 px-3 bg-white rounded">
+                  <span className="text-sm text-gray-700">สำเนาทะเบียนบ้าน</span>
+                  <div className="flex items-center gap-2">
+                    {registration.houseRegistrationDoc ? (
+                      <>
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-xs text-green-600 font-medium">แนบแล้ว</span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-gray-400">ยังไม่แนบ</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between py-2 px-3 bg-white rounded">
+                  <span className="text-sm text-gray-700">หลักฐานผลการเรียน (ปพ.1 หรือ ปพ.7)</span>
+                  <div className="flex items-center gap-2">
+                    {registration.transcriptDoc ? (
+                      <>
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-xs text-green-600 font-medium">แนบแล้ว</span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-gray-400">ยังไม่แนบ</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between py-2 px-3 bg-white rounded">
+                  <span className="text-sm text-gray-700">รูปถ่าย (1.5 หรือ 2 นิ้ว)</span>
+                  <div className="flex items-center gap-2">
+                    {registration.photoDoc ? (
+                      <>
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-xs text-green-600 font-medium">แนบแล้ว</span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-gray-400">ยังไม่แนบ</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* รายการเอกสาร */}
+            {(registration.houseRegistrationDoc || registration.transcriptDoc || registration.photoDoc || registration.documents.length > 0) ? (
+              <div className="space-y-2">
+                <h4 className="font-medium text-gray-700 mb-2">รายการเอกสารที่แนบแล้ว</h4>
+                
+                {/* เอกสารจาก field แยก */}
+                {registration.houseRegistrationDoc && (
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-gray-600" />
+                      <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                       <a
-                        href={doc}
+                        href={registration.houseRegistrationDoc}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-blue-600 hover:underline"
                       >
-                        เอกสาร {index + 1}
+                        สำเนาทะเบียนบ้าน
                       </a>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteDocument(doc)}
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
                   </div>
-                ))}
+                )}
+                {registration.transcriptDoc && (
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      <a
+                        href={registration.transcriptDoc}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        หลักฐานผลการเรียน (ปพ.1 / ปพ.7)
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {registration.photoDoc && (
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      <a
+                        href={registration.photoDoc}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        รูปถ่าย (1.5 / 2 นิ้ว)
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {/* เอกสารเพิ่มเติมจาก documents array */}
+                {registration.documents.length > 0 && (
+                  <>
+                    {registration.documents.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <p className="text-xs text-gray-500 mb-2">เอกสารเพิ่มเติม</p>
+                      </div>
+                    )}
+                    {registration.documents.map((doc, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg"
+                      >
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                          <a
+                            href={doc}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:underline"
+                          >
+                            เอกสารเพิ่มเติม {index + 1}
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        )}
+            ) : (
+              <div className="text-center py-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <FileText className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-600">ยังไม่มีเอกสารแนบ</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  เอกสารจะถูกแนบมาพร้อมกับการสมัคร
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Registration Details */}
         <Card>
@@ -606,84 +460,58 @@ export default function RegistrationViewPage({
                       <p className="font-medium">{registration.schoolDistrict}</p>
                     </div>
                   )}
+                  {registration.schoolSubdistrict && (
+                    <div>
+                      <Label className="text-gray-600">ตำบล</Label>
+                      <p className="font-medium">{registration.schoolSubdistrict}</p>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Grades */}
                 {registration.gradeLevel === "m4" ? (
-                  // เกรดสำหรับ ม.4 (ม.1-3)
-                  (registration.scienceGradeM1 || registration.scienceGradeM2 || registration.scienceGradeM3 ||
-                   registration.mathGradeM1 || registration.mathGradeM2 || registration.mathGradeM3) && (
+                  // คะแนนสะสมสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)
+                  (registration.scienceCumulativeM1M3 || registration.mathCumulativeM1M3 || registration.englishCumulativeM1M3) && (
                     <div className="mt-4 pt-4 border-t">
-                      <h4 className="font-semibold mb-3 text-green-700">เกรดเฉลี่ยรายวิชา</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {registration.scienceGradeM1 && (
+                      <h4 className="font-semibold mb-3 text-green-700">คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน)</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {registration.scienceCumulativeM1M3 && (
                           <div>
-                            <Label className="text-gray-600">วิทยาศาสตร์ ม.1</Label>
-                            <p className="font-medium text-green-600">{registration.scienceGradeM1}</p>
+                            <Label className="text-gray-600">วิทยาศาสตร์</Label>
+                            <p className="font-medium text-green-600">{registration.scienceCumulativeM1M3}</p>
                           </div>
                         )}
-                        {registration.scienceGradeM2 && (
+                        {registration.mathCumulativeM1M3 && (
                           <div>
-                            <Label className="text-gray-600">วิทยาศาสตร์ ม.2</Label>
-                            <p className="font-medium text-green-600">{registration.scienceGradeM2}</p>
+                            <Label className="text-gray-600">คณิตศาสตร์</Label>
+                            <p className="font-medium text-green-600">{registration.mathCumulativeM1M3}</p>
                           </div>
                         )}
-                        {registration.scienceGradeM3 && (
+                        {registration.englishCumulativeM1M3 && (
                           <div>
-                            <Label className="text-gray-600">วิทยาศาสตร์ ม.3</Label>
-                            <p className="font-medium text-green-600">{registration.scienceGradeM3}</p>
-                          </div>
-                        )}
-                        {registration.mathGradeM1 && (
-                          <div>
-                            <Label className="text-gray-600">คณิตศาสตร์ ม.1</Label>
-                            <p className="font-medium text-green-600">{registration.mathGradeM1}</p>
-                          </div>
-                        )}
-                        {registration.mathGradeM2 && (
-                          <div>
-                            <Label className="text-gray-600">คณิตศาสตร์ ม.2</Label>
-                            <p className="font-medium text-green-600">{registration.mathGradeM2}</p>
-                          </div>
-                        )}
-                        {registration.mathGradeM3 && (
-                          <div>
-                            <Label className="text-gray-600">คณิตศาสตร์ ม.3</Label>
-                            <p className="font-medium text-green-600">{registration.mathGradeM3}</p>
+                            <Label className="text-gray-600">ภาษาอังกฤษ</Label>
+                            <p className="font-medium text-green-600">{registration.englishCumulativeM1M3}</p>
                           </div>
                         )}
                       </div>
                     </div>
                   )
                 ) : (
-                  // เกรดสำหรับ ม.1 (ป.5-6)
-                  (registration.scienceGradeP5 || registration.scienceGradeP6 ||
-                   registration.mathGradeP5 || registration.mathGradeP6) && (
+                  // เกรดเฉลี่ยสำหรับ ม.1 (ป.4-5)
+                  (registration.gradeP4 || registration.gradeP5) && (
                     <div className="mt-4 pt-4 border-t">
-                      <h4 className="font-semibold mb-3 text-green-700">เกรดเฉลี่ยรายวิชา</h4>
+                      <h4 className="font-semibold mb-3 text-green-700">เกรดเฉลี่ย</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {registration.scienceGradeP5 && (
+                        {registration.gradeP4 && (
                           <div>
-                            <Label className="text-gray-600">วิทยาศาสตร์ ป.5</Label>
-                            <p className="font-medium text-green-600">{registration.scienceGradeP5}</p>
+                            <Label className="text-gray-600">ประถมศึกษาปีที่ 4</Label>
+                            <p className="font-medium text-green-600">{registration.gradeP4}</p>
                           </div>
                         )}
-                        {registration.scienceGradeP6 && (
+                        {registration.gradeP5 && (
                           <div>
-                            <Label className="text-gray-600">วิทยาศาสตร์ ป.6</Label>
-                            <p className="font-medium text-green-600">{registration.scienceGradeP6}</p>
-                          </div>
-                        )}
-                        {registration.mathGradeP5 && (
-                          <div>
-                            <Label className="text-gray-600">คณิตศาสตร์ ป.5</Label>
-                            <p className="font-medium text-green-600">{registration.mathGradeP5}</p>
-                          </div>
-                        )}
-                        {registration.mathGradeP6 && (
-                          <div>
-                            <Label className="text-gray-600">คณิตศาสตร์ ป.6</Label>
-                            <p className="font-medium text-green-600">{registration.mathGradeP6}</p>
+                            <Label className="text-gray-600">ประถมศึกษาปีที่ 5</Label>
+                            <p className="font-medium text-green-600">{registration.gradeP5}</p>
                           </div>
                         )}
                       </div>

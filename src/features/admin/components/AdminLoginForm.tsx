@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Shield, ArrowLeft } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface AdminLoginFormProps {
   onLoginSuccess: (adminId: number) => void;
@@ -16,12 +17,11 @@ export function AdminLoginForm({ onLoginSuccess }: AdminLoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { toast } = useToast();
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
       const res = await fetch("/api/admin/login", {
@@ -33,12 +33,24 @@ export function AdminLoginForm({ onLoginSuccess }: AdminLoginFormProps) {
       const data = await res.json();
 
       if (res.ok) {
+        toast({
+          title: "เข้าสู่ระบบสำเร็จ",
+          description: "ยินดีต้อนรับ",
+        });
         onLoginSuccess(data.admin.id);
       } else {
-        setError(data.error || "เข้าสู่ระบบไม่สำเร็จ");
+        toast({
+          variant: "destructive",
+          title: "เข้าสู่ระบบไม่สำเร็จ",
+          description: data.error || "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
+        });
       }
     } catch (err) {
-      setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+      toast({
+        variant: "destructive",
+        title: "ข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการเชื่อมต่อ",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -91,11 +103,6 @@ export function AdminLoginForm({ onLoginSuccess }: AdminLoginFormProps) {
                 className="border-amber-200 focus:border-amber-400 focus:ring-amber-400"
               />
             </div>
-            {error && (
-              <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md border border-red-200">
-                {error}
-              </div>
-            )}
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700"

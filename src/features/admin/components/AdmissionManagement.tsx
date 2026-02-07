@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { Settings, Calendar, FileText, Bell, CheckCircle, XCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface AdmissionSettings {
   id: string;
@@ -26,7 +27,7 @@ export function AdmissionManagement() {
   const [m4Settings, setM4Settings] = useState<AdmissionSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"m1" | "m4">("m1");
 
   useEffect(() => {
@@ -58,7 +59,6 @@ export function AdmissionManagement() {
 
   const handleSave = async (gradeLevel: "m1" | "m4") => {
     setSaving(true);
-    setMessage("");
 
     const settings = gradeLevel === "m1" ? m1Settings : m4Settings;
     if (!settings) return;
@@ -73,13 +73,24 @@ export function AdmissionManagement() {
       });
 
       if (response.ok) {
-        setMessage("บันทึกการตั้งค่าสำเร็จ");
+        toast({
+          title: "บันทึกสำเร็จ",
+          description: "บันทึกการตั้งค่าการรับสมัครเรียบร้อยแล้ว",
+        });
         await fetchSettings();
       } else {
-        setMessage("เกิดข้อผิดพลาดในการบันทึก");
+        toast({
+          variant: "destructive",
+          title: "เกิดข้อผิดพลาด",
+          description: "ไม่สามารถบันทึกการตั้งค่าได้",
+        });
       }
     } catch (error) {
-      setMessage("เกิดข้อผิดพลาดในการบันทึก");
+      toast({
+        variant: "destructive",
+        title: "เกิดข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการบันทึก",
+      });
     } finally {
       setSaving(false);
     }
@@ -130,12 +141,6 @@ export function AdmissionManagement() {
           มัธยมศึกษาปีที่ 4
         </Button>
       </div>
-
-      {message && (
-        <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded">
-          {message}
-        </div>
-      )}
 
       {currentSettings && (
         <div className="space-y-6">

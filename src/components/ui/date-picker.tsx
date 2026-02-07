@@ -68,6 +68,10 @@ export function DatePicker({ date, setDate, placeholder = "เลือกวั
           onSelect={handleDateSelect}
           initialFocus
           locale={th}
+          captionLayout="dropdown"
+          fromYear={1990}
+          toYear={new Date().getFullYear() + 5}
+          defaultMonth={tempDate || new Date(2010, 0, 1)}
         />
         <div className="p-3 border-t flex gap-2 justify-end">
           <Button
