@@ -73,7 +73,7 @@ export function SearchForm() {
               id="idCard"
               value={idCard}
               onChange={(e) => setIdCard(e.target.value)}
-              placeholder="กรอกเลขบัตรประชาชน 13 หลัก หรือเลขพาสปอร์ต"
+              placeholder="กรอกเลขบัตรประชาชน 13"
               className="border-amber-200 text-lg py-6"
               required
             />
