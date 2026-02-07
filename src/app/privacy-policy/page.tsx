@@ -173,7 +173,7 @@ export default function PrivacyPolicyPage() {
               </div>
             </section>
 
-            {/* ระยะเวลาเก็บรักษา */}
+            {/* ระยะเวลาเก็บรักษา
             <section className="mb-8">
               <div className="flex items-center gap-2 mb-4">
                 <FileText className="w-5 h-5 text-amber-600" />
@@ -192,13 +192,13 @@ export default function PrivacyPolicyPage() {
                   <span>ข้อมูลนักเรียนที่รับเข้าศึกษา: เก็บไว้ตลอดระยะเวลาที่ศึกษาและอีก 5 ปีหลังสำเร็จการศึกษา</span>
                 </li>
               </ul>
-            </section>
+            </section> */}
 
             {/* สิทธิของเจ้าของข้อมูล */}
             <section className="mb-8">
               <div className="flex items-center gap-2 mb-4">
                 <Shield className="w-5 h-5 text-amber-600" />
-                <h2 className="text-xl font-bold text-amber-900 m-0">6. สิทธิของเจ้าของข้อมูลส่วนบุคคล</h2>
+                <h2 className="text-xl font-bold text-amber-900 m-0">5. สิทธิของเจ้าของข้อมูลส่วนบุคคล</h2>
               </div>
               <p className="text-gray-700 mb-3">ท่านมีสิทธิต่อไปนี้เกี่ยวกับข้อมูลส่วนบุคคลของท่าน:</p>
               <div className="grid md:grid-cols-2 gap-3">
@@ -221,7 +221,7 @@ export default function PrivacyPolicyPage() {
               </div>
             </section>
 
-            {/* ติดต่อ */}
+            {/* ติดต่อ
             <section className="mb-8">
               <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-lg p-6">
                 <h2 className="text-xl font-bold text-amber-900 mb-4">7. ติดต่อเรา</h2>
@@ -236,7 +236,7 @@ export default function PrivacyPolicyPage() {
                   <p>อีเมล: info@nongbua.ac.th</p>
                 </div>
               </div>
-            </section>
+            </section> */}
 
             {/* การเปลี่ยนแปลง */}
             <section>
