@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@layer base {
+  :root {
+
+    --background: 48 100% 99%;
+
+    --foreground: 24 45% 10%;
+
+    --card: 0 0% 100%;
+
+    --card-foreground: 24 45% 10%;
+
+    --popover: 0 0% 100%;
+
+    --popover-foreground: 24 45% 10%;
+
+    --primary: 32 95% 44%;
+
+    --primary-foreground: 48 100% 98%;
+
+    --secondary: 43 100% 96%;
+
+    --secondary-foreground: 24 45% 10%;
+
+    --muted: 43 96% 94%;
+
+    --muted-foreground: 30 25% 45%;
+
+    --accent: 38 92% 50%;
+
+    --accent-foreground: 48 100% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 43 77% 86%;
+
+    --input: 43 77% 86%;
+
+    --ring: 32 95% 44%;
+
+    --chart-1: 32 95% 44%;
+
+    --chart-2: 38 92% 50%;
+
+    --chart-3: 43 96% 56%;
+
+    --chart-4: 30 70% 35%;
+
+    --chart-5: 25 60% 40%;
+
+    --radius: 0.5rem
+  }
+  .dark {
+
+    --background: 24 20% 8%;
+
+    --foreground: 48 100% 98%;
+
+    --card: 24 20% 10%;
+
+    --card-foreground: 48 100% 98%;
+
+    --popover: 24 20% 10%;
+
+    --popover-foreground: 48 100% 98%;
+
+    --primary: 43 96% 56%;
+
+    --primary-foreground: 24 45% 10%;
+
+    --secondary: 30 40% 20%;
+
+    --secondary-foreground: 48 100% 98%;
+
+    --muted: 30 40% 18%;
+
+    --muted-foreground: 43 70% 65%;
+
+    --accent: 38 92% 50%;
+
+    --accent-foreground: 24 45% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 30 40% 20%;
+
+    --input: 30 40% 20%;
+
+    --ring: 43 96% 56%;
+
+    --chart-1: 43 96% 56%;
+
+    --chart-2: 38 92% 50%;
+
+    --chart-3: 32 95% 44%;
+
+    --chart-4: 25 60% 40%;
+
+    --chart-5: 30 70% 35%
+  }
+}
+
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom Leaflet marker styles */
+.custom-marker-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-marker-icon svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}

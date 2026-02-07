@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  news      News[]
+}
+
+model Registration {
+  id                String   @id @default(cuid())
+  
+  // ข้อมูลผู้สมัคร
+  idCardOrPassport  String?
+  isSpecialISM      Boolean  @default(true)  // ห้องเรียนพิเศษ ISM
+  gradeLevel        String   @default("m1")  // m1 หรือ m4 - ระดับชั้นที่สมัคร
+  title             String   // เด็กชาย, เด็กหญิง, นาย, นางสาว, นาง
+  firstNameTH       String
+  lastNameTH        String
+  birthDate         String   // Date in YYYY-MM-DD format
+  ethnicity         String
+  nationality       String
+  religion          String
+  phone             String
+  siblings          String?  // จำนวนพี่น้อง
+  siblingsInSchool  String?  // พี่น้องที่เรียนโรงเรียนนี้
+  
+  // ข้อมูลการศึกษา
+  educationStatus   String?  // กำลังศึกษา/จบการศึกษา
+  schoolName        String?
+  schoolProvince    String?
+  schoolDistrict    String?
+  schoolSubdistrict String?
+  
+  // ที่อยู่ตามทะเบียนบ้าน
+  villageName       String?
+  houseNumber       String
+  moo               String?
+  road              String?
+  soi               String?
+  province          String
+  district          String
+  subdistrict       String
+  postalCode        String
+  
+  // เกรดเฉลี่ยแยกตามวิชา (สำหรับ ม.1)
+  scienceGradeP5    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ป.5
+  scienceGradeP6    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ป.6
+  mathGradeP5       String?  // เกรดเฉลี่ยคณิตศาสตร์ ป.5
+  mathGradeP6       String?  // เกรดเฉลี่ยคณิตศาสตร์ ป.6
+  
+  // เกรดเฉลี่ยแยกตามวิชา (สำหรับ ม.4)
+  scienceGradeM1    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ม.1
+  scienceGradeM2    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ม.2
+  scienceGradeM3    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ม.3
+  mathGradeM1       String?  // เกรดเฉลี่ยคณิตศาสตร์ ม.1
+  mathGradeM2       String?  // เกรดเฉลี่ยคณิตศาสตร์ ม.2
+  mathGradeM3       String?  // เกรดเฉลี่ยคณิตศาสตร์ ม.3
+  
+  documents         String[] @default([]) // Array of document URLs/paths
+  
+  status            String   @default("pending") // pending, approved, rejected
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([status])
+  @@index([createdAt])
+  @@index([idCardOrPassport])
+}
+
+model News {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  imageUrl    String?
+  published   Boolean  @default(false)
+  adminId     String
+  admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([published])
+  @@index([createdAt(sort: Desc)])
+}
+
+model HeroImage {
+  id          String   @id @default(cuid())
+  imageUrl    String   // Path หรือ URL ของรูปภาพ
+  title       String?  // ชื่อหรือคำอธิบายรูป (optional)
+  order       Int      @default(0) // ลำดับการแสดงผล (เรียงจากน้อยไปมาก)
+  active      Boolean  @default(true) // เปิด-ปิดการแสดงผล
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([active, order])
+}

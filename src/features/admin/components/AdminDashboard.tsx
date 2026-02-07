@@ -1,0 +1,169 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Shield, ArrowLeft, Newspaper, Image, LogOut } from "lucide-react";
+import { RegistrationTable } from "./RegistrationTable";
+import { RegistrationDrawer } from "./RegistrationDrawer";
+import { NewsManagement } from "./NewsManagement";
+import { HeroImageManagement } from "./HeroImageManagement";
+import type { Registration, News } from "@/types";
+
+interface AdminDashboardProps {
+  adminId: number;
+  onLogout: () => void;
+}
+
+export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [news, setNews] = useState<News[]>([]);
+  const [activeTab, setActiveTab] = useState<'registrations' | 'news' | 'hero'>('registrations');
+  const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    fetchRegistrations();
+    fetchNews();
+  }, []);
+
+  const fetchRegistrations = async () => {
+    try {
+      const res = await fetch('/api/admin/registrations');
+      if (res.ok) {
+        const data = await res.json();
+        setRegistrations(Array.isArray(data) ? data : []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch registrations:', err);
+      setRegistrations([]);
+    }
+  };
+
+  const fetchNews = async () => {
+    try {
+      const res = await fetch('/api/news?admin=true');
+      if (res.ok) {
+        const data = await res.json();
+        setNews(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch news:', err);
+    }
+  };
+
+  const updateStatus = async (id: string, status: string) => {
+    try {
+      const res = await fetch('/api/admin/registrations', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      });
+
+      if (res.ok) {
+        fetchRegistrations();
+      }
+    } catch (err) {
+      console.error('Failed to update status:', err);
+    }
+  };
+
+  const handleViewDetails = (registration: Registration) => {
+    setSelectedRegistration(registration);
+    setIsDrawerOpen(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-amber-900 mb-2">แผงควบคุม Admin</h1>
+            <p className="text-amber-700">โรงเรียนหนองบัว จ.นครสวรรค์</p>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              className="border-red-300 text-red-700 hover:bg-red-50"
+              onClick={onLogout}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              ออกจากระบบ
+            </Button>
+            <Link href="/">
+              <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                กลับหน้าแรก
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6">
+          <Button
+            variant={activeTab === 'registrations' ? 'default' : 'outline'}
+            className={activeTab === 'registrations' 
+              ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
+              : 'border-amber-300 text-amber-700 hover:bg-amber-50'}
+            onClick={() => setActiveTab('registrations')}
+          >
+            <Shield className="w-4 h-4 mr-2" />
+            การสมัครเรียน ({registrations.length})
+          </Button>
+          <Button
+            variant={activeTab === 'news' ? 'default' : 'outline'}
+            className={activeTab === 'news' 
+              ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
+              : 'border-amber-300 text-amber-700 hover:bg-amber-50'}
+            onClick={() => setActiveTab('news')}
+          >
+            <Newspaper className="w-4 h-4 mr-2" />
+            จัดการข่าว ({news.length})
+          </Button>
+          <Button
+            variant={activeTab === 'hero' ? 'default' : 'outline'}
+            className={activeTab === 'hero' 
+              ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
+              : 'border-amber-300 text-amber-700 hover:bg-amber-50'}
+            onClick={() => setActiveTab('hero')}
+          >
+            <Image className="w-4 h-4 mr-2" />
+            รูป Hero Section
+          </Button>
+        </div>
+
+        {/* Registrations Tab */}
+        {activeTab === 'registrations' && (
+          <RegistrationTable
+            registrations={registrations}
+            onViewDetails={handleViewDetails}
+            onStatusChange={updateStatus}
+          />
+        )}
+
+        {/* News Tab */}
+        {activeTab === 'news' && (
+          <NewsManagement
+            news={news}
+            adminId={adminId}
+            onRefresh={fetchNews}
+          />
+        )}
+
+        {/* Hero Images Tab */}
+        {activeTab === 'hero' && (
+          <HeroImageManagement />
+        )}
+      </div>
+
+      {/* Registration Detail Drawer */}
+      <RegistrationDrawer
+        registration={selectedRegistration}
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
+        onUpdate={fetchRegistrations}
+      />
+    </div>
+  );
+}
