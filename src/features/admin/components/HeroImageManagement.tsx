@@ -74,6 +74,7 @@ export function HeroImageManagement() {
       const response = await fetch(`/api/hero?${params}`);
       if (!response.ok) throw new Error("Failed to fetch");
       const data = await response.json();
+      
       setHeroImages(Array.isArray(data.heroImages) ? data.heroImages : []);
       setTotalCount(data.pagination.total);
       setTotalPages(data.pagination.totalPages);

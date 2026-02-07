@@ -53,16 +53,7 @@ export function WelcomeSection() {
               ตรวจสอบการสมัคร
             </Button>
           </Link>
-          
-          <Link href="/admin/login">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg"
-            >
-              <GraduationCap className="w-6 h-6 mr-2" />
-              แผงควบคุม Admin
-            </Button>
-          </Link>
+        
         </div>
       </div>
     </section>
