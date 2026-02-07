@@ -92,7 +92,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
               ออกจากระบบ
             </Button>
             <Link href="/">
-              <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+              <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-600 hover:text-white">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 กลับหน้าแรก
               </Button>
@@ -106,7 +106,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             variant={activeTab === 'registrations' ? 'default' : 'outline'}
             className={activeTab === 'registrations' 
               ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
-              : 'border-amber-300 text-amber-700 hover:bg-amber-50'}
+              : 'border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900'}
             onClick={() => setActiveTab('registrations')}
           >
             <Shield className="w-4 h-4 mr-2" />
@@ -116,7 +116,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             variant={activeTab === 'news' ? 'default' : 'outline'}
             className={activeTab === 'news' 
               ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
-              : 'border-amber-300 text-amber-700 hover:bg-amber-50'}
+              : 'border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900'}
             onClick={() => setActiveTab('news')}
           >
             <Newspaper className="w-4 h-4 mr-2" />
@@ -126,7 +126,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             variant={activeTab === 'hero' ? 'default' : 'outline'}
             className={activeTab === 'hero' 
               ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
-              : 'border-amber-300 text-amber-700 hover:bg-amber-50'}
+              : 'border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900'}
             onClick={() => setActiveTab('hero')}
           >
             <Image className="w-4 h-4 mr-2" />
@@ -136,7 +136,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             variant={activeTab === 'admission' ? 'default' : 'outline'}
             className={activeTab === 'admission' 
               ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
-              : 'border-amber-300 text-amber-700 hover:bg-amber-50'}
+              : 'border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900'}
             onClick={() => setActiveTab('admission')}
           >
             <Settings className="w-4 h-4 mr-2" />

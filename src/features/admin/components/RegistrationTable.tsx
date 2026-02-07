@@ -103,10 +103,10 @@ export function RegistrationTable({ registrations, onViewDetails, onStatusChange
                       }
                       className={
                         reg.status === 'approved'
-                          ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                          ? 'bg-green-100 text-green-900 hover:bg-green-200 hover:text-green-950'
                           : reg.status === 'rejected'
                           ? ''
-                          : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                          : 'bg-amber-100 text-amber-900 hover:bg-amber-200 hover:text-amber-950'
                       }
                     >
                       {reg.status === 'pending' && 'รอดำเนินการ'}

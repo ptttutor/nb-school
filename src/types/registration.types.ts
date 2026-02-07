@@ -43,10 +43,15 @@ export interface Registration {
   mathCumulativeM1M3?: string;
   englishCumulativeM1M3?: string;
   
+  // เอกสารแนบ (fields แยก)
+  houseRegistrationDoc?: string;
+  transcriptDoc?: string;
+  photoDoc?: string;
+  
   documents: string[];
   status: RegistrationStatus;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 export type RegistrationStatus = 'pending' | 'approved' | 'rejected';

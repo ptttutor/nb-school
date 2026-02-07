@@ -269,7 +269,7 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
                 <Button
                   variant="outline"
                   onClick={cancelNewsForm}
-                  className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                  className="border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900"
                 >
                   <X className="w-4 h-4 mr-2" />
                   ยกเลิก
@@ -349,7 +349,7 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
                         size="sm"
                         variant="outline"
                         onClick={() => togglePublish(item.id, item.published)}
-                        className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                        className="border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900"
                       >
                         {item.published ? (
                           <>
@@ -367,7 +367,7 @@ export function NewsManagement({ news, adminId, onRefresh }: NewsManagementProps
                         size="sm"
                         variant="outline"
                         onClick={() => startEditNews(item)}
-                        className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                        className="border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900"
                       >
                         <Edit className="w-4 h-4 mr-1" />
                         แก้ไข

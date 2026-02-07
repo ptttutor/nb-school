@@ -181,7 +181,7 @@ export function DocumentStep({
                 onClick={onRegenerateCaptcha}
                 variant="outline"
                 size="sm"
-                className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                className="border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 สร้างรหัสใหม่

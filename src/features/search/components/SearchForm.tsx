@@ -123,7 +123,7 @@ export function SearchForm() {
         <div className="mt-6 text-center">
           <p className="text-gray-600 mb-2">ยังไม่ได้สมัคร?</p>
           <Link href="/register">
-            <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+            <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900">
               สมัครเรียนเลย
             </Button>
           </Link>

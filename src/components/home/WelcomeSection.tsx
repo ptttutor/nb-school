@@ -7,7 +7,7 @@ export function WelcomeSection() {
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto text-center">
-        <Badge className="mb-6 bg-amber-100 text-amber-800 hover:bg-amber-200 text-sm px-4 py-2">
+        <Badge className="mb-6 bg-amber-100 text-amber-900 hover:bg-amber-200 hover:text-amber-950 text-sm px-4 py-2">
           <Clock className="w-4 h-4 mr-2" />
           เปิดรับสมัครแล้ว
         </Badge>
@@ -47,7 +47,7 @@ export function WelcomeSection() {
             <Button 
               size="lg" 
               variant="outline"
-              className="border-2 border-amber-600 text-amber-700 hover:bg-amber-50 shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg"
+              className="border-2 border-amber-600 text-amber-700 hover:bg-amber-600 hover:text-white shadow-lg hover:shadow-xl transition-all px-8 py-6 text-lg"
             >
               <Search className="w-6 h-6 mr-2" />
               ตรวจสอบการสมัคร

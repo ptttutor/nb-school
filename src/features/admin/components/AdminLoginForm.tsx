@@ -60,7 +60,7 @@ export function AdminLoginForm({ onLoginSuccess }: AdminLoginFormProps) {
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
       <div className="absolute top-8 left-8">
         <Link href="/">
-          <Button variant="ghost" className="text-amber-700 hover:text-amber-900 hover:bg-amber-100">
+          <Button variant="ghost" className="text-amber-700 hover:text-white hover:bg-amber-700">
             <ArrowLeft className="w-4 h-4 mr-2" />
             กลับหน้าแรก
           </Button>

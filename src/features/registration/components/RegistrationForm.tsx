@@ -343,7 +343,7 @@ export function RegistrationForm({ grade }: RegistrationFormProps) {
                 onClick={handlePrevious}
                 disabled={currentStep === 1}
                 variant="outline"
-                className="border-amber-300 text-amber-700 hover:bg-amber-50 disabled:opacity-50"
+                className="border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-900 disabled:opacity-50"
               >
                 <ChevronLeft className="w-4 h-4 mr-2" />
                 ย้อนกลับ
