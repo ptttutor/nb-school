@@ -242,81 +242,49 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
 
           {/* เกรดเฉลี่ยรายวิชา */}
           {registration.gradeLevel === 'm4' ? (
-            // เกรดสำหรับ ม.4 (ม.1-3)
-            (registration.scienceGradeM1 || registration.scienceGradeM2 || 
-             registration.scienceGradeM3 || registration.mathGradeM1 || 
-             registration.mathGradeM2 || registration.mathGradeM3) && (
+            // คะแนนสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)
+            (registration.scienceCumulativeM1M3 || registration.mathCumulativeM1M3 || 
+             registration.englishCumulativeM1M3) && (
               <div>
-                <h3 className="font-semibold text-lg mb-3 text-amber-900">เกรดเฉลี่ยรายวิชา</h3>
+                <h3 className="font-semibold text-lg mb-3 text-amber-900">คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน)</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {registration.scienceGradeM1 && (
+                  {registration.scienceCumulativeM1M3 && (
                     <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">วิทยาศาสตร์ ม.1</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.scienceGradeM1}</p>
+                      <Label className="text-gray-600 text-xs">กลุ่มสาระวิทยาศาสตร์</Label>
+                      <p className="font-bold text-xl text-green-600 mt-1">{registration.scienceCumulativeM1M3}</p>
                     </div>
                   )}
-                  {registration.scienceGradeM2 && (
+                  {registration.mathCumulativeM1M3 && (
                     <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">วิทยาศาสตร์ ม.2</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.scienceGradeM2}</p>
+                      <Label className="text-gray-600 text-xs">กลุ่มสาระคณิตศาสตร์</Label>
+                      <p className="font-bold text-xl text-green-600 mt-1">{registration.mathCumulativeM1M3}</p>
                     </div>
                   )}
-                  {registration.scienceGradeM3 && (
+                  {registration.englishCumulativeM1M3 && (
                     <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">วิทยาศาสตร์ ม.3</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.scienceGradeM3}</p>
-                    </div>
-                  )}
-                  {registration.mathGradeM1 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">คณิตศาสตร์ ม.1</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.mathGradeM1}</p>
-                    </div>
-                  )}
-                  {registration.mathGradeM2 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">คณิตศาสตร์ ม.2</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.mathGradeM2}</p>
-                    </div>
-                  )}
-                  {registration.mathGradeM3 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">คณิตศาสตร์ ม.3</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.mathGradeM3}</p>
+                      <Label className="text-gray-600 text-xs">กลุ่มสาระภาษาอังกฤษ</Label>
+                      <p className="font-bold text-xl text-green-600 mt-1">{registration.englishCumulativeM1M3}</p>
                     </div>
                   )}
                 </div>
               </div>
             )
           ) : (
-            // เกรดสำหรับ ม.1 (ป.5-6)
-            (registration.scienceGradeP5 || registration.scienceGradeP6 || 
-             registration.mathGradeP5 || registration.mathGradeP6) && (
+            // เกรดสำหรับ ม.1 (ป.4-5)
+            (registration.gradeP4 || registration.gradeP5) && (
               <div>
-                <h3 className="font-semibold text-lg mb-3 text-amber-900">เกรดเฉลี่ยรายวิชา</h3>
+                <h3 className="font-semibold text-lg mb-3 text-amber-900">เกรดเฉลี่ย</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {registration.scienceGradeP5 && (
+                  {registration.gradeP4 && (
                     <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">วิทยาศาสตร์ ป.5</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.scienceGradeP5}</p>
+                      <Label className="text-gray-600 text-xs">ระดับชั้นประถมศึกษาปีที่ 4</Label>
+                      <p className="font-bold text-xl text-green-600 mt-1">{registration.gradeP4}</p>
                     </div>
                   )}
-                  {registration.scienceGradeP6 && (
+                  {registration.gradeP5 && (
                     <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">วิทยาศาสตร์ ป.6</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.scienceGradeP6}</p>
-                    </div>
-                  )}
-                  {registration.mathGradeP5 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">คณิตศาสตร์ ป.5</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.mathGradeP5}</p>
-                    </div>
-                  )}
-                  {registration.mathGradeP6 && (
-                    <div className="p-3 bg-white rounded border border-green-100">
-                      <Label className="text-gray-600 text-xs">คณิตศาสตร์ ป.6</Label>
-                      <p className="font-bold text-xl text-green-600 mt-1">{registration.mathGradeP6}</p>
+                      <Label className="text-gray-600 text-xs">ระดับชั้นประถมศึกษาปีที่ 5</Label>
+                      <p className="font-bold text-xl text-green-600 mt-1">{registration.gradeP5}</p>
                     </div>
                   )}
                 </div>

@@ -24,7 +24,7 @@ model Registration {
   id                String   @id @default(cuid())
   
   // ข้อมูลผู้สมัคร
-  idCardOrPassport  String?
+  idCardOrPassport  String   // บังคับกรอก
   isSpecialISM      Boolean  @default(true)  // ห้องเรียนพิเศษ ISM
   gradeLevel        String   @default("m1")  // m1 หรือ m4 - ระดับชั้นที่สมัคร
   title             String   // เด็กชาย, เด็กหญิง, นาย, นางสาว, นาง
@@ -56,21 +56,21 @@ model Registration {
   subdistrict       String
   postalCode        String
   
-  // เกรดเฉลี่ยแยกตามวิชา (สำหรับ ม.1)
-  scienceGradeP5    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ป.5
-  scienceGradeP6    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ป.6
-  mathGradeP5       String?  // เกรดเฉลี่ยคณิตศาสตร์ ป.5
-  mathGradeP6       String?  // เกรดเฉลี่ยคณิตศาสตร์ ป.6
+  // เกรดเฉลี่ย (สำหรับ ม.1)
+  gradeP4           String?  // เกรดเฉลี่ย ระดับชั้นประถมศึกษาปีที่ 4
+  gradeP5           String?  // เกรดเฉลี่ย ระดับชั้นประถมศึกษาปีที่ 5
   
-  // เกรดเฉลี่ยแยกตามวิชา (สำหรับ ม.4)
-  scienceGradeM1    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ม.1
-  scienceGradeM2    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ม.2
-  scienceGradeM3    String?  // เกรดเฉลี่ยวิทยาศาสตร์ ม.3
-  mathGradeM1       String?  // เกรดเฉลี่ยคณิตศาสตร์ ม.1
-  mathGradeM2       String?  // เกรดเฉลี่ยคณิตศาสตร์ ม.2
-  mathGradeM3       String?  // เกรดเฉลี่ยคณิตศาสตร์ ม.3
+  // คะแนนเฉลี่ยสะสม (สำหรับ ม.4 จำนวน 5 ภาคเรียน ม.1-3)
+  scienceCumulativeM1M3  String?  // คะแนนเฉลี่ยสะสมกลุ่มสาระวิทยาศาสตร์
+  mathCumulativeM1M3     String?  // คะแนนเฉลี่ยสะสมกลุ่มสาระคณิตศาสตร์
+  englishCumulativeM1M3  String?  // คะแนนเฉลี่ยสะสมกลุ่มสาระภาษาอังกฤษ
   
-  documents         String[] @default([]) // Array of document URLs/paths
+  // เอกสารแนบ
+  houseRegistrationDoc String?  // สำเนาทะเบียนบ้าน
+  transcriptDoc        String?  // หลักฐานแสดงผลการเรียน (ปพ.1 หรือ ปพ.7)
+  photoDoc             String?  // รูปถ่าย 1.5 นิ้ว หรือ 2 นิ้ว
+  
+  documents         String[] @default([]) // Array of document URLs/paths (legacy)
   
   status            String   @default("pending") // pending, approved, rejected
   createdAt         DateTime @default(now())
@@ -106,4 +106,21 @@ model HeroImage {
   updatedAt   DateTime @updatedAt
   
   @@index([active, order])
+}
+
+model AdmissionSettings {
+  id            String   @id @default(cuid())
+  gradeLevel    String   @unique // "m1" หรือ "m4"
+  isOpen        Boolean  @default(false) // เปิด/ปิดรับสมัคร
+  startDate     DateTime? // วันเริ่มรับสมัคร
+  endDate       DateTime? // วันปิดรับสมัคร
+  schedule      String?   @db.Text // กำหนดการ
+  requirements  String?   @db.Text // ข้อกำหนด
+  announcement  String?   @db.Text // ประกาศ/รายละเอียด
+  allowISM      Boolean  @default(true) // อนุญาตให้สมัคร ISM
+  allowRegular  Boolean  @default(true) // อนุญาตให้สมัครห้องปกติ
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([gradeLevel])
 }

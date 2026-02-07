@@ -32,21 +32,27 @@ export async function POST(request: NextRequest) {
       district,
       subdistrict,
       postalCode,
-      // เกรดสำหรับ ม.1 (ป.5-6)
-      scienceGradeP5,
-      scienceGradeP6,
-      mathGradeP5,
-      mathGradeP6,
-      // เกรดสำหรับ ม.4 (ม.1-3)
-      scienceGradeM1,
-      scienceGradeM2,
-      scienceGradeM3,
-      mathGradeM1,
-      mathGradeM2,
-      mathGradeM3,
+      // เกรดสำหรับ ม.1 (ป.4-5)
+      gradeP4,
+      gradeP5,
+      // คะแนนสำหรับ ม.4 (ม.1-3)
+      scienceCumulativeM1M3,
+      mathCumulativeM1M3,
+      englishCumulativeM1M3,
+      // เอกสารแนบ
+      houseRegistrationDoc,
+      transcriptDoc,
+      photoDoc,
     } = body;
 
     // Validate required fields
+    if (!idCardOrPassport || !idCardOrPassport.trim()) {
+      return NextResponse.json(
+        { error: "กรุณากรอกเลขบัตรประชาชน/หนังสือเดินทาง" },
+        { status: 400 }
+      );
+    }
+
     if (!title || !firstNameTH || !lastNameTH || !birthDate || 
         !ethnicity || !nationality || !religion || !phone ||
         !houseNumber || !province || !district || !subdistrict || !postalCode) {
@@ -57,17 +63,15 @@ export async function POST(request: NextRequest) {
     }
 
     // ตรวจสอบเลขบัตรประชาชนซ้ำ
-    if (idCardOrPassport && idCardOrPassport.trim()) {
-      const existingRegistration = await prisma.registration.findFirst({
-        where: { idCardOrPassport: idCardOrPassport.trim() }
-      });
+    const existingRegistration = await prisma.registration.findFirst({
+      where: { idCardOrPassport: idCardOrPassport.trim() }
+    });
 
-      if (existingRegistration) {
-        return NextResponse.json(
-          { error: "เลขบัตรประชาชน/หนังสือเดินทางนี้มีในระบบแล้ว กรุณาตรวจสอบการสมัครของคุณ" },
-          { status: 409 }
-        );
-      }
+    if (existingRegistration) {
+      return NextResponse.json(
+        { error: "เลขบัตรประชาชน/หนังสือเดินทางนี้มีในระบบแล้ว กรุณาตรวจสอบการสมัครของคุณ" },
+        { status: 409 }
+      );
     }
 
     // Create registration
@@ -101,17 +105,16 @@ export async function POST(request: NextRequest) {
         subdistrict,
         postalCode,
         // เกรดสำหรับ ม.1
-        scienceGradeP5,
-        scienceGradeP6,
-        mathGradeP5,
-        mathGradeP6,
-        // เกรดสำหรับ ม.4
-        scienceGradeM1,
-        scienceGradeM2,
-        scienceGradeM3,
-        mathGradeM1,
-        mathGradeM2,
-        mathGradeM3,
+        gradeP4,
+        gradeP5,
+        // คะแนนสำหรับ ม.4
+        scienceCumulativeM1M3,
+        mathCumulativeM1M3,
+        englishCumulativeM1M3,
+        // เอกสารแนบ
+        houseRegistrationDoc,
+        transcriptDoc,
+        photoDoc,
         status: "pending",
       },
     });

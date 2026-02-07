@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertCircle, RefreshCw, Upload, Bell } from "lucide-react";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Badge } from "@/components/ui/badge";
 
 export default function RegisterPage({
@@ -22,6 +23,16 @@ export default function RegisterPage({
   const [message, setMessage] = useState("");
   const [captcha, setCaptcha] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
+  
+  // States สำหรับเอกสารแนบ
+  const [houseRegistrationFile, setHouseRegistrationFile] = useState<File | null>(null);
+  const [transcriptFile, setTranscriptFile] = useState<File | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
+  
+  // States สำหรับ Admission Settings
+  const [admissionSettings, setAdmissionSettings] = useState<any>(null);
+  const [loadingSettings, setLoadingSettings] = useState(true);
   
   // ตรวจสอบ grade ที่ถูกต้อง
   const isM4 = grade === "m4";
@@ -55,18 +66,13 @@ export default function RegisterPage({
     district: "",
     subdistrict: "",
     postalCode: "",
-    // เกรดสำหรับ ม.1 (ป.5-6)
-    scienceGradeP5: "",
-    scienceGradeP6: "",
-    mathGradeP5: "",
-    mathGradeP6: "",
-    // เกรดสำหรับ ม.4 (ม.1-3)
-    scienceGradeM1: "",
-    scienceGradeM2: "",
-    scienceGradeM3: "",
-    mathGradeM1: "",
-    mathGradeM2: "",
-    mathGradeM3: "",
+    // เกรดสำหรับ ม.1 (ป.4-5)
+    gradeP4: "",
+    gradeP5: "",
+    // คะแนนสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)
+    scienceCumulativeM1M3: "",  // วิทยาศาสตร์
+    mathCumulativeM1M3: "",     // คณิตศาสตร์
+    englishCumulativeM1M3: "",  // ภาษาอังกฤษ
   });
 
   const generateCaptcha = () => {
@@ -77,7 +83,22 @@ export default function RegisterPage({
 
   useEffect(() => {
     generateCaptcha();
-  }, []);
+    fetchAdmissionSettings();
+  }, [grade]);
+
+  const fetchAdmissionSettings = async () => {
+    try {
+      const response = await fetch(`/api/admission?gradeLevel=${grade}`);
+      if (response.ok) {
+        const data = await response.json();
+        setAdmissionSettings(data);
+      }
+    } catch (error) {
+      console.error("Error fetching admission settings:", error);
+    } finally {
+      setLoadingSettings(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -94,19 +115,66 @@ export default function RegisterPage({
     });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'house' | 'transcript' | 'photo') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // ตรวจสอบขนาดไฟล์ (ไม่เกิน 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage("ขนาดไฟล์ต้องไม่เกิน 5MB");
+      return;
+    }
+
+    switch (fileType) {
+      case 'house':
+        setHouseRegistrationFile(file);
+        break;
+      case 'transcript':
+        setTranscriptFile(file);
+        break;
+      case 'photo':
+        setPhotoFile(file);
+        break;
+    }
+  };
+
+  const uploadFile = async (file: File): Promise<string | null> => {
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formDataUpload,
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      return null;
+    }
+  };
+
   const validateForm = (): string | null => {
-    // Validate ID Card or Passport (Optional but if provided must be valid)
-    if (formData.idCardOrPassport.trim()) {
-      // If it's all digits, should be 13 digits (Thai ID)
-      if (/^\d+$/.test(formData.idCardOrPassport)) {
-        if (formData.idCardOrPassport.length !== 13) {
-          return "เลขบัตรประชาชนต้องเป็น 13 หลัก";
-        }
-      } else {
-        // Passport should have at least 6 characters
-        if (formData.idCardOrPassport.length < 6) {
-          return "หมายเลข Passport ต้องมีอย่างน้อย 6 ตัวอักษร";
-        }
+    // Validate ID Card or Passport (Required)
+    if (!formData.idCardOrPassport.trim()) {
+      return "กรุณากรอกเลขบัตรประชาชน/หนังสือเดินทาง";
+    }
+    
+    // If it's all digits, should be 13 digits (Thai ID)
+    if (/^\d+$/.test(formData.idCardOrPassport)) {
+      if (formData.idCardOrPassport.length !== 13) {
+        return "เลขบัตรประชาชนต้องเป็น 13 หลัก";
+      }
+    } else {
+      // Passport should have at least 6 characters
+      if (formData.idCardOrPassport.length < 6) {
+        return "หมายเลข Passport ต้องมีอย่างน้อย 6 ตัวอักษร";
       }
     }
 
@@ -240,12 +308,56 @@ export default function RegisterPage({
     }
 
     try {
+      // อัปโหลดไฟล์เอกสารก่อน (ถ้ามี)
+      setUploadingFiles(true);
+      let houseRegistrationUrl: string | null = null;
+      let transcriptUrl: string | null = null;
+      let photoUrl: string | null = null;
+
+      if (houseRegistrationFile) {
+        houseRegistrationUrl = await uploadFile(houseRegistrationFile);
+        if (!houseRegistrationUrl) {
+          setMessage("เกิดข้อผิดพลาดในการอัปโหลดสำเนาทะเบียนบ้าน");
+          setLoading(false);
+          setUploadingFiles(false);
+          return;
+        }
+      }
+
+      if (transcriptFile) {
+        transcriptUrl = await uploadFile(transcriptFile);
+        if (!transcriptUrl) {
+          setMessage("เกิดข้อผิดพลาดในการอัปโหลดหลักฐานแสดงผลการเรียน");
+          setLoading(false);
+          setUploadingFiles(false);
+          return;
+        }
+      }
+
+      if (photoFile) {
+        photoUrl = await uploadFile(photoFile);
+        if (!photoUrl) {
+          setMessage("เกิดข้อผิดพลาดในการอัปโหลดรูปถ่าย");
+          setLoading(false);
+          setUploadingFiles(false);
+          return;
+        }
+      }
+
+      setUploadingFiles(false);
+
+      // ส่งข้อมูลฟอร์มพร้อม URL ของไฟล์
       const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          houseRegistrationDoc: houseRegistrationUrl,
+          transcriptDoc: transcriptUrl,
+          photoDoc: photoUrl,
+        }),
       });
 
       const data = await response.json();
@@ -260,12 +372,110 @@ export default function RegisterPage({
       setMessage("เกิดข้อผิดพลาดในการเชื่อมต่อ");
     } finally {
       setLoading(false);
+      setUploadingFiles(false);
     }
   };
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+      {/* Fixed notification at top right */}
+      {message && (
+        <div
+          className={`fixed top-4 right-4 max-w-md z-50 p-4 rounded-lg shadow-2xl flex items-start gap-3 animate-in slide-in-from-top-5 ${
+            message.includes("สำเร็จ")
+              ? "bg-green-100 text-green-800 border-2 border-green-300"
+              : "bg-red-100 text-red-800 border-2 border-red-300"
+          }`}
+        >
+          {message.includes("สำเร็จ") ? (
+            <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+          ) : (
+            <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+          )}
+          <div className="flex-1">
+            <p className="font-medium">{message}</p>
+          </div>
+          <button
+            onClick={() => setMessage("")}
+            className="text-gray-500 hover:text-gray-700 ml-2"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       <div className="max-w-5xl mx-auto">
+        {loadingSettings ? (
+          <Card className="shadow-xl border-amber-200 bg-white/95 backdrop-blur">
+            <CardContent className="py-12 text-center">
+              <p className="text-gray-600">กำลังโหลดข้อมูล...</p>
+            </CardContent>
+          </Card>
+        ) : !admissionSettings?.isOpen ? (
+          <Card className="shadow-xl border-red-200 bg-white/95 backdrop-blur">
+            <CardHeader>
+              <div className="mb-4">
+                <Link href="/register" className="text-amber-700 hover:text-amber-900 text-sm font-medium transition-colors inline-flex items-center gap-2">
+                  <ArrowLeft className="w-4 h-4" />
+                  เปลี่ยนระดับชั้น
+                </Link>
+              </div>
+              <CardTitle className="text-3xl text-red-900 flex items-center gap-3">
+                <AlertCircle className="w-8 h-8" />
+                ปิดรับสมัคร {gradeText}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-lg text-red-800">
+                ขณะนี้ยังไม่เปิดรับสมัครหรือปิดรับสมัครแล้ว
+              </p>
+              {admissionSettings?.announcement && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-blue-900 mb-2">ประกาศ:</h3>
+                  <div className="text-sm text-blue-800 whitespace-pre-line">
+                    {admissionSettings.announcement}
+                  </div>
+                </div>
+              )}
+              {(admissionSettings?.startDate || admissionSettings?.endDate) && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-amber-900 mb-2">ช่วงเวลารับสมัคร:</h3>
+                  <p className="text-sm text-amber-800">
+                    {admissionSettings.startDate && `เริ่ม: ${new Date(admissionSettings.startDate).toLocaleString('th-TH')}`}
+                    {admissionSettings.startDate && admissionSettings.endDate && ' - '}
+                    {admissionSettings.endDate && `สิ้นสุด: ${new Date(admissionSettings.endDate).toLocaleString('th-TH')}`}
+                  </p>
+                </div>
+              )}
+              <div className="pt-4">
+                <Link href="/">
+                  <Button variant="outline" className="border-amber-300 text-amber-700">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    กลับหน้าแรก
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {/* แสดงประกาศสำคัญ */}
+            {admissionSettings?.announcement && (
+              <div className="space-y-4 mb-4">
+                <Card className="bg-blue-50 border-blue-200">
+                  <CardHeader>
+                    <CardTitle className="text-lg text-blue-900 flex items-center gap-2">
+                      <Bell className="w-5 h-5" />
+                      ประกาศสำคัญ
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm text-blue-800 whitespace-pre-line">
+                      {admissionSettings.announcement}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
         <Card className="shadow-xl border-amber-200 bg-white/95 backdrop-blur mb-4">
           <CardHeader>
             <div className="mb-4">
@@ -281,28 +491,11 @@ export default function RegisterPage({
               โรงเรียนหนองบัว อำเภอหนองบัว จังหวัดนครสวรรค์
             </CardDescription>
             <CardDescription className="text-base mt-1">
-              กรุณากรอกข้อมูลให้ครบถ้วน ฟิลด์ที่มีเครื่องหมาย * จำเป็นต้องกรอก
+              กรุณากรอกข้อมูลให้ครบถ้วน ช่องที่มีเครื่องหมาย * จำเป็นต้องกรอก
             </CardDescription>
           </CardHeader>
           
           <CardContent>
-            {message && (
-              <div
-                className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
-                  message.includes("สำเร็จ")
-                    ? "bg-green-100 text-green-800 border border-green-200"
-                    : "bg-red-100 text-red-800 border border-red-200"
-                }`}
-              >
-                {message.includes("สำเร็จ") ? (
-                  <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                ) : (
-                  <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                )}
-                <span>{message}</span>
-              </div>
-            )}
-
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* ส่วนที่ 1: ข้อมูลผู้สมัคร */}
               <div className="space-y-6">
@@ -313,7 +506,7 @@ export default function RegisterPage({
 
                 <div className="space-y-2">
                   <Label htmlFor="idCardOrPassport">
-                    เลขบัตรประจำตัวประชาชน / Passport Number (ไม่บังคับ)
+                    เลขบัตรประจำตัวประชาชน / Passport Number *
                     <span className="text-amber-600 text-xs ml-2">(ไม่ต้องใส่เครื่องหมาย -)</span>
                   </Label>
                   <Input
@@ -324,37 +517,55 @@ export default function RegisterPage({
                     onChange={handleChange}
                     placeholder="Ex. 1234567891234"
                     className="border-amber-200"
+                    required
                   />
-                  <p className="text-xs text-gray-500">ข้อมูลนี้ช่วยป้องกันการสมัครซ้ำและรักษาความปลอดภัยในการจัดเก็บข้อมูล หากกรอกกรุณากรอกให้ถูกต้องเหมือนบัตรของตัวนักเรียน</p>
+                  <p className="text-xs text-gray-500">ข้อมูลนี้ช่วยป้องกันการสมัครซ้ำและรักษาความปลอดภัยในการจัดเก็บข้อมูล กรุณากรอกให้ถูกต้องเหมือนบัตรของตัวนักเรียน</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="isSpecialISM">ประเภทห้องเรียน *</Label>
-                  <Select 
-                    value={formData.isSpecialISM ? "true" : "false"} 
-                    onValueChange={(val) => handleSelectChange("isSpecialISM", val === "true")} 
-                    required
-                  >
-                    <SelectTrigger className="border-amber-200">
-                      <SelectValue placeholder="เลือกประเภทห้องเรียน" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-amber-600 text-white text-xs">ISM</Badge>
-                          <span>ห้องเรียนพิเศษ ISM (Intensive Science and Mathematics)</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="false">
-                        <div className="flex items-center gap-2">
-                          <span>ห้องเรียนทั่วไป</span>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-gray-600">
-                    ห้องเรียนพิเศษ ISM เน้นวิทยาศาสตร์และคณิตศาสตร์อย่างเข้มข้น
-                  </p>
+                  {(!admissionSettings?.allowISM && !admissionSettings?.allowRegular) ? (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
+                      ขณะนี้ไม่เปิดรับสมัครทั้งห้อง ISM และห้องทั่วไป
+                    </div>
+                  ) : (
+                    <>
+                      <Select 
+                        value={formData.isSpecialISM ? "true" : "false"} 
+                        onValueChange={(val) => handleSelectChange("isSpecialISM", val === "true")} 
+                        required
+                      >
+                        <SelectTrigger className="border-amber-200">
+                          <SelectValue placeholder="เลือกประเภทห้องเรียน" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {admissionSettings?.allowISM && (
+                            <SelectItem value="true">
+                              <div className="flex items-center gap-2">
+                                <Badge className="bg-amber-600 text-white text-xs">ISM</Badge>
+                                <span>ห้องเรียนพิเศษ ISM (Intensive Science and Mathematics)</span>
+                              </div>
+                            </SelectItem>
+                          )}
+                          {admissionSettings?.allowRegular && (
+                            <SelectItem value="false">
+                              <div className="flex items-center gap-2">
+                                <span>ห้องเรียนทั่วไป</span>
+                              </div>
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-gray-600">
+                        {admissionSettings?.allowISM && admissionSettings?.allowRegular 
+                          ? "ห้องเรียนพิเศษ ISM เน้นวิทยาศาสตร์และคณิตศาสตร์อย่างเข้มข้น"
+                          : admissionSettings?.allowISM 
+                          ? "ขณะนี้เปิดรับสมัครเฉพาะห้อง ISM เท่านั้น"
+                          : "ขณะนี้เปิดรับสมัครเฉพาะห้องทั่วไปเท่านั้น"
+                        }
+                      </p>
+                    </>
+                  )}
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6">
@@ -404,14 +615,19 @@ export default function RegisterPage({
 
                 <div className="space-y-2">
                   <Label htmlFor="birthDate">วันเกิด *</Label>
-                  <Input
-                    type="date"
-                    id="birthDate"
-                    name="birthDate"
-                    required
-                    value={formData.birthDate}
-                    onChange={handleChange}
-                    className="border-amber-200"
+                  <DatePicker
+                    date={formData.birthDate ? new Date(formData.birthDate) : undefined}
+                    setDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        setFormData({...formData, birthDate: `${year}-${month}-${day}`});
+                      } else {
+                        setFormData({...formData, birthDate: ""});
+                      }
+                    }}
+                    placeholder="เลือกวันเกิด"
                   />
                   <p className="text-xs text-gray-500">ระบบจะแปลงเป็น พ.ศ. ให้อัตโนมัติ</p>
                 </div>
@@ -733,7 +949,7 @@ export default function RegisterPage({
                         name="schoolName"
                         value={formData.schoolName}
                         onChange={handleChange}
-                        placeholder="Ex. โรงเรียนหนองบัว"
+                        placeholder="Ex. หนองบัว"
                         className="border-amber-200"
                       />
                     </div>
@@ -782,103 +998,66 @@ export default function RegisterPage({
 
                   {/* ฟิลด์เกรดเฉลี่ย */}
                   <div className="space-y-4 pt-4 border-t border-amber-200">
-                    <Label className="text-base font-medium">เกรดเฉลี่ยรายวิชา *</Label>
+                    <Label className="text-base font-medium">
+                      {isM4 ? "คะแนนเฉลี่ยสะสม (ม.1-3 จำนวน 5 ภาคเรียน) *" : "เกรดเฉลี่ยรายวิชา *"}
+                    </Label>
                     <div className="grid md:grid-cols-2 gap-6">
                       {isM4 ? (
                         <>
                           <div className="space-y-2">
-                            <Label htmlFor="scienceGradeM1">เกรดเฉลี่ยวิทยาศาสตร์ ม.1 *</Label>
+                            <Label htmlFor="scienceCumulativeM1M3">คะแนนเฉลี่ยสะสมกลุ่มสาระวิทยาศาสตร์ *</Label>
                             <Input
                               type="text"
-                              id="scienceGradeM1"
-                              name="scienceGradeM1"
-                              value={formData.scienceGradeM1}
+                              id="scienceCumulativeM1M3"
+                              name="scienceCumulativeM1M3"
+                              value={formData.scienceCumulativeM1M3}
                               onChange={handleChange}
                               placeholder="0.00"
                               className="border-amber-200"
                               pattern="[0-4](\.[0-9]{1,2})?"
                             />
+                            <p className="text-xs text-gray-500">ม.1-3 จำนวน 5 ภาคเรียน</p>
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="scienceGradeM2">เกรดเฉลี่ยวิทยาศาสตร์ ม.2 *</Label>
+                            <Label htmlFor="mathCumulativeM1M3">คะแนนเฉลี่ยสะสมกลุ่มสาระคณิตศาสตร์ *</Label>
                             <Input
                               type="text"
-                              id="scienceGradeM2"
-                              name="scienceGradeM2"
-                              value={formData.scienceGradeM2}
+                              id="mathCumulativeM1M3"
+                              name="mathCumulativeM1M3"
+                              value={formData.mathCumulativeM1M3}
                               onChange={handleChange}
                               placeholder="0.00"
                               className="border-amber-200"
                               pattern="[0-4](\.[0-9]{1,2})?"
                             />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="scienceGradeM3">เกรดเฉลี่ยวิทยาศาสตร์ ม.3 *</Label>
-                            <Input
-                              type="text"
-                              id="scienceGradeM3"
-                              name="scienceGradeM3"
-                              value={formData.scienceGradeM3}
-                              onChange={handleChange}
-                              placeholder="0.00"
-                              className="border-amber-200"
-                              pattern="[0-4](\.[0-9]{1,2})?"
-                            />
+                            <p className="text-xs text-gray-500">ม.1-3 จำนวน 5 ภาคเรียน</p>
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="mathGradeM1">เกรดเฉลี่ยคณิตศาสตร์ ม.1 *</Label>
+                            <Label htmlFor="englishCumulativeM1M3">คะแนนเฉลี่ยสะสมกลุ่มสาระภาษาอังกฤษ *</Label>
                             <Input
                               type="text"
-                              id="mathGradeM1"
-                              name="mathGradeM1"
-                              value={formData.mathGradeM1}
+                              id="englishCumulativeM1M3"
+                              name="englishCumulativeM1M3"
+                              value={formData.englishCumulativeM1M3}
                               onChange={handleChange}
                               placeholder="0.00"
                               className="border-amber-200"
                               pattern="[0-4](\.[0-9]{1,2})?"
                             />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="mathGradeM2">เกรดเฉลี่ยคณิตศาสตร์ ม.2 *</Label>
-                            <Input
-                              type="text"
-                              id="mathGradeM2"
-                              name="mathGradeM2"
-                              value={formData.mathGradeM2}
-                              onChange={handleChange}
-                              placeholder="0.00"
-                              className="border-amber-200"
-                              pattern="[0-4](\.[0-9]{1,2})?"
-                            />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="mathGradeM3">เกรดเฉลี่ยคณิตศาสตร์ ม.3 *</Label>
-                            <Input
-                              type="text"
-                              id="mathGradeM3"
-                              name="mathGradeM3"
-                              value={formData.mathGradeM3}
-                              onChange={handleChange}
-                              placeholder="0.00"
-                              className="border-amber-200"
-                              pattern="[0-4](\.[0-9]{1,2})?"
-                            />
+                            <p className="text-xs text-gray-500">ม.1-3 จำนวน 5 ภาคเรียน</p>
                           </div>
                         </>
                       ) : (
                         <>
                           <div className="space-y-2">
-                            <Label htmlFor="scienceGradeP5">เกรดเฉลี่ยวิทยาศาสตร์ ป.5 *</Label>
+                            <Label htmlFor="gradeP4">เกรดเฉลี่ย ระดับชั้นประถมศึกษาปีที่ 4 *</Label>
                             <Input
                               type="text"
-                              id="scienceGradeP5"
-                              name="scienceGradeP5"
-                              value={formData.scienceGradeP5}
+                              id="gradeP4"
+                              name="gradeP4"
+                              value={formData.gradeP4}
                               onChange={handleChange}
                               placeholder="0.00"
                               className="border-amber-200"
@@ -887,40 +1066,12 @@ export default function RegisterPage({
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="scienceGradeP6">เกรดเฉลี่ยวิทยาศาสตร์ ป.6 *</Label>
+                            <Label htmlFor="gradeP5">เกรดเฉลี่ย ระดับชั้นประถมศึกษาปีที่ 5 *</Label>
                             <Input
                               type="text"
-                              id="scienceGradeP6"
-                              name="scienceGradeP6"
-                              value={formData.scienceGradeP6}
-                              onChange={handleChange}
-                              placeholder="0.00"
-                              className="border-amber-200"
-                              pattern="[0-4](\.[0-9]{1,2})?"
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="mathGradeP5">เกรดเฉลี่ยคณิตศาสตร์ ป.5 *</Label>
-                            <Input
-                              type="text"
-                              id="mathGradeP5"
-                              name="mathGradeP5"
-                              value={formData.mathGradeP5}
-                              onChange={handleChange}
-                              placeholder="0.00"
-                              className="border-amber-200"
-                              pattern="[0-4](\.[0-9]{1,2})?"
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="mathGradeP6">เกรดเฉลี่ยคณิตศาสตร์ ป.6 *</Label>
-                            <Input
-                              type="text"
-                              id="mathGradeP6"
-                              name="mathGradeP6"
-                              value={formData.mathGradeP6}
+                              id="gradeP5"
+                              name="gradeP5"
+                              value={formData.gradeP5}
                               onChange={handleChange}
                               placeholder="0.00"
                               className="border-amber-200"
@@ -934,10 +1085,91 @@ export default function RegisterPage({
                 </div>
               </div>
 
-              {/* ส่วนที่ 4: จำนวนต้องใส่ */}
+              {/* ส่วนที่ 4: เอกสารแนบ */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
                   <Badge className="bg-amber-600 text-white text-base px-3 py-1">4</Badge>
+                  <h3 className="text-xl font-bold text-amber-900">เอกสารแนบ (ไม่บังคับ)</h3>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-blue-800 mb-2">
+                    <strong>เอกสารที่ควรเตรียม:</strong>
+                  </p>
+                  <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                    <li>สำเนาทะเบียนบ้าน</li>
+                    <li>หลักฐานแสดงผลการเรียน (ปพ.1 หรือ ปพ.7)</li>
+                    <li>รูปถ่ายขนาด 1.5 นิ้ว หรือ 2 นิ้ว</li>
+                  </ul>
+                  <p className="text-xs text-blue-600 mt-2">
+                    * ขนาดไฟล์แต่ละไฟล์ไม่เกิน 5MB
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {/* สำเนาทะเบียนบ้าน */}
+                  <div className="space-y-2">
+                    <Label htmlFor="houseRegistration">
+                      สำเนาทะเบียนบ้าน
+                    </Label>
+                    <Input
+                      type="file"
+                      id="houseRegistration"
+                      accept="image/*,application/pdf"
+                      onChange={(e) => handleFileChange(e, 'house')}
+                      className="border-amber-200"
+                    />
+                    {houseRegistrationFile && (
+                      <p className="text-xs text-green-600">
+                        ✓ เลือกไฟล์: {houseRegistrationFile.name}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* หลักฐานแสดงผลการเรียน */}
+                  <div className="space-y-2">
+                    <Label htmlFor="transcript">
+                      หลักฐานแสดงผลการเรียน (ปพ.1 หรือ ปพ.7)
+                    </Label>
+                    <Input
+                      type="file"
+                      id="transcript"
+                      accept="image/*,application/pdf"
+                      onChange={(e) => handleFileChange(e, 'transcript')}
+                      className="border-amber-200"
+                    />
+                    {transcriptFile && (
+                      <p className="text-xs text-green-600">
+                        ✓ เลือกไฟล์: {transcriptFile.name}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* รูปถ่าย */}
+                  <div className="space-y-2">
+                    <Label htmlFor="photo">
+                      รูปถ่าย (ขนาด 1.5 นิ้ว หรือ 2 นิ้ว)
+                    </Label>
+                    <Input
+                      type="file"
+                      id="photo"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(e, 'photo')}
+                      className="border-amber-200"
+                    />
+                    {photoFile && (
+                      <p className="text-xs text-green-600">
+                        ✓ เลือกไฟล์: {photoFile.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* ส่วนที่ 5: จำนวนต้องใส่ */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-3 border-b-2 border-amber-200">
+                  <Badge className="bg-amber-600 text-white text-base px-3 py-1">5</Badge>
                   <h3 className="text-xl font-bold text-amber-900">ยืนยันตัวตน (ป้องกัน Bot)</h3>
                 </div>
 
@@ -984,10 +1216,15 @@ export default function RegisterPage({
 
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploadingFiles}
                 className="w-full bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white shadow-lg hover:shadow-xl transition-all text-lg py-6"
               >
-                {loading ? (
+                {uploadingFiles ? (
+                  <>
+                    <Upload className="w-5 h-5 mr-2 animate-pulse" />
+                    กำลังอัปโหลดเอกสาร...
+                  </>
+                ) : loading ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                     กำลังส่งข้อมูล...
@@ -999,6 +1236,8 @@ export default function RegisterPage({
             </form>
           </CardContent>
         </Card>
+          </>
+        )}
       </div>
     </div>
   );

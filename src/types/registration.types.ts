@@ -34,19 +34,14 @@ export interface Registration {
   subdistrict: string;
   postalCode: string;
   
-  // เกรดสำหรับ ม.1 (ป.5-6)
-  scienceGradeP5?: string;
-  scienceGradeP6?: string;
-  mathGradeP5?: string;
-  mathGradeP6?: string;
+  // เกรดสำหรับ ม.1 (ป.4-5)
+  gradeP4?: string;
+  gradeP5?: string;
   
-  // เกรดสำหรับ ม.4 (ม.1-3)
-  scienceGradeM1?: string;
-  scienceGradeM2?: string;
-  scienceGradeM3?: string;
-  mathGradeM1?: string;
-  mathGradeM2?: string;
-  mathGradeM3?: string;
+  // คะแนนสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)
+  scienceCumulativeM1M3?: string;
+  mathCumulativeM1M3?: string;
+  englishCumulativeM1M3?: string;
   
   documents: string[];
   status: RegistrationStatus;
@@ -86,17 +81,12 @@ export interface RegistrationFormData {
   subdistrict: string;
   postalCode: string;
   // เกรดสำหรับ ม.1
-  scienceGradeP5: string;
-  scienceGradeP6: string;
-  mathGradeP5: string;
-  mathGradeP6: string;
-  // เกรดสำหรับ ม.4
-  scienceGradeM1: string;
-  scienceGradeM2: string;
-  scienceGradeM3: string;
-  mathGradeM1: string;
-  mathGradeM2: string;
-  mathGradeM3: string;
+  gradeP4: string;
+  gradeP5: string;
+  // คะแนนสำหรับ ม.4
+  scienceCumulativeM1M3: string;
+  mathCumulativeM1M3: string;
+  englishCumulativeM1M3: string;
 }
 
 export interface GradeData {

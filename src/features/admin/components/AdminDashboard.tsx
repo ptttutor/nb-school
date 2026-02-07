@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Shield, ArrowLeft, Newspaper, Image, LogOut } from "lucide-react";
+import { Shield, ArrowLeft, Newspaper, Image, LogOut, Settings } from "lucide-react";
 import { RegistrationTable } from "./RegistrationTable";
 import { RegistrationDrawer } from "./RegistrationDrawer";
 import { NewsManagement } from "./NewsManagement";
 import { HeroImageManagement } from "./HeroImageManagement";
+import { AdmissionManagement } from "./AdmissionManagement";
 import type { Registration, News } from "@/types";
 
 interface AdminDashboardProps {
@@ -18,7 +19,7 @@ interface AdminDashboardProps {
 export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [news, setNews] = useState<News[]>([]);
-  const [activeTab, setActiveTab] = useState<'registrations' | 'news' | 'hero'>('registrations');
+  const [activeTab, setActiveTab] = useState<'registrations' | 'news' | 'hero' | 'admission'>('registrations');
   const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -131,6 +132,16 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
             <Image className="w-4 h-4 mr-2" />
             รูป Hero Section
           </Button>
+          <Button
+            variant={activeTab === 'admission' ? 'default' : 'outline'}
+            className={activeTab === 'admission' 
+              ? 'bg-gradient-to-r from-amber-500 to-yellow-600' 
+              : 'border-amber-300 text-amber-700 hover:bg-amber-50'}
+            onClick={() => setActiveTab('admission')}
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            การจัดการรับสมัคร
+          </Button>
         </div>
 
         {/* Registrations Tab */}
@@ -154,6 +165,11 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
         {/* Hero Images Tab */}
         {activeTab === 'hero' && (
           <HeroImageManagement />
+        )}
+
+        {/* Admission Management Tab */}
+        {activeTab === 'admission' && (
+          <AdmissionManagement />
         )}
       </div>
 
