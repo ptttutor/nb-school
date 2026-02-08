@@ -507,57 +507,106 @@ function M1GradesSection({
   editedData: Partial<Registration>;
   handleChange: (field: string, value: any) => void;
 }) {
-  if (!isEditing && !registration.gradeP4 && !registration.gradeP5) {
+  if (!isEditing && !registration.cumulativeGPAP4P5 && !registration.scienceCumulativeP4P5 && !registration.mathCumulativeP4P5 && !registration.englishCumulativeP4P5 && !registration.gradeP4 && !registration.gradeP5) {
     return null;
   }
 
   return (
     <div className="mt-4 pt-4 border-t">
-      <h4 className="font-semibold mb-3 text-green-700">เกรดเฉลี่ย</h4>
+      <h4 className="font-semibold mb-3 text-green-700">เกรดเฉลี่ย (GPA ป.4-5 จำนวน 5 ภาคเรียน)</h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {(isEditing || registration.gradeP4) && (
-          <div className="space-y-2">
-            <Label className="text-gray-600">ประถมศึกษาปีที่ 4</Label>
+        {/* Overall GPA - Full Width */}
+        {(isEditing || registration.cumulativeGPAP4P5) && (
+          <div className="space-y-2 md:col-span-2">
+            <Label className="text-gray-600">GPA รวม ป.4-5</Label>
             {isEditing ? (
               <Input
-                type="number"
-                step="0.01"
-                value={editedData.gradeP4 ?? ""}
-                onChange={(e) => handleChange("gradeP4", e.target.value)}
+                type="text"
+                value={editedData.cumulativeGPAP4P5 ?? ""}
+                onChange={(e) => handleChange("cumulativeGPAP4P5", e.target.value)}
                 onInput={(e) => {
                   const value = e.currentTarget.value;
-                  const parts = value.split('.');
-                  if (parts[1] && parts[1].length > 2) {
-                    e.currentTarget.value = parseFloat(value).toFixed(2);
+                  if (!/^[0-4]?(\.[0-9]{0,2})?$/.test(value)) {
+                    e.currentTarget.value = value.slice(0, -1);
                   }
                 }}
-                className="border-amber-200"
+                placeholder="0.00-4.00"
+                className="border-purple-200"
               />
             ) : (
-              <p className="font-medium text-green-600">{registration.gradeP4 || '-'}</p>
+              <p className="font-medium text-purple-600">{registration.cumulativeGPAP4P5 || '-'}</p>
             )}
           </div>
         )}
-        {(isEditing || registration.gradeP5) && (
+
+        {/* Science GPA */}
+        {(isEditing || registration.scienceCumulativeP4P5) && (
           <div className="space-y-2">
-            <Label className="text-gray-600">ประถมศึกษาปีที่ 5</Label>
+            <Label className="text-gray-600">วิทยาศาสตร์</Label>
             {isEditing ? (
               <Input
-                type="number"
-                step="0.01"
-                value={editedData.gradeP5 ?? ""}
-                onChange={(e) => handleChange("gradeP5", e.target.value)}
+                type="text"
+                value={editedData.scienceCumulativeP4P5 ?? ""}
+                onChange={(e) => handleChange("scienceCumulativeP4P5", e.target.value)}
                 onInput={(e) => {
                   const value = e.currentTarget.value;
-                  const parts = value.split('.');
-                  if (parts[1] && parts[1].length > 2) {
-                    e.currentTarget.value = parseFloat(value).toFixed(2);
+                  if (!/^[0-4]?(\.[0-9]{0,2})?$/.test(value)) {
+                    e.currentTarget.value = value.slice(0, -1);
                   }
                 }}
-                className="border-amber-200"
+                placeholder="0.00-4.00"
+                className="border-green-200"
               />
             ) : (
-              <p className="font-medium text-green-600">{registration.gradeP5 || '-'}</p>
+              <p className="font-medium text-green-600">{registration.scienceCumulativeP4P5 || '-'}</p>
+            )}
+          </div>
+        )}
+
+        {/* Math GPA */}
+        {(isEditing || registration.mathCumulativeP4P5) && (
+          <div className="space-y-2">
+            <Label className="text-gray-600">คณิตศาสตร์</Label>
+            {isEditing ? (
+              <Input
+                type="text"
+                value={editedData.mathCumulativeP4P5 ?? ""}
+                onChange={(e) => handleChange("mathCumulativeP4P5", e.target.value)}
+                onInput={(e) => {
+                  const value = e.currentTarget.value;
+                  if (!/^[0-4]?(\.[0-9]{0,2})?$/.test(value)) {
+                    e.currentTarget.value = value.slice(0, -1);
+                  }
+                }}
+                placeholder="0.00-4.00"
+                className="border-blue-200"
+              />
+            ) : (
+              <p className="font-medium text-blue-600">{registration.mathCumulativeP4P5 || '-'}</p>
+            )}
+          </div>
+        )}
+
+        {/* English GPA */}
+        {(isEditing || registration.englishCumulativeP4P5) && (
+          <div className="space-y-2">
+            <Label className="text-gray-600">ภาษาอังกฤษ</Label>
+            {isEditing ? (
+              <Input
+                type="text"
+                value={editedData.englishCumulativeP4P5 ?? ""}
+                onChange={(e) => handleChange("englishCumulativeP4P5", e.target.value)}
+                onInput={(e) => {
+                  const value = e.currentTarget.value;
+                  if (!/^[0-4]?(\.[0-9]{0,2})?$/.test(value)) {
+                    e.currentTarget.value = value.slice(0, -1);
+                  }
+                }}
+                placeholder="0.00-4.00"
+                className="border-orange-200"
+              />
+            ) : (
+              <p className="font-medium text-orange-600">{registration.englishCumulativeP4P5 || '-'}</p>
             )}
           </div>
         )}
@@ -566,7 +615,7 @@ function M1GradesSection({
   );
 }
 
-function AddressSection({ 
+function AddressSection({
   registration,
   isEditing,
   editedData,

@@ -200,16 +200,20 @@ export function RegistrationTable({
         // Add grade-specific fields based on what's present in the data
         if (isMixed) {
           // If mixed, include all columns but fill based on grade level
-          baseData['ผลการเรียน ป.4'] = reg.gradeLevel === 'm1' ? (reg.gradeP4 || '-') : '-';
-          baseData['ผลการเรียน ป.5'] = reg.gradeLevel === 'm1' ? (reg.gradeP5 || '-') : '-';
+          baseData['GPA รวม ป.4-5'] = reg.gradeLevel === 'm1' ? (reg.cumulativeGPAP4P5 || '-') : '-';
+          baseData['GPA วิทยาศาสตร์ ป.4-5'] = reg.gradeLevel === 'm1' ? (reg.scienceCumulativeP4P5 || '-') : '-';
+          baseData['GPA คณิตศาสตร์ ป.4-5'] = reg.gradeLevel === 'm1' ? (reg.mathCumulativeP4P5 || '-') : '-';
+          baseData['GPA ภาษาอังกฤษ ป.4-5'] = reg.gradeLevel === 'm1' ? (reg.englishCumulativeP4P5 || '-') : '-';
           baseData['GPA รวม ม.1-3'] = reg.gradeLevel === 'm4' ? (reg.cumulativeGPAM1M3 || '-') : '-';
           baseData['GPA วิทยาศาสตร์ ม.1-3'] = reg.gradeLevel === 'm4' ? (reg.scienceCumulativeM1M3 || '-') : '-';
           baseData['GPA คณิตศาสตร์ ม.1-3'] = reg.gradeLevel === 'm4' ? (reg.mathCumulativeM1M3 || '-') : '-';
           baseData['GPA ภาษาอังกฤษ ม.1-3'] = reg.gradeLevel === 'm4' ? (reg.englishCumulativeM1M3 || '-') : '-';
         } else if (hasM1) {
           // Only M1 students - only include M1 grade columns
-          baseData['ผลการเรียน ป.4'] = reg.gradeP4 || '-';
-          baseData['ผลการเรียน ป.5'] = reg.gradeP5 || '-';
+          baseData['GPA รวม ป.4-5'] = reg.cumulativeGPAP4P5 || '-';
+          baseData['GPA วิทยาศาสตร์ ป.4-5'] = reg.scienceCumulativeP4P5 || '-';
+          baseData['GPA คณิตศาสตร์ ป.4-5'] = reg.mathCumulativeP4P5 || '-';
+          baseData['GPA ภาษาอังกฤษ ป.4-5'] = reg.englishCumulativeP4P5 || '-';
         } else if (hasM4) {
           // Only M4 students - only include M4 grade columns
           baseData['GPA รวม ม.1-3'] = reg.cumulativeGPAM1M3 || '-';

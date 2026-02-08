@@ -35,6 +35,11 @@ export async function POST(request: NextRequest) {
       // เกรดสำหรับ ม.1 (ระดับชั้นประถมศึกษาปีที่ 4-5)
       gradeP4,
       gradeP5,
+      // GPA สำหรับ ม.1 (ป.4-5 จำนวน 5 ภาคเรียน)
+      cumulativeGPAP4P5,
+      scienceCumulativeP4P5,
+      mathCumulativeP4P5,
+      englishCumulativeP4P5,
       // คะแนนสำหรับ ม.4 (ม.1-3)
       cumulativeGPAM1M3,
       scienceCumulativeM1M3,
@@ -105,9 +110,14 @@ export async function POST(request: NextRequest) {
         district,
         subdistrict,
         postalCode,
-        // เกรดสำหรับ ม.1
+        // เกรดสำหรับ ม.1 (legacy)
         gradeP4,
         gradeP5,
+        // GPA สำหรับ ม.1 (ป.4-5 จำนวน 5 ภาคเรียน)
+        cumulativeGPAP4P5,
+        scienceCumulativeP4P5,
+        mathCumulativeP4P5,
+        englishCumulativeP4P5,
         // คะแนนสำหรับ ม.4
         cumulativeGPAM1M3,
         scienceCumulativeM1M3,

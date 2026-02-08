@@ -113,13 +113,13 @@ export function GradeStep({
               </>
             ) : (
               <>
-                <div className="space-y-4">
-                  <Label htmlFor="gradeP4">เกรดเฉลี่ย ระดับชั้นประถมศึกษาปีที่ 4</Label>
+                <div className="space-y-4 md:col-span-2">
+                  <Label htmlFor="cumulativeGPAP4P5">ระดับคะแนนเฉลี่ยสะสม ระดับชั้นประถมศึกษาปีที่ 4-5 จำนวน 5 ภาคเรียน (GPA รวมทุกวิชา)</Label>
                   <Input
                     type="text"
-                    id="gradeP4"
-                    name="gradeP4"
-                    value={formData.gradeP4}
+                    id="cumulativeGPAP4P5"
+                    name="cumulativeGPAP4P5"
+                    value={formData.cumulativeGPAP4P5}
                     onChange={handleChange}
                     onInput={(e) => {
                       const value = e.currentTarget.value;
@@ -131,16 +131,16 @@ export function GradeStep({
                     className="border-amber-200"
                     pattern="[0-4](\.[0-9]{1,2})?"
                   />
-                  <p className="text-xs text-gray-500">ระบุเกรดเฉลี่ย 0.00 - 4.00</p>
+                  <p className="text-xs text-gray-500">ระบุคะแนนเฉลี่ย 0.00 - 4.00</p>
                 </div>
 
                 <div className="space-y-4">
-                  <Label htmlFor="gradeP5">เกรดเฉลี่ย ระดับชั้นประถมศึกษาปีที่ 5</Label>
+                  <Label htmlFor="scienceCumulativeP4P5">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาวิทยาศาสตร์ ระดับชั้นประถมศึกษาปีที่ 4-5 จำนวน 5 ภาคเรียน</Label>
                   <Input
                     type="text"
-                    id="gradeP5"
-                    name="gradeP5"
-                    value={formData.gradeP5}
+                    id="scienceCumulativeP4P5"
+                    name="scienceCumulativeP4P5"
+                    value={formData.scienceCumulativeP4P5}
                     onChange={handleChange}
                     onInput={(e) => {
                       const value = e.currentTarget.value;
@@ -152,7 +152,49 @@ export function GradeStep({
                     className="border-amber-200"
                     pattern="[0-4](\.[0-9]{1,2})?"
                   />
-                  <p className="text-xs text-gray-500">ระบุเกรดเฉลี่ย 0.00 - 4.00</p>
+                  <p className="text-xs text-gray-500">ระบุคะแนนเฉลี่ย 0.00 - 4.00</p>
+                </div>
+
+                <div className="space-y-4">
+                  <Label htmlFor="mathCumulativeP4P5">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาคณิตศาสตร์ ระดับชั้นประถมศึกษาปีที่ 4-5 จำนวน 5 ภาคเรียน</Label>
+                  <Input
+                    type="text"
+                    id="mathCumulativeP4P5"
+                    name="mathCumulativeP4P5"
+                    value={formData.mathCumulativeP4P5}
+                    onChange={handleChange}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                        e.currentTarget.value = value.slice(0, -1);
+                      }
+                    }}
+                    placeholder="0.00"
+                    className="border-amber-200"
+                    pattern="[0-4](\.[0-9]{1,2})?"
+                  />
+                  <p className="text-xs text-gray-500">ระบุคะแนนเฉลี่ย 0.00 - 4.00</p>
+                </div>
+
+                <div className="space-y-4">
+                  <Label htmlFor="englishCumulativeP4P5">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาภาษาอังกฤษ ระดับชั้นประถมศึกษาปีที่ 4-5 จำนวน 5 ภาคเรียน</Label>
+                  <Input
+                    type="text"
+                    id="englishCumulativeP4P5"
+                    name="englishCumulativeP4P5"
+                    value={formData.englishCumulativeP4P5}
+                    onChange={handleChange}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      if (!/^\d*\.?\d{0,2}$/.test(value)) {
+                        e.currentTarget.value = value.slice(0, -1);
+                      }
+                    }}
+                    placeholder="0.00"
+                    className="border-amber-200"
+                    pattern="[0-4](\.[0-9]{1,2})?"
+                  />
+                  <p className="text-xs text-gray-500">ระบุคะแนนเฉลี่ย 0.00 - 4.00</p>
                 </div>
               </>
             )}

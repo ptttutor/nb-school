@@ -34,9 +34,13 @@ export interface Registration {
   subdistrict: string;
   postalCode: string;
   
-  // เกรดสำหรับ ม.1 (ระดับชั้นประถมศึกษาปีที่ 4-5)
-  gradeP4?: string;
-  gradeP5?: string;
+  // เกรดสำหรับ ม.1 (ระดับชั้นประถมศึกษาปีที่ 4-5 จำนวน 5 ภาคเรียน)
+  gradeP4?: string; // legacy
+  gradeP5?: string; // legacy
+  cumulativeGPAP4P5?: string;
+  scienceCumulativeP4P5?: string;
+  mathCumulativeP4P5?: string;
+  englishCumulativeP4P5?: string;
   
   // คะแนนสำหรับ ม.4 (ม.1-3 จำนวน 5 ภาคเรียน)
   cumulativeGPAM1M3?: string;
@@ -86,9 +90,13 @@ export interface RegistrationFormData {
   district: string;
   subdistrict: string;
   postalCode: string;
-  // เกรดสำหรับ ม.1
-  gradeP4: string;
-  gradeP5: string;
+  // เกรดสำหรับ ม.1 (จำนวน 5 ภาคเรียน)
+  gradeP4: string; // legacy
+  gradeP5: string; // legacy
+  cumulativeGPAP4P5: string;
+  scienceCumulativeP4P5: string;
+  mathCumulativeP4P5: string;
+  englishCumulativeP4P5: string;
   // คะแนนสำหรับ ม.4
   cumulativeGPAM1M3: string;
   scienceCumulativeM1M3: string;

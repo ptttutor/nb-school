@@ -125,9 +125,15 @@ export async function PATCH(request: NextRequest) {
       'district',
       'subdistrict',
       'postalCode',
-      // เกรด
+      // เกรด M1 (legacy)
       'gradeP4',
       'gradeP5',
+      // GPA M1 (ป.4-5)
+      'cumulativeGPAP4P5',
+      'scienceCumulativeP4P5',
+      'mathCumulativeP4P5',
+      'englishCumulativeP4P5',
+      // GPA M4 (ม.1-3)
       'cumulativeGPAM1M3',
       'scienceCumulativeM1M3',
       'mathCumulativeM1M3',
