@@ -13,7 +13,7 @@ import { AdmissionManagement } from "./AdmissionManagement";
 import type { Registration, News } from "@/types";
 
 interface AdminDashboardProps {
-  adminId: number;
+  adminId: string;
   onLogout: () => void;
 }
 

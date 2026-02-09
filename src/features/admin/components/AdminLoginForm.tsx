@@ -10,7 +10,7 @@ import { Shield, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface AdminLoginFormProps {
-  onLoginSuccess: (adminId: number) => void;
+  onLoginSuccess: (adminId: string) => void;
 }
 
 export function AdminLoginForm({ onLoginSuccess }: AdminLoginFormProps) {

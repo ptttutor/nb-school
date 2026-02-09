@@ -33,7 +33,7 @@ interface NewsFormData {
 }
 
 interface NewsManagementProps {
-  adminId: number | null;
+  adminId: string;
 }
 
 export function NewsManagement({ adminId }: NewsManagementProps) {
@@ -180,7 +180,18 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
   };
 
   const createNews = async () => {
-    if (!adminId || !newsForm.title.trim() || !newsForm.content.trim()) {
+    console.log('createNews - adminId:', adminId, 'type:', typeof adminId);
+    console.log('createNews - newsForm:', newsForm);
+    console.log('createNews - title trimmed:', newsForm.title.trim());
+    console.log('createNews - content trimmed:', newsForm.content.trim());
+    
+    if (!adminId || adminId.trim() === '' || !newsForm.title.trim() || !newsForm.content.trim()) {
+      console.log('Validation failed:', {
+        hasAdminId: !!adminId,
+        adminIdTrimmed: adminId?.trim(),
+        hasTitle: !!newsForm.title.trim(),
+        hasContent: !!newsForm.content.trim()
+      });
       toast({
         variant: "destructive",
         title: "ข้อมูลไม่ครบถ้วน",
@@ -188,6 +199,8 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
       });
       return;
     }
+    
+    console.log('Validation passed, creating news...');
 
     setSaving(true);
     try {
