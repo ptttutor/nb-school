@@ -180,11 +180,11 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
   };
 
   const createNews = async () => {
-    if (!adminId || !newsForm.title.trim() || !newsForm.content.trim() || !newsForm.imageUrl.trim()) {
+    if (!adminId || !newsForm.title.trim() || !newsForm.content.trim()) {
       toast({
         variant: "destructive",
         title: "ข้อมูลไม่ครบถ้วน",
-        description: "กรุณากรอกข้อมูลให้ครบถ้วนและอัพโหลดรูปภาพ",
+        description: "กรุณากรอกหัวข้อและเนื้อหาให้ครบถ้วน",
       });
       return;
     }
@@ -197,7 +197,7 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
         body: JSON.stringify({
           title: newsForm.title,
           content: newsForm.content,
-          imageUrl: newsForm.imageUrl,
+          imageUrl: newsForm.imageUrl || null,
           fileUrl: newsForm.fileUrl || null,
           published: false,
           adminId,
@@ -402,7 +402,7 @@ export function NewsManagement({ adminId }: NewsManagementProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="news-image">รูปภาพข่าว *</Label>
+              <Label htmlFor="news-image">รูปภาพข่าว (ไม่บังคับ)</Label>
               <div className="space-y-2">
                 <Input
                   type="file"
