@@ -16,12 +16,19 @@ export default function ApplicantsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [gradeLevelFilter, setGradeLevelFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [stats, setStats] = useState<{
+    total: number;
+    withAllDocuments: number;
+    withIncompleteDocuments: number;
+  } | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     // Debounce search
     const timeoutId = setTimeout(() => {
       setCurrentPage(1); // Reset to first page when searching
       fetchRegistrations();
+      fetchStats();
     }, 500);
 
     return () => clearTimeout(timeoutId);
@@ -53,6 +60,27 @@ export default function ApplicantsPage() {
       setRegistrations([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    try {
+      const params = new URLSearchParams({
+        gradeLevel: gradeLevelFilter,
+        search: searchQuery,
+      });
+
+      const res = await fetch(`/api/applicants/stats?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch stats:", err);
+      setStats(null);
+    } finally {
+      setStatsLoading(false);
     }
   };
 
@@ -89,6 +117,8 @@ export default function ApplicantsPage() {
             onGradeLevelFilterChange={setGradeLevelFilter}
             searchQuery={searchQuery}
             onSearchQueryChange={setSearchQuery}
+            stats={stats}
+            statsLoading={statsLoading}
           />
         </Card>
       </div>

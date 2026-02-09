@@ -135,7 +135,7 @@ export function GradeStep({
                 </div>
 
                 <div className="space-y-4">
-                  <Label htmlFor="scienceCumulativeP4P5">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาวิทยาศาสตร์ ระดับชั้นประถมศึกษาปีที่ 4-5 จำนวน 5 ภาคเรียน</Label>
+                  <Label htmlFor="scienceCumulativeP4P5">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาวิทยาศาสตร์ ระดับชั้นประถมศึกษาปีที่ 4-5</Label>
                   <Input
                     type="text"
                     id="scienceCumulativeP4P5"
@@ -156,7 +156,7 @@ export function GradeStep({
                 </div>
 
                 <div className="space-y-4">
-                  <Label htmlFor="mathCumulativeP4P5">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาคณิตศาสตร์ ระดับชั้นประถมศึกษาปีที่ 4-5 จำนวน 5 ภาคเรียน</Label>
+                  <Label htmlFor="mathCumulativeP4P5">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาคณิตศาสตร์ ระดับชั้นประถมศึกษาปีที่ 4-5</Label>
                   <Input
                     type="text"
                     id="mathCumulativeP4P5"
@@ -177,7 +177,7 @@ export function GradeStep({
                 </div>
 
                 <div className="space-y-4">
-                  <Label htmlFor="englishCumulativeP4P5">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาภาษาอังกฤษ ระดับชั้นประถมศึกษาปีที่ 4-5 จำนวน 5 ภาคเรียน</Label>
+                  <Label htmlFor="englishCumulativeP4P5">ระดับคะแนนเฉลี่ยสะสมกลุ่มสาระการเรียนรู้วิชาภาษาอังกฤษ ระดับชั้นประถมศึกษาปีที่</Label>
                   <Input
                     type="text"
                     id="englishCumulativeP4P5"

@@ -21,6 +21,12 @@ import {
 import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, FileCheck, Search } from "lucide-react";
 import type { Registration } from "@/types";
 
+interface ApplicantsStats {
+  total: number;
+  withAllDocuments: number;
+  withIncompleteDocuments: number;
+}
+
 interface ApplicantsListProps {
   registrations: Registration[];
   loading: boolean;
@@ -32,6 +38,8 @@ interface ApplicantsListProps {
   onGradeLevelFilterChange: (gradeLevel: string) => void;
   searchQuery: string;
   onSearchQueryChange: (search: string) => void;
+  stats: ApplicantsStats | null;
+  statsLoading: boolean;
 }
 
 export function ApplicantsList({
@@ -45,6 +53,8 @@ export function ApplicantsList({
   onGradeLevelFilterChange,
   searchQuery,
   onSearchQueryChange,
+  stats,
+  statsLoading,
 }: ApplicantsListProps) {
   const hasAllDocuments = (reg: Registration) => {
     return reg.photoDoc && reg.houseRegistrationDoc && reg.transcriptDoc;
@@ -219,18 +229,20 @@ export function ApplicantsList({
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-amber-900">{totalCount}</div>
+              <div className="text-2xl font-bold text-amber-900">
+                {statsLoading ? '-' : (stats?.total ?? 0)}
+              </div>
               <div className="text-sm text-gray-600">ผู้สมัครทั้งหมด</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
-                {loading ? '-' : registrations.filter(hasAllDocuments).length}
+                {statsLoading ? '-' : (stats?.withAllDocuments ?? 0)}
               </div>
               <div className="text-sm text-gray-600">เอกสารครบถ้วน</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-red-600">
-                {loading ? '-' : registrations.filter((r) => !hasAllDocuments(r)).length}
+                {statsLoading ? '-' : (stats?.withIncompleteDocuments ?? 0)}
               </div>
               <div className="text-sm text-gray-600">เอกสารไม่ครบ</div>
             </div>

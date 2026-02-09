@@ -48,7 +48,7 @@ export function GradeSelection() {
                 <span>เน้นวิทยาศาสตร์และคณิตศาสตร์</span>
               </li>
             </ul>
-            <Link href="/register/grade7" className="block">
+            <Link href="/register/m1" className="block">
               <Button className="w-full" size="lg">
                 <GraduationCap className="mr-2 h-4 w-4 md:h-5 md:w-5" />
                 สมัครเรียน ม.1
@@ -83,7 +83,7 @@ export function GradeSelection() {
                 <span>เตรียมความพร้อมสู่มหาวิทยาลัย</span>
               </li>
             </ul>
-            <Link href="/register/grade10" className="block">
+            <Link href="/register/m4" className="block">
               <Button className="w-full" size="lg">
                 <GraduationCap className="mr-2 h-4 w-4 md:h-5 md:w-5" />
                 สมัครเรียน ม.4

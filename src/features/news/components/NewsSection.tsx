@@ -1,28 +1,37 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Download } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
 interface News {
-  id: number;
+  id: string;
   title: string;
   content: string;
-  imageUrl?: string;
-  fileUrl?: string;
-  createdAt: string;
+  imageUrl?: string | null;
+  fileUrl?: string | null;
+  createdAt: Date;
 }
 
 async function getNews(): Promise<News[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/news`, { 
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
+    const news = await prisma.news.findMany({
+      where: {
+        published: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        imageUrl: true,
+        fileUrl: true,
+        createdAt: true,
+      },
+      take: 3,
     });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.slice(0, 3);
+    return news;
   } catch (error) {
     console.error('Failed to fetch news:', error);
     return [];
@@ -32,10 +41,6 @@ async function getNews(): Promise<News[]> {
 export async function NewsSection() {
   const news = await getNews();
 
-  if (news.length === 0) {
-    return null;
-  }
-
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 mb-32">
       <div className="max-w-7xl mx-auto">
@@ -44,8 +49,16 @@ export async function NewsSection() {
             ข่าวสารและประกาศ
           </h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {news.map((item) => (
+        
+        {news.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-amber-200">
+            <Calendar className="w-16 h-16 mx-auto mb-4 text-amber-300" />
+            <p className="text-amber-600 text-lg font-medium mb-2">ยังไม่มีข่าวสารและประกาศ</p>
+            <p className="text-amber-500 text-sm">กรุณาติดตามข่าวสารและประกาศอื่นๆ ในภายหลัง</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-8">
+            {news.map((item) => (
             <Card key={item.id} className="border-amber-200 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
               <div className="aspect-video bg-gradient-to-br from-amber-100 to-yellow-100 flex items-center justify-center overflow-hidden rounded-t-lg">
                 {item.imageUrl ? (
@@ -90,7 +103,8 @@ export async function NewsSection() {
               </CardHeader>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );
