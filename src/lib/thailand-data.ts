@@ -187,7 +187,7 @@ export const SUBDISTRICTS: Record<string, string[]> = {
 export const NONGBUA_SCHOOLS = [
   { name: "หนองบัว", subdistrict: "หนองบัว" },
   { name: "วังบ่อวิทยา", subdistrict: "วังบ่อ" },
-  { name: "อนุบาลหนองบัว (เทพวิทยาคม)", subdistrict: "หนองกลับ" },
+  { name: "อนุบาลหนองบัว (เทพวิทยาคม)", subdistrict: "หนองกลับ" }, { name: "ภูมิบดินทร์ศึกษา", subdistrict: "หนองกลับ" },
   { name: "บ้านท่าเรือ", subdistrict: "หนองกลับ" },
   { name: "วัดวังแรต", subdistrict: "หนองกลับ" },
   { name: "บ้านเขามะเกลือ", subdistrict: "หนองกลับ" },
@@ -231,5 +231,5 @@ export const NONGBUA_SCHOOLS = [
   { name: "เกาะแก้วสามัคคี", subdistrict: "ห้วยร่วม" },
   { name: "สระงาม", subdistrict: "ห้วยใหญ่" },
   { name: "บ้านวังโพรง", subdistrict: "ห้วยใหญ่" },
-  { name: "ภูมิบดินทร์ศึกษา", subdistrict: "" },
+
 ];
