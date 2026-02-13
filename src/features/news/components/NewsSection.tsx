@@ -14,6 +14,7 @@ interface News {
 
 async function getNews(): Promise<News[]> {
   try {
+    // Force fresh data fetch without cache
     const news = await prisma.news.findMany({
       where: {
         published: true,

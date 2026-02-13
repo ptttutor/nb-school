@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 // GET - ดึงข่าวทั้งหมด (เฉพาะที่ publish แล้วสำหรับ public)
 export async function GET(request: NextRequest) {
@@ -114,6 +115,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Revalidate home page to show new news
+    revalidatePath('/');
+
     return NextResponse.json(
       {
         message: "สร้างข่าวสำเร็จ",
@@ -161,6 +165,9 @@ export async function PUT(request: NextRequest) {
 
     console.log('PUT /api/news - Updated news:', news);
 
+    // Revalidate home page to show updated news (especially when published status changes)
+    revalidatePath('/');
+
     return NextResponse.json(
       {
         message: "อัพเดทข่าวสำเร็จ",
@@ -193,6 +200,9 @@ export async function DELETE(request: NextRequest) {
     await prisma.news.delete({
       where: { id },
     });
+
+    // Revalidate home page after deleting news
+    revalidatePath('/');
 
     return NextResponse.json(
       { message: "ลบข่าวสำเร็จ" },

@@ -3,6 +3,9 @@ import { HeroSection, WelcomeSection, LocationSection } from "@/components/home"
 import { NewsSection } from "@/features/news/components";
 import { prisma } from "@/lib/prisma";
 
+// Revalidate every 60 seconds to show fresh news
+export const revalidate = 60;
+
 export default async function Home() {
   // Fetch active hero images
   const heroImages = await prisma.heroImage.findMany({
