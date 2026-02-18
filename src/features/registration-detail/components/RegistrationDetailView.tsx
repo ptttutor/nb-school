@@ -107,21 +107,21 @@ export function RegistrationDetailView({ id }: RegistrationDetailViewProps) {
 
           {/* Action Buttons */}
           <div className="mb-6">
-            <Button disabled className="w-full">
+            <Button onClick={handlePrint} className="w-full">
               <Download className="mr-2 h-4 w-4" />
-              ดาวน์โหลดใบสมัคร
+              ดาวน์โหลดใบสมัคร PDF
             </Button>
           </div>
 
           {/* คำแนะนำการดาวน์โหลดใบสมัคร */}
-          <Card className="mb-6 bg-amber-50 border-amber-200">
+          <Card className="mb-6 bg-blue-50 border-blue-200">
             <CardContent className="pt-6">
               <div className="flex items-start gap-3">
-                <FileText className="h-5 w-5 text-amber-600 mt-0.5" />
-                <div className="text-sm text-amber-800">
-                  <p className="font-semibold mb-1">ประกาศ: การดาวน์โหลดใบสมัคร</p>
-                  <p>ระบบจะเปิดให้ดาวน์โหลดใบสมัครอย่างเป็นทางการหลังจากเจ้าหน้าที่ตรวจสอบข้อมูลเรียบร้อยแล้ว</p>
-                  <p className="mt-1">กรุณาตรวจสอบสถานะการสมัครของท่านเป็นระยะ โดยใช้รหัสอ้างอิงที่ได้รับ</p>
+                <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-semibold mb-1">การดาวน์โหลดใบสมัคร</p>
+                  <p>คลิกปุ่มด้านบนเพื่อเปิดหน้าต่างใหม่สำหรับดาวน์โหลดใบสมัครเป็น PDF</p>
+                  <p className="mt-1">ท่านสามารถพิมพ์หรือบันทึกเป็นไฟล์ PDF เพื่อนำมายื่นที่โรงเรียนได้</p>
                 </div>
               </div>
             </CardContent>

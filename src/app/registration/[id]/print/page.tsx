@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, use, useRef } from "react";
 import { useRouter } from "next/navigation";
 import jsPDF from "jspdf";
@@ -44,6 +43,24 @@ interface Registration {
   createdAt: string;
 }
 
+// Dotted underline field component
+function F({ value, w = "80px" }: { value?: string | null; w?: string }) {
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        borderBottom: "1px dotted #555",
+        minWidth: w,
+        paddingLeft: "2px",
+        paddingRight: "2px",
+        verticalAlign: "bottom",
+      }}
+    >
+      {value ?? ""}
+    </span>
+  );
+}
+
 export default function PrintPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -71,45 +88,26 @@ export default function PrintPage({ params }: { params: Promise<{ id: string }> 
 
   const handleDownloadPDF = async () => {
     if (!contentRef.current || !registration) return;
-    
     setGenerating(true);
     try {
       const canvas = await html2canvas(contentRef.current, {
         scale: 3,
         useCORS: true,
         logging: false,
-        backgroundColor: '#ffffff',
+        backgroundColor: "#ffffff",
         width: contentRef.current.scrollWidth,
-        height: contentRef.current.scrollHeight
+        height: contentRef.current.scrollHeight,
       });
-
       const imgWidth = 210;
       const pageHeight = 297;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
       
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true
-      });
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      // Add single page only
+      pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
       
-      let heightLeft = imgHeight;
-      let position = 0;
-      
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-      
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-      
-      const fileName = `ใบสมัคร_${registration.firstNameTH}_${registration.lastNameTH}.pdf`;
+      const fileName = `ใบสมัคร_ISM_${registration.firstNameTH}_${registration.lastNameTH}.pdf`;
       pdf.save(fileName);
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -119,367 +117,211 @@ export default function PrintPage({ params }: { params: Promise<{ id: string }> 
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>กำลังโหลดข้อมูล...</p>
-      </div>
-    );
-  }
+  if (loading)
+    return <div className="flex justify-center items-center h-screen text-lg">กำลังโหลดข้อมูล...</div>;
+  if (!registration)
+    return <div className="flex justify-center items-center h-screen text-lg">ไม่พบข้อมูลการสมัคร</div>;
 
-  if (!registration) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>ไม่พบข้อมูลการสมัคร</p>
-      </div>
-    );
-  }
+  const gradeTH = registration.gradeLevel === "m4" ? "มัธยมศึกษาปีที่ ๔" : "มัธยมศึกษาปีที่ ๑";
 
-  const grade = registration.gradeLevel === "m4" ? "4" : "1";
-  const gradeTH = registration.gradeLevel === "m4"
-    ? "มัธยมศึกษาปีที่ 4"
-    : "มัธยมศึกษาปีที่ 1";
-  const roomType = registration.isSpecialISM ? "ห้องเรียนพิเศษ ISM" : "ห้องเรียนปกติ";
+  const createdDate = new Date(registration.createdAt);
+  const thDay = createdDate.getDate();
+  const thMonth = createdDate.toLocaleDateString("th-TH", { month: "long" });
+  const thYear = createdDate.getFullYear() + 543;
+
+  const birthDateObj = new Date(registration.birthDate);
+  const birthDay = birthDateObj.getDate();
+  const birthMonth = birthDateObj.toLocaleDateString("th-TH", { month: "long" });
+  const birthYear = birthDateObj.getFullYear() + 543;
+
+  // Calculate age
+  const ageYears = createdDate.getFullYear() - birthDateObj.getFullYear();
+
+  const fullName = `${registration.title}${registration.firstNameTH} ${registration.lastNameTH}`;
+
+  const baseStyle: React.CSSProperties = {
+    fontFamily: "'TH Sarabun New', 'Sarabun', 'Angsana New', serif",
+    fontSize: "14.5pt",
+    color: "#000",
+    lineHeight: "1.75",
+  };
 
   return (
     <>
-      <style jsx global>{`
-        @media print {
-          @page {
-            size: A4;
-            margin: 0;
-          }
-          body {
-            margin: 0;
-            padding: 0;
-          }
-          .no-print {
-            display: none !important;
-          }
-          .print-container {
-            width: 210mm;
-            height: 297mm;
-            max-height: 297mm;
-            padding: 10mm !important;
-            page-break-after: avoid;
-            overflow: hidden;
-          }
-        }
-        
-        .print-container {
-          font-family: 'Sarabun', 'TH SarabunPSK', sans-serif;
-          width: 210mm;
-          max-width: 210mm;
-          min-height: 297mm;
-          background: white;
-          margin: 0 auto;
-          padding: 20mm;
-          box-sizing: border-box;
-        }
-        
-        .form-field {
-          border-bottom: 1px dotted #333;
-          display: inline-block;
-          padding: 0 4px 2px;
-          min-width: 40px;
-          line-height: 1.4;
-        }
-        
-        .section-spacing {
-          margin-bottom: 10px;
-        }
-        
-        .subsection-spacing {
-          margin-bottom: 6px;
-        }
-        
-        .line-spacing {
-          margin-bottom: 5px;
-          line-height: 1.5;
-        }
-        
-        @media print {
-          .section-spacing {
-            margin-bottom: 8px;
-          }
-          .subsection-spacing {
-            margin-bottom: 5px;
-          }
-          .line-spacing {
-            margin-bottom: 4px;
-            line-height: 1.4;
-          }
-        }
-      `}</style>
+      {/* Toolbar — hidden on print */}
+      <div className="flex justify-center gap-4 p-4 bg-gray-100 print:hidden">
+        <button
+          onClick={handleDownloadPDF}
+          disabled={generating}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium shadow transition-all disabled:opacity-50"
+        >
+          {generating ? "กำลังสร้าง PDF..." : "ดาวน์โหลด PDF"}
+        </button>
+        <button
+          onClick={() => router.back()}
+          className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium shadow transition-all"
+        >
+          ← กลับ
+        </button>
+      </div>
 
-      <div className="bg-gray-100 min-h-screen py-8">
-        {/* Print Button */}
-        <div className="no-print mb-6 text-center">
-          <button
-            onClick={handleDownloadPDF}
-            disabled={generating}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 font-medium shadow-lg transition-all"
-          >
-            {generating ? 'กำลังสร้าง PDF...' : '📥 ดาวน์โหลด PDF'}
-          </button>
-          <button
-            onClick={() => router.back()}
-            className="ml-4 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium shadow-lg transition-all"
-          >
-            ← กลับ
-          </button>
-        </div>
+      {/* A4 canvas */}
+      <div className="flex justify-center bg-gray-200 min-h-screen py-8 print:py-0 print:bg-white">
+        <div
+          ref={contentRef}
+          style={{
+            ...baseStyle,
+            width: "210mm",
+            minHeight: "297mm",
+            backgroundColor: "#fff",
+            padding: "14mm 22mm 14mm 22mm",
+            boxSizing: "border-box",
+          }}
+        >
 
-        <div className="print-container bg-white shadow-2xl">
-          
-          {/* Border Container */}
-          <div ref={contentRef} className="border-2 border-black" style={{fontSize: '12px', padding: '12px'}}>
-            
-            {/* Header */}
-            <div className="border-2 border-black text-center" style={{padding: '8px', marginBottom: '12px'}}>
-              <h1 className="text-sm font-bold" style={{marginBottom: '4px'}}>
-                ใบสมัครเข้าศึกษาต่อระดับชั้น{gradeTH}
-              </h1>
-              <h2 className="text-xs font-bold" style={{marginBottom: '2px'}}>
-                ประเภท {roomType}
-              </h2>
-              <p className="text-xs" style={{margin: 0}}>
-                โรงเรียนหนองบัว อำเภอหนองบัว จังหวัดนครสวรรค์
-              </p>
+          {/* ─────────────────────────────────────────
+              SECTION 1 — Main Application Form
+          ───────────────────────────────────────── */}
+
+          {/* Title */}
+          <div style={{ textAlign: "center", marginBottom: "2px" }}>
+            <div style={{ fontWeight: "bold", fontSize: "17pt" }}>
+              ใบสมัครเข้าศึกษาต่อระดับชั้น{gradeTH}
             </div>
-
-            {/* Date Section */}
-            <div className="section-spacing">
-              <div className="line-spacing">
-                <span>วันที่ </span>
-                <span className="form-field" style={{minWidth: '60px', textAlign: 'center'}}>
-                  {new Date(registration.createdAt).getDate()}
-                </span>
-                <span> เดือน </span>
-                <span className="form-field" style={{minWidth: '120px', textAlign: 'center'}}>
-                  {new Date(registration.createdAt).toLocaleDateString("th-TH", { month: "long" })}
-                </span>
-                <span> พ.ศ. </span>
-                <span className="form-field" style={{minWidth: '80px', textAlign: 'center'}}>
-                  {new Date(registration.createdAt).getFullYear() + 543}
-                </span>
-              </div>
+            <div style={{ fontWeight: "bold", fontSize: "15pt" }}>
+              โรงเรียนหนองบัว อำเภอหนองบัว จังหวัดนครสวรรค์
             </div>
-
-            {/* Personal Info Section */}
-            <div className="section-spacing">
-              <div className="line-spacing">
-                <span>ข้าพเจ้า </span>
-                <span className="form-field" style={{minWidth: '80px'}}>
-                  {registration.title}
-                </span>
-                <span> ชื่อ </span>
-                <span className="form-field" style={{minWidth: '150px'}}>
-                  {registration.firstNameTH}
-                </span>
-                <span> สกุล </span>
-                <span className="form-field" style={{minWidth: '150px'}}>
-                  {registration.lastNameTH}
-                </span>
-              </div>
-
-              <div className="line-spacing">
-                <span>เลขประจำตัวประชาชน </span>
-                <span className="form-field" style={{minWidth: '180px'}}>
-                  {registration.idCardOrPassport || "-"}
-                </span>
-                <span> เกิดวันที่ </span>
-                <span className="form-field" style={{minWidth: '150px'}}>
-                  {new Date(registration.birthDate).toLocaleDateString("th-TH")}
-                </span>
-              </div>
-
-              <div className="line-spacing">
-                <span>สัญชาติ </span>
-                <span className="form-field" style={{minWidth: '100px'}}>
-                  {registration.nationality}
-                </span>
-                <span> เชื้อชาติ </span>
-                <span className="form-field" style={{minWidth: '100px'}}>
-                  {registration.ethnicity}
-                </span>
-                <span> ศาสนา </span>
-                <span className="form-field" style={{minWidth: '100px'}}>
-                  {registration.religion}
-                </span>
-              </div>
-
-              <div className="line-spacing">
-                <span>โทรศัพท์ </span>
-                <span className="form-field" style={{minWidth: '150px'}}>
-                  {registration.phone}
-                </span>
-              </div>
+            <div style={{ fontWeight: "bold", fontSize: "15pt" }}>
+              ประเภท {registration.isSpecialISM ? "ห้องเรียนพิเศษ ISM" : "ห้องเรียนปกติ"}
             </div>
-
-            {/* Address Section */}
-            <div className="section-spacing">
-              <div className="font-bold text-sm border-b-2 border-gray-400 pb-2 mb-3">
-                ที่อยู่ตามทะเบียนบ้าน
-              </div>
-              
-              <div className="subsection-spacing">
-                <div className="line-spacing">
-                  <span>บ้านเลขที่ </span>
-                  <span className="form-field" style={{minWidth: '100px'}}>
-                    {registration.houseNumber}
-                  </span>
-                  {registration.villageName && (
-                    <>
-                      <span> หมู่บ้าน </span>
-                      <span className="form-field" style={{minWidth: '150px'}}>
-                        {registration.villageName}
-                      </span>
-                    </>
-                  )}
-                  {registration.moo && (
-                    <>
-                      <span> หมู่ที่ </span>
-                      <span className="form-field" style={{minWidth: '60px'}}>
-                        {registration.moo}
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                {(registration.soi || registration.road) && (
-                  <div className="line-spacing">
-                    {registration.soi && (
-                      <>
-                        <span>ซอย </span>
-                        <span className="form-field" style={{minWidth: '150px'}}>
-                          {registration.soi}
-                        </span>
-                      </>
-                    )}
-                    {registration.road && (
-                      <>
-                        <span> ถนน </span>
-                        <span className="form-field" style={{minWidth: '150px'}}>
-                          {registration.road}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                <div className="line-spacing">
-                  <span>ตำบล/แขวง </span>
-                  <span className="form-field" style={{minWidth: '130px'}}>
-                    {registration.subdistrict}
-                  </span>
-                  <span> อำเภอ/เขต </span>
-                  <span className="form-field" style={{minWidth: '130px'}}>
-                    {registration.district}
-                  </span>
-                </div>
-
-                <div className="line-spacing">
-                  <span>จังหวัด </span>
-                  <span className="form-field" style={{minWidth: '150px'}}>
-                    {registration.province}
-                  </span>
-                  <span> รหัสไปรษณีย์ </span>
-                  <span className="form-field" style={{minWidth: '80px'}}>
-                    {registration.postalCode}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Additional Info Section */}
-            <div className="border-t-2 border-gray-400 section-spacing" style={{paddingTop: '10px'}}>
-              <div className="font-bold text-sm" style={{marginBottom: '8px'}}>
-                นักเรียนต้องกรอกข้อมูลด้านล่างด้วย
-              </div>
-              
-              <div className="subsection-spacing">
-                <div className="line-spacing">
-                  <span>ลำดับที่ </span>
-                  <span className="form-field" style={{minWidth: '80px'}}></span>
-                  <span> / </span>
-                  <span className="form-field" style={{minWidth: '80px'}}></span>
-                </div>
-
-                <div className="line-spacing">
-                  <span>ข้าพเจ้า {registration.title} {registration.firstNameTH} {registration.lastNameTH}</span>
-                </div>
-
-                <div className="line-spacing">
-                  <span>นักเรียนชั้น{registration.gradeLevel === "m1" ? "ประถมศึกษาปีที่ ๖" : "มัธยมศึกษาปีที่ ๓"}</span>
-                </div>
-
-                <div className="line-spacing">
-                  <span>โรงเรียน </span>
-                  <span className="form-field" style={{minWidth: '400px'}}></span>
-                </div>
-
-                <div className="line-spacing">
-                  <span>ปัจจุบันอยู่บ้านเลขที่ </span>
-                  <span className="form-field" style={{minWidth: '60px'}}></span>
-                  <span> หมู่ที่ </span>
-                  <span className="form-field" style={{minWidth: '50px'}}></span>
-                  <span> ตำบล </span>
-                  <span className="form-field" style={{minWidth: '120px'}}></span>
-                </div>
-
-                <div className="line-spacing">
-                  <span>อำเภอ </span>
-                  <span className="form-field" style={{minWidth: '120px'}}></span>
-                  <span> จังหวัด </span>
-                  <span className="form-field" style={{minWidth: '120px'}}></span>
-                </div>
-
-                <div className="line-spacing">
-                  <span>มีความประสงค์สมัครเรียน ม. </span>
-                  <span className="form-field" style={{minWidth: '50px'}}></span>
-                  <span> ห้อง {roomType}</span>
-                </div>
-              </div>
-
-              {/* Exam Subjects Box */}
-              <div className="border-2 border-black" style={{padding: '8px', margin: '12px 0'}}>
-                <div className="font-bold text-sm" style={{marginBottom: '6px'}}>วิชาที่สอบ</div>
-                <div className="text-sm" style={{lineHeight: '1.6'}}>
-                  <div>1. วิทยาศาสตร์</div>
-                  <div>๒. คณิตศาสตร์</div>
-                  <div>๓. ภาษาอังกฤษ</div>
-                </div>
-              </div>
-
-              {/* Signature Section */}
-              <div className="text-right mt-8">
-                <div className="line-spacing">
-                  <span>ลงชื่อ </span>
-                  <span className="form-field" style={{minWidth: '200px'}}></span>
-                  <span> ผู้รับสมัคร</span>
-                </div>
-                <div className="line-spacing">
-                  <span>(นางสาวธิดารัตน์ ขอดจันทึก)</span>
-                </div>
-                <div className="line-spacing">
-                  <span className="form-field" style={{minWidth: '50px'}}></span>
-                  <span> / </span>
-                  <span className="form-field" style={{minWidth: '50px'}}></span>
-                  <span> / </span>
-                  <span className="form-field" style={{minWidth: '70px'}}></span>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="text-center border-t border-gray-300 mt-8 pt-3 text-xs text-gray-600">
-              <p className="mb-0">
-                โรงเรียน 1 อำเภอ 1 โรงเรียนคุณภาพ
-              </p>
-            </div>
-
           </div>
+
+          {/* ลำดับที่ */}
+          <div style={{ textAlign: "right", fontSize: "13pt", marginBottom: "1px" }}>
+            ลำดับที่<F w="55px" />/<F w="35px" />
+          </div>
+
+          {/* วันที่ */}
+          <div style={{ marginBottom: "5px", fontSize: "13.5pt" }}>
+            วันที่<F w="28px" />เดือน<F w="90px" />พ.ศ.<F w="50px" />
+          </div>
+
+          {/* ชื่อ + ชั้น */}
+          <div style={{ marginBottom: "3px" }}>
+            ข้าพเจ้า<F value={fullName} w="195px" />นักเรียนชั้น{registration.gradeLevel === "m1" ? "ประถมศึกษาปีที่ ๖" : "มัธยมศึกษาปีที่ ๓"}
+          </div>
+
+          {/* โรงเรียน + ตำบล + อำเภอ */}
+          <div style={{ marginBottom: "3px" }}>
+            โรงเรียน<F value={registration.schoolName} w="160px" />ตำบล<F value={registration.schoolSubdistrict} w="90px" />อำเภอ<F value={registration.schoolDistrict} w="90px" />
+          </div>
+
+          {/* รหัสประจำตัว + วันเกิด + อายุ */}
+          <div style={{ marginBottom: "3px" }}>
+            รหัสประจำตัว<F value={registration.idCardOrPassport} w="130px" />เกิดวันที่<F value={String(birthDay)} w="24px" />เดือน<F value={birthMonth} w="85px" />พ.ศ.<F value={String(birthYear)} w="48px" />อายุ<F value={String(ageYears)} w="28px" />ปี
+          </div>
+
+          {/* ที่อยู่ */}
+          <div style={{ marginBottom: "3px" }}>
+            อยู่บ้านเลขที่<F value={registration.houseNumber} w="48px" />หมู่ที่<F value={registration.moo} w="28px" />ตำบล<F value={registration.subdistrict} w="90px" />อำเภอ<F value={registration.district} w="90px" />จังหวัด<F value={registration.province} w="80px" />
+          </div>
+
+          {/* โทรศัพท์ + เลขประชาชน */}
+          <div style={{ marginBottom: "8px" }}>
+            โทรศัพท์<F value={registration.phone} w="120px" />เลขประจำตัวประชาชน<F value={registration.idCardOrPassport} w="145px" />
+          </div>
+
+          {/* หลักฐานการสมัคร */}
+          <div style={{ fontWeight: "bold", marginBottom: "3px" }}>หลักฐานการสมัคร</div>
+          <div style={{ marginLeft: "20px", marginBottom: "18px" }}>
+            <span style={{ fontSize: "16pt", verticalAlign: "middle", marginRight: "6px" }}>○</span>
+            หลักฐานใบแสดงผลการเรียน (ปพ.๑) ระดับชั้น{registration.gradeLevel === "m1" ? "ประถมศึกษา" : "มัธยมศึกษาตอนต้น"}
+          </div>
+
+          {/* ลายเซ็นผู้สมัคร */}
+          <div style={{ textAlign: "center", marginTop: "10px" }}>
+            ลงชื่อ<F w="190px" />ผู้สมัคร
+          </div>
+          <div style={{ textAlign: "center", marginTop: "2px" }}>
+            (<F w="190px" />)
+          </div>
+
+          {/* ════ Dashed separator with label ════ */}
+          <div style={{ position: "relative", margin: "22px 0 14px 0" }}>
+            <div style={{ borderTop: "1px dashed #444", width: "100%" }} />
+            <span
+              style={{
+                position: "absolute",
+                top: "-10px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                background: "#fff",
+                padding: "0 12px",
+                fontSize: "12pt",
+                whiteSpace: "nowrap",
+              }}
+            >
+              นักเรียนต้องกรอกข้อมูลด้านล่างด้วย
+            </span>
+          </div>
+
+          {/* ─────────────────────────────────────────
+              SECTION 2 — Tear-off Acceptance Slip
+          ───────────────────────────────────────── */}
+
+          {/* ลำดับที่ */}
+          <div style={{ textAlign: "right", fontSize: "13pt", marginBottom: "1px" }}>
+            ลำดับที่<F w="55px" />/<F w="35px" />
+          </div>
+
+          {/* ชื่อ + ชั้น */}
+          <div style={{ marginBottom: "3px" }}>
+            ข้าพเจ้า<F w="195px" />นักเรียนชั้น{registration.gradeLevel === "m1" ? "ประถมศึกษาปีที่ ๖" : "มัธยมศึกษาปีที่ ๓"}
+          </div>
+
+          {/* โรงเรียน */}
+          <div style={{ marginBottom: "3px" }}>
+            โรงเรียน<F w="240px" />
+          </div>
+
+          {/* ที่อยู่ปัจจุบัน */}
+          <div style={{ marginBottom: "3px" }}>
+            ปัจจุบันอยู่บ้านเลขที่<F w="48px" />หมู่ที่<F w="28px" />ตำบล<F w="90px" />อำเภอ<F w="90px" />
+          </div>
+
+          {/* จังหวัด + ความประสงค์ */}
+          <div style={{ marginBottom: "14px" }}>
+            จังหวัด<F w="110px" />มีความประสงค์สมัครเรียนระดับชั้น{gradeTH} ห้อง ISM
+          </div>
+
+          {/* วิชาที่สอบ box — right aligned */}
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "14px" }}>
+            <div
+              style={{
+                border: "1px solid #333",
+                padding: "6px 16px 8px 16px",
+                fontSize: "13.5pt",
+                lineHeight: "1.9",
+              }}
+            >
+              <div style={{ fontWeight: "bold" }}>วิชาที่สอบ</div>
+              <div>ก. วิทยาศาสตร์</div>
+              <div>ข. คณิตศาสตร์</div>
+              <div>ค. ภาษาอังกฤษ</div>
+            </div>
+          </div>
+
+          {/* ลายเซ็นผู้รับสมัคร */}
+          <div style={{ textAlign: "center" }}>
+            ลงชื่อ<F w="190px" />ผู้รับสมัคร
+          </div>
+          <div style={{ textAlign: "center", marginTop: "2px" }}>
+            (นางสาวธิดารัตน์ ขอดจันทึก)
+          </div>
+          <div style={{ textAlign: "center", marginTop: "2px" }}>
+            <F w="38px" />/<F w="38px" />/<F w="38px" />
+          </div>
+
         </div>
       </div>
     </>
