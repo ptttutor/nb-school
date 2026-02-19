@@ -159,78 +159,15 @@ export function RegistrationTable({
                            `${exportOptions.dateFrom} ถึง ${exportOptions.dateTo || 'วันนี้'}`;
 
       // Prepare data for Excel
-      // Determine which grade levels are present
-      const hasM1 = allRegistrations.some((r: Registration) => r.gradeLevel === 'm1');
-      const hasM4 = allRegistrations.some((r: Registration) => r.gradeLevel === 'm4');
-      const isMixed = hasM1 && hasM4;
-
       const excelData = allRegistrations.map((reg: Registration, index: number) => {
-        const baseData: any = {
+        return {
           'ลำดับ': index + 1,
-          'รหัสผู้สมัคร': reg.id,
-          'เลขบัตรประชาชน/Passport': reg.idCardOrPassport || '-',
-          'ISM': reg.isSpecialISM ? 'ใช่' : 'ไม่ใช่',
-          'ระดับชั้น': reg.gradeLevel === 'm4' ? 'ม.4' : 'ม.1',
           'คำนำหน้า': reg.title,
           'ชื่อ': reg.firstNameTH,
           'นามสกุล': reg.lastNameTH,
-          'วันเกิด': reg.birthDate ? new Date(reg.birthDate).toLocaleDateString('th-TH') : '-',
-          'เชื้อชาติ': reg.ethnicity,
-          'สัญชาติ': reg.nationality,
-          'ศาสนา': reg.religion,
+          'เลขบัตรประชาชน': reg.idCardOrPassport || '-',
           'เบอร์โทร': reg.phone,
-          'จำนวนพี่น้อง': reg.siblings || '-',
-          'พี่น้องในโรงเรียน': reg.siblingsInSchool || '-',
-          'สถานะการศึกษา': reg.educationStatus || '-',
-          'โรงเรียน': reg.schoolName || '-',
-          'จังหวัดโรงเรียน': reg.schoolProvince || '-',
-          'อำเภอโรงเรียน': reg.schoolDistrict || '-',
-          'ตำบลโรงเรียน': reg.schoolSubdistrict || '-',
-          'ชื่อหมู่บ้าน': reg.villageName || '-',
-          'บ้านเลขที่': reg.houseNumber,
-          'หมู่ที่': reg.moo || '-',
-          'ถนน': reg.road || '-',
-          'ซอย': reg.soi || '-',
-          'จังหวัด': reg.province,
-          'อำเภอ': reg.district,
-          'ตำบล': reg.subdistrict,
-          'รหัสไปรษณีย์': reg.postalCode,
         };
-
-        // Add grade-specific fields based on what's present in the data
-        if (isMixed) {
-          // If mixed, include all columns but fill based on grade level
-          baseData['GPA รวม ป.4-5'] = reg.gradeLevel === 'm1' ? (reg.cumulativeGPAP4P5 || '-') : '-';
-          baseData['GPA วิทยาศาสตร์ ป.4-5'] = reg.gradeLevel === 'm1' ? (reg.scienceCumulativeP4P5 || '-') : '-';
-          baseData['GPA คณิตศาสตร์ ป.4-5'] = reg.gradeLevel === 'm1' ? (reg.mathCumulativeP4P5 || '-') : '-';
-          baseData['GPA ภาษาอังกฤษ ป.4-5'] = reg.gradeLevel === 'm1' ? (reg.englishCumulativeP4P5 || '-') : '-';
-          baseData['GPA รวม ม.1-3'] = reg.gradeLevel === 'm4' ? (reg.cumulativeGPAM1M3 || '-') : '-';
-          baseData['GPA วิทยาศาสตร์ ม.1-3'] = reg.gradeLevel === 'm4' ? (reg.scienceCumulativeM1M3 || '-') : '-';
-          baseData['GPA คณิตศาสตร์ ม.1-3'] = reg.gradeLevel === 'm4' ? (reg.mathCumulativeM1M3 || '-') : '-';
-          baseData['GPA ภาษาอังกฤษ ม.1-3'] = reg.gradeLevel === 'm4' ? (reg.englishCumulativeM1M3 || '-') : '-';
-        } else if (hasM1) {
-          // Only M1 students - only include M1 grade columns
-          baseData['GPA รวม ป.4-5'] = reg.cumulativeGPAP4P5 || '-';
-          baseData['GPA วิทยาศาสตร์ ป.4-5'] = reg.scienceCumulativeP4P5 || '-';
-          baseData['GPA คณิตศาสตร์ ป.4-5'] = reg.mathCumulativeP4P5 || '-';
-          baseData['GPA ภาษาอังกฤษ ป.4-5'] = reg.englishCumulativeP4P5 || '-';
-        } else if (hasM4) {
-          // Only M4 students - only include M4 grade columns
-          baseData['GPA รวม ม.1-3'] = reg.cumulativeGPAM1M3 || '-';
-          baseData['GPA วิทยาศาสตร์ ม.1-3'] = reg.scienceCumulativeM1M3 || '-';
-          baseData['GPA คณิตศาสตร์ ม.1-3'] = reg.mathCumulativeM1M3 || '-';
-          baseData['GPA ภาษาอังกฤษ ม.1-3'] = reg.englishCumulativeM1M3 || '-';
-        }
-
-        // Add document and status fields
-        baseData['เอกสารทะเบียนบ้าน'] = reg.houseRegistrationDoc || '-';
-        baseData['เอกสารผลการเรียน'] = reg.transcriptDoc || '-';
-        baseData['เอกสารรูปถ่าย'] = reg.photoDoc || '-';
-        baseData['สถานะ'] = reg.status === 'approved' ? 'อนุมัติ' : reg.status === 'rejected' ? 'ปฏิเสธ' : 'รอดำเนินการ';
-        baseData['วันที่สมัคร'] = new Date(reg.createdAt).toLocaleString('th-TH');
-        baseData['วันที่อัพเดท'] = new Date(reg.updatedAt).toLocaleString('th-TH');
-
-        return baseData;
       });
 
       // Create header information
@@ -257,82 +194,20 @@ export function RegistrationTable({
         skipHeader: false 
       });
       
-      // Set column widths based on actual columns
-      const baseColWidths = [
+      // Set column widths for 6 columns only
+      const colWidths = [
         { wch: 8 },  // ลำดับ
-        { wch: 25 }, // รหัส
-        { wch: 18 }, // บัตร
-        { wch: 8 },  // ISM
-        { wch: 12 }, // ระดับชั้น
-        { wch: 10 }, // คำนำหน้า
-        { wch: 15 }, // ชื่อ
-        { wch: 15 }, // นามสกุล
-        { wch: 15 }, // วันเกิด
-        { wch: 12 }, // เชื้อชาติ
-        { wch: 12 }, // สัญชาติ
-        { wch: 12 }, // ศาสนา
-        { wch: 12 }, // เบอร์
-        { wch: 10 }, // พี่น้อง
-        { wch: 15 }, // พี่น้องในโรงเรียน
-        { wch: 15 }, // สถานะการศึกษา
-        { wch: 30 }, // โรงเรียน
-        { wch: 15 }, // จังหวัดโรงเรียน
-        { wch: 15 }, // อำเภอโรงเรียน
-        { wch: 15 }, // ตำบลโรงเรียน
-        { wch: 15 }, // ชื่อหมู่บ้าน
-        { wch: 12 }, // บ้านเลขที่
-        { wch: 8 },  // หมู่
-        { wch: 15 }, // ถนน
-        { wch: 15 }, // ซอย
-        { wch: 15 }, // จังหวัด
-        { wch: 15 }, // อำเภอ
-        { wch: 15 }, // ตำบล
-        { wch: 12 }, // รหัสไปรษณีย์
+        { wch: 12 }, // คำนำหน้า
+        { wch: 20 }, // ชื่อ
+        { wch: 20 }, // นามสกุล
+        { wch: 20 }, // เลขบัตรประชาชน
+        { wch: 15 }, // เบอร์โทร
       ];
-
-      // Use the same hasM1/hasM4 determined earlier
-      let gradeColWidths: any[] = [];
-      if (hasM1 && !hasM4) {
-        // Only M1 students
-        gradeColWidths = [
-          { wch: 15 }, // ผลการเรียน ป.4
-          { wch: 15 }, // ผลการเรียน ป.5
-        ];
-      } else if (hasM4 && !hasM1) {
-        // Only M4 students
-        gradeColWidths = [
-          { wch: 15 }, // GPA รวม ม.1-3
-          { wch: 20 }, // GPA วิทยาศาสตร์ ม.1-3
-          { wch: 20 }, // GPA คณิตศาสตร์ ม.1-3
-          { wch: 20 }, // GPA ภาษาอังกฤษ ม.1-3
-        ];
-      } else if (hasM1 && hasM4) {
-        // Mixed - include both
-        gradeColWidths = [
-          { wch: 15 }, // ผลการเรียน ป.4
-          { wch: 15 }, // ผลการเรียน ป.5
-          { wch: 15 }, // GPA รวม ม.1-3
-          { wch: 20 }, // GPA วิทยาศาสตร์ ม.1-3
-          { wch: 20 }, // GPA คณิตศาสตร์ ม.1-3
-          { wch: 20 }, // GPA ภาษาอังกฤษ ม.1-3
-        ];
-      }
-
-      const documentColWidths = [
-        { wch: 50 }, // เอกสารทะเบียนบ้าน
-        { wch: 50 }, // เอกสารผลการเรียน
-        { wch: 50 }, // เอกสารรูปถ่าย
-        { wch: 15 }, // สถานะ
-        { wch: 20 }, // วันที่สมัคร
-        { wch: 20 }, // วันที่อัพเดท
-      ];
-
-      const colWidths = [...baseColWidths, ...gradeColWidths, ...documentColWidths];
       worksheet['!cols'] = colWidths;
       
-      // Merge cells for title
+      // Merge cells for title (6 columns: A to F)
       if (!worksheet['!merges']) worksheet['!merges'] = [];
-      worksheet['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }); // Merge title row
+      worksheet['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }); // Merge title row
 
       // Add to workbook
       XLSX.utils.book_append_sheet(workbook, worksheet, 'รายการสมัคร');
