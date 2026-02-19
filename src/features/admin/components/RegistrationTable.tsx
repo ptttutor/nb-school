@@ -172,7 +172,7 @@ export function RegistrationTable({
 
       // Create header information
       const headerInfo = [
-        ['รายงานการสมัครเรียน โรงเรียนนวมินทราชูทิศ บดินทรเดชา'],
+        ['รายงานการสมัครเรียน โรงเรียนหนองบัว'],
         [''],
         ['วันที่ Export:', exportDate],
         ['ระดับชั้นที่กรอง:', gradeLevelText],
