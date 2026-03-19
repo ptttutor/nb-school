@@ -38,6 +38,8 @@ interface ApplicantsListProps {
   onGradeLevelFilterChange: (gradeLevel: string) => void;
   ismFilter: string;
   onIsmFilterChange: (ism: string) => void;
+  docFilter: string;
+  onDocFilterChange: (doc: string) => void;
   searchQuery: string;
   onSearchQueryChange: (search: string) => void;
   stats: ApplicantsStats | null;
@@ -55,6 +57,8 @@ export function ApplicantsList({
   onGradeLevelFilterChange,
   ismFilter,
   onIsmFilterChange,
+  docFilter,
+  onDocFilterChange,
   searchQuery,
   onSearchQueryChange,
   stats,
@@ -112,6 +116,19 @@ export function ApplicantsList({
               <SelectItem value="all">ทุกประเภท</SelectItem>
               <SelectItem value="ism">ห้องเรียนพิเศษ ISM</SelectItem>
               <SelectItem value="regular">ห้องเรียนทั่วไป (รอบปกติ)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-600 whitespace-nowrap">เอกสาร:</span>
+          <Select value={docFilter} onValueChange={onDocFilterChange} disabled={loading}>
+            <SelectTrigger className="w-[160px] border-amber-200">
+              <SelectValue placeholder="ทุกสถานะ" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">ทุกสถานะ</SelectItem>
+              <SelectItem value="complete">เอกสารครบถ้วน</SelectItem>
+              <SelectItem value="incomplete">เอกสารไม่ครบ</SelectItem>
             </SelectContent>
           </Select>
         </div>

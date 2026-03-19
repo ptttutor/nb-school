@@ -30,12 +30,13 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
   const [totalPages, setTotalPages] = useState(0);
   const [statusFilter, setStatusFilter] = useState("all");
   const [gradeLevelFilter, setGradeLevelFilter] = useState("all");
+  const [ismFilter, setIsmFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchRegistrations();
     fetchAllRegistrations();
-  }, [currentPage, statusFilter, gradeLevelFilter, searchQuery]);
+  }, [currentPage, statusFilter, gradeLevelFilter, ismFilter, searchQuery]);
 
   const fetchRegistrations = async () => {
     try {
@@ -44,6 +45,7 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
         limit: "10",
         status: statusFilter,
         gradeLevel: gradeLevelFilter,
+        ismFilter: ismFilter,
         search: searchQuery,
       });
 
@@ -208,22 +210,63 @@ export function AdminDashboard({ adminId, onLogout }: AdminDashboardProps) {
 
         {/* Registrations Tab */}
         {activeTab === 'registrations' && (
-          <RegistrationTable
-            registrations={registrations}
-            onViewDetails={handleViewDetails}
-            onStatusChange={updateStatus}
-            onDelete={deleteRegistration}
-            totalCount={totalCount}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
-            gradeLevelFilter={gradeLevelFilter}
-            onGradeLevelFilterChange={setGradeLevelFilter}
-            searchQuery={searchQuery}
-            onSearchQueryChange={setSearchQuery}
-          />
+          <>
+            {/* Overview stat cards */}
+            {allRegistrations.length > 0 && (() => {
+              const all = allRegistrations;
+              const pending = all.filter(r => r.status === 'pending').length;
+              const approved = all.filter(r => r.status === 'approved').length;
+              const rejected = all.filter(r => r.status === 'rejected').length;
+              const ism = all.filter(r => r.isSpecialISM).length;
+              const regular = all.filter(r => !r.isSpecialISM).length;
+              return (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-blue-700">{all.length}</div>
+                    <div className="text-xs text-gray-600 mt-1">ทั้งหมด</div>
+                  </div>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-yellow-700">{pending}</div>
+                    <div className="text-xs text-gray-600 mt-1">รอดำเนินการ</div>
+                  </div>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-green-700">{approved}</div>
+                    <div className="text-xs text-gray-600 mt-1">อนุมัติ</div>
+                  </div>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-red-700">{rejected}</div>
+                    <div className="text-xs text-gray-600 mt-1">ปฏิเสธ</div>
+                  </div>
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-purple-700">{ism}</div>
+                    <div className="text-xs text-gray-600 mt-1">ห้องพิเศษ ISM</div>
+                  </div>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-gray-700">{regular}</div>
+                    <div className="text-xs text-gray-600 mt-1">รอบปกติ</div>
+                  </div>
+                </div>
+              );
+            })()}
+            <RegistrationTable
+              registrations={registrations}
+              onViewDetails={handleViewDetails}
+              onStatusChange={updateStatus}
+              onDelete={deleteRegistration}
+              totalCount={totalCount}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              gradeLevelFilter={gradeLevelFilter}
+              onGradeLevelFilterChange={setGradeLevelFilter}
+              ismFilter={ismFilter}
+              onIsmFilterChange={setIsmFilter}
+              searchQuery={searchQuery}
+              onSearchQueryChange={setSearchQuery}
+            />
+          </>
         )}
 
         {/* Stats Tab */}

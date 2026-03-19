@@ -8,27 +8,46 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const gradeLevel = searchParams.get("gradeLevel") || "all";
     const ismFilter = searchParams.get("ismFilter") || "all";
+    const docFilter = searchParams.get("docFilter") || "all";
     const search = searchParams.get("search") || "";
 
-    // Build where clause for filtering
-    const where: any = {};
-    
+    // Build where clause using AND to support all filters cleanly
+    const conditions: any[] = [];
+
     if (gradeLevel !== "all") {
-      where.gradeLevel = gradeLevel;
+      conditions.push({ gradeLevel });
     }
 
     if (ismFilter === "ism") {
-      where.isSpecialISM = true;
+      conditions.push({ isSpecialISM: true });
     } else if (ismFilter === "regular") {
-      where.isSpecialISM = false;
+      conditions.push({ isSpecialISM: false });
     }
-    
+
+    if (docFilter === "complete") {
+      conditions.push({ photoDoc: { not: null } });
+      conditions.push({ houseRegistrationDoc: { not: null } });
+      conditions.push({ transcriptDoc: { not: null } });
+    } else if (docFilter === "incomplete") {
+      conditions.push({
+        OR: [
+          { photoDoc: null },
+          { houseRegistrationDoc: null },
+          { transcriptDoc: null },
+        ],
+      });
+    }
+
     if (search) {
-      where.OR = [
-        { firstNameTH: { contains: search, mode: 'insensitive' } },
-        { lastNameTH: { contains: search, mode: 'insensitive' } },
-      ];
+      conditions.push({
+        OR: [
+          { firstNameTH: { contains: search, mode: 'insensitive' } },
+          { lastNameTH: { contains: search, mode: 'insensitive' } },
+        ],
+      });
     }
+
+    const where: any = conditions.length > 0 ? { AND: conditions } : {};
 
     // Get total count
     const total = await prisma.registration.count({ where });

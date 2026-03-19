@@ -55,6 +55,8 @@ interface RegistrationTableProps {
   onStatusFilterChange: (status: string) => void;
   gradeLevelFilter: string;
   onGradeLevelFilterChange: (gradeLevel: string) => void;
+  ismFilter: string;
+  onIsmFilterChange: (ism: string) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
 }
@@ -72,6 +74,8 @@ export function RegistrationTable({
   onStatusFilterChange,
   gradeLevelFilter,
   onGradeLevelFilterChange,
+  ismFilter,
+  onIsmFilterChange,
   searchQuery,
   onSearchQueryChange,
 }: RegistrationTableProps) {
@@ -319,6 +323,16 @@ export function RegistrationTable({
                 <SelectItem value="m4">ม.4</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={ismFilter} onValueChange={onIsmFilterChange}>
+              <SelectTrigger className="w-[180px] border-amber-200">
+                <SelectValue placeholder="ทุกประเภท" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">ทุกประเภท</SelectItem>
+                <SelectItem value="ism">ห้องเรียนพิเศษ ISM</SelectItem>
+                <SelectItem value="regular">รอบปกติ</SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               onClick={exportToExcel}
               disabled={isExporting}
@@ -384,6 +398,16 @@ export function RegistrationTable({
               <SelectItem value="all">ทุกระดับชั้น</SelectItem>
               <SelectItem value="m1">ม.1</SelectItem>
               <SelectItem value="m4">ม.4</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={ismFilter} onValueChange={onIsmFilterChange}>
+            <SelectTrigger className="w-[180px] border-amber-200">
+              <SelectValue placeholder="ทุกประเภท" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">ทุกประเภท</SelectItem>
+              <SelectItem value="ism">ห้องเรียนพิเศษ ISM</SelectItem>
+              <SelectItem value="regular">รอบปกติ</SelectItem>
             </SelectContent>
           </Select>
           <Button
