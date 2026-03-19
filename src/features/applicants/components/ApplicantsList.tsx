@@ -36,6 +36,8 @@ interface ApplicantsListProps {
   onPageChange: (page: number) => void;
   gradeLevelFilter: string;
   onGradeLevelFilterChange: (gradeLevel: string) => void;
+  ismFilter: string;
+  onIsmFilterChange: (ism: string) => void;
   searchQuery: string;
   onSearchQueryChange: (search: string) => void;
   stats: ApplicantsStats | null;
@@ -51,6 +53,8 @@ export function ApplicantsList({
   onPageChange,
   gradeLevelFilter,
   onGradeLevelFilterChange,
+  ismFilter,
+  onIsmFilterChange,
   searchQuery,
   onSearchQueryChange,
   stats,
@@ -88,13 +92,26 @@ export function ApplicantsList({
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-600 whitespace-nowrap">ระดับชั้น:</span>
           <Select value={gradeLevelFilter} onValueChange={onGradeLevelFilterChange} disabled={loading}>
-            <SelectTrigger className="w-[180px] border-amber-200">
+            <SelectTrigger className="w-[150px] border-amber-200">
               <SelectValue placeholder="ทุกระดับชั้น" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">ทุกระดับชั้น</SelectItem>
               <SelectItem value="m1">ม.1</SelectItem>
               <SelectItem value="m4">ม.4</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-600 whitespace-nowrap">ประเภท:</span>
+          <Select value={ismFilter} onValueChange={onIsmFilterChange} disabled={loading}>
+            <SelectTrigger className="w-[160px] border-amber-200">
+              <SelectValue placeholder="ทุกประเภท" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">ทุกประเภท</SelectItem>
+              <SelectItem value="ism">ห้องเรียนพิเศษ ISM</SelectItem>
+              <SelectItem value="regular">ห้องเรียนทั่วไป (รอบปกติ)</SelectItem>
             </SelectContent>
           </Select>
         </div>

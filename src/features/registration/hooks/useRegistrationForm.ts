@@ -74,6 +74,8 @@ export function useRegistrationForm(grade: string) {
     scienceCumulativeM1M3: "",
     mathCumulativeM1M3: "",
     englishCumulativeM1M3: "",
+    // ประเภทนักเรียนรอบปกติ
+    studentZone: "",
   });
 
   const generateCaptcha = () => {

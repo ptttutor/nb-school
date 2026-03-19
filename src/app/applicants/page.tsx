@@ -15,6 +15,7 @@ export default function ApplicantsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [gradeLevelFilter, setGradeLevelFilter] = useState("all");
+  const [ismFilter, setIsmFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [stats, setStats] = useState<{
     total: number;
@@ -32,7 +33,7 @@ export default function ApplicantsPage() {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, gradeLevelFilter]);
+  }, [searchQuery, gradeLevelFilter, ismFilter]);
 
   useEffect(() => {
     fetchRegistrations();
@@ -45,6 +46,7 @@ export default function ApplicantsPage() {
         page: currentPage.toString(),
         limit: "20",
         gradeLevel: gradeLevelFilter,
+        ismFilter: ismFilter,
         search: searchQuery,
       });
 
@@ -68,6 +70,7 @@ export default function ApplicantsPage() {
     try {
       const params = new URLSearchParams({
         gradeLevel: gradeLevelFilter,
+        ismFilter: ismFilter,
         search: searchQuery,
       });
 
@@ -115,6 +118,8 @@ export default function ApplicantsPage() {
             onPageChange={setCurrentPage}
             gradeLevelFilter={gradeLevelFilter}
             onGradeLevelFilterChange={setGradeLevelFilter}
+            ismFilter={ismFilter}
+            onIsmFilterChange={setIsmFilter}
             searchQuery={searchQuery}
             onSearchQueryChange={setSearchQuery}
             stats={stats}

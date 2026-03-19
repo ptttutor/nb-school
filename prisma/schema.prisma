@@ -70,6 +70,11 @@ model Registration {
   mathCumulativeM1M3     String?  // คะแนนเฉลี่ยสะสมกลุ่มสาระคณิตศาสตร์
   englishCumulativeM1M3  String?  // คะแนนเฉลี่ยสะสมกลุ่มสาระภาษาอังกฤษ
   
+  // ประเภทนักเรียน (สำหรับรอบปกติเท่านั้น)
+  // ม.1: "ในเขต" หรือ "นอกเขต"
+  // ม.4: "นร.เดิม" หรือ "นร.ใหม่"
+  studentZone       String?
+  
   // เอกสารแนบ
   houseRegistrationDoc String?  // สำเนาทะเบียนบ้าน
   transcriptDoc        String?  // หลักฐานแสดงผลการเรียน (ปพ.1 หรือ ปพ.7)

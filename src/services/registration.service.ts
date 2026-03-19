@@ -11,7 +11,6 @@ export class RegistrationService {
     return await prisma.registration.create({
       data: {
         ...data,
-        isSpecialISM: true,
         status: 'pending',
       } as any,
     }) as Registration;

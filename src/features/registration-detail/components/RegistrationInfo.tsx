@@ -113,6 +113,18 @@ export function RegistrationInfo({ registration, gradeText }: RegistrationInfoPr
             </div>
           </div>
           <div className="space-y-2">
+            <Label className="text-gray-600">ประเภทห้องเรียน</Label>
+            <p className="font-medium">
+              {registration.isSpecialISM ? "ห้องเรียนพิเศษ ISM" : "ห้องเรียนทั่วไป"}
+            </p>
+          </div>
+          {!registration.isSpecialISM && registration.studentZone && (
+            <div className="space-y-2">
+              <Label className="text-gray-600">ประเภทนักเรียน</Label>
+              <p className="font-medium">{registration.studentZone}</p>
+            </div>
+          )}
+          <div className="space-y-2">
             <Label className="text-gray-600">คำนำหน้า</Label>
             {isEditing ? (
               <Input

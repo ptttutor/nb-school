@@ -45,6 +45,8 @@ export async function POST(request: NextRequest) {
       scienceCumulativeM1M3,
       mathCumulativeM1M3,
       englishCumulativeM1M3,
+      // ประเภทนักเรียนรอบปกติ
+      studentZone,
       // เอกสารแนบ
       houseRegistrationDoc,
       transcriptDoc,
@@ -123,6 +125,8 @@ export async function POST(request: NextRequest) {
         scienceCumulativeM1M3,
         mathCumulativeM1M3,
         englishCumulativeM1M3,
+        // ประเภทนักเรียนรอบปกติ
+        studentZone,
         // เอกสารแนบ
         houseRegistrationDoc,
         transcriptDoc,

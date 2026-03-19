@@ -8,6 +8,7 @@ interface Registration {
   id: string;
   idCardOrPassport?: string;
   isSpecialISM: boolean;
+  studentZone?: string;
   gradeLevel: string;
   title: string;
   firstNameTH: string;

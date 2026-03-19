@@ -169,8 +169,15 @@ export function RegistrationDrawer({ registration, open, onOpenChange, onUpdate 
                 <span className="font-medium">
                   {registration.gradeLevel === 'm4' ? 'มัธยมศึกษาปีที่ 4' : 'มัธยมศึกษาปีที่ 1'}
                 </span>
-                {registration.isSpecialISM && (
+                {registration.isSpecialISM ? (
                   <span className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-purple-600 text-white">ISM</span>
+                ) : (
+                  <>
+                    <span className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-gray-500 text-white">ทั่วไป</span>
+                    {registration.studentZone && (
+                      <span className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-amber-600 text-white">{registration.studentZone}</span>
+                    )}
+                  </>
                 )}
               </div>
             </div>

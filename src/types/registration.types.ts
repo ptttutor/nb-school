@@ -48,6 +48,10 @@ export interface Registration {
   mathCumulativeM1M3?: string;
   englishCumulativeM1M3?: string;
   
+  // ประเภทนักเรียน (รอบปกติ)
+  // ม.1: "ในเขต" | "นอกเขต"  ม.4: "นร.เดิม" | "นร.ใหม่"
+  studentZone?: string;
+  
   // เอกสารแนบ (fields แยก)
   houseRegistrationDoc?: string;
   transcriptDoc?: string;
@@ -102,6 +106,8 @@ export interface RegistrationFormData {
   scienceCumulativeM1M3: string;
   mathCumulativeM1M3: string;
   englishCumulativeM1M3: string;
+  // ประเภทนักเรียน (รอบปกติ)
+  studentZone: string;
 }
 
 export interface GradeData {

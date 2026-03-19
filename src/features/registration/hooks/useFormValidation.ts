@@ -163,6 +163,10 @@ export function useFormValidation(isM4: boolean) {
         if (!formData.siblingsInSchool || formData.siblingsInSchool === "") {
           errors.siblingsInSchool = "กรุณากรอกจำนวนพี่น้องในโรงเรียน";
         }
+
+        if (!formData.isSpecialISM && !formData.studentZone) {
+          errors.studentZone = "กรุณาเลือกประเภทนักเรียน";
+        }
         break;
       
       case 2: // Address

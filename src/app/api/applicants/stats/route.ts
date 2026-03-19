@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const gradeLevel = searchParams.get("gradeLevel") || "all";
+    const ismFilter = searchParams.get("ismFilter") || "all";
     const search = searchParams.get("search") || "";
 
     // Build where clause for filtering (same as main list)
@@ -12,6 +13,12 @@ export async function GET(request: NextRequest) {
     
     if (gradeLevel !== "all") {
       where.gradeLevel = gradeLevel;
+    }
+
+    if (ismFilter === "ism") {
+      where.isSpecialISM = true;
+    } else if (ismFilter === "regular") {
+      where.isSpecialISM = false;
     }
     
     if (search) {

@@ -98,6 +98,42 @@ export function StudentInfoStep({
         )}
       </div>
 
+      {/* ประเภทนักเรียน — แสดงเฉพาะรอบปกติ (ไม่ใช่ ISM) */}
+      {!formData.isSpecialISM && (
+        <div className="space-y-4">
+          <Label htmlFor="studentZone">
+            {isM4 ? "ประเภทนักเรียน *" : "ประเภทนักเรียน *"}
+          </Label>
+          <Select
+            value={formData.studentZone}
+            onValueChange={(val) => handleSelectChange("studentZone", val)}
+          >
+            <SelectTrigger className={cn("border-amber-200", errors?.studentZone && "border-red-500")}>
+              <SelectValue placeholder="เลือกประเภทนักเรียน" />
+            </SelectTrigger>
+            <SelectContent>
+              {isM4 ? (
+                <>
+                  <SelectItem value="นร.เดิม">นร.เดิม (นักเรียนโรงเรียนหนองบัวเดิม)</SelectItem>
+                  <SelectItem value="นร.ใหม่">นร.ใหม่ (นักเรียนจากโรงเรียนอื่น)</SelectItem>
+                </>
+              ) : (
+                <>
+                  <SelectItem value="ในเขต">นักเรียนในเขต</SelectItem>
+                  <SelectItem value="นอกเขต">นักเรียนนอกเขต</SelectItem>
+                </>
+              )}
+            </SelectContent>
+          </Select>
+          {errors?.studentZone && (
+            <p className="text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="w-4 h-4" />
+              {errors.studentZone}
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
         <div className="space-y-4">
           <Label htmlFor="title">คำนำหน้า *</Label>

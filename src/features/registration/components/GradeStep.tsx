@@ -19,7 +19,17 @@ export function GradeStep({
         <h3 className="text-xl font-bold text-amber-900">ผลการเรียน</h3>
       </div>
 
-      <div className="space-y-4">
+      {/* รอบปกติ — ไม่ต้องกรอกเกรด */}
+      {!formData.isSpecialISM ? (
+        <div className="rounded-lg bg-amber-50 border border-amber-200 p-6 text-center space-y-2">
+          <p className="text-amber-800 font-medium text-base">
+            การสมัครรอบปกติ (ห้องเรียนทั่วไป)
+          </p>
+          <p className="text-amber-700 text-sm">
+            ไม่จำเป็นต้องกรอกเกรดเฉลี่ย กรุณากดถัดไปเพื่อดำเนินการต่อ
+          </p>
+        </div>
+      ) : (
         <div className="space-y-4">
           <Label className="text-base font-medium">
             {isM4 ? "ระดับคะแนนเฉลี่ยสะสม ระดับชั้นมัธยมศึกษาปีที่ 3 จำนวน 5 ภาคเรียน" : "เกรดเฉลี่ยรายวิชา *"}
@@ -200,7 +210,7 @@ export function GradeStep({
             )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
