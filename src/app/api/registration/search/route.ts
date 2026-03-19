@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // ค้นหาการสมัครด้วยเลขบัตรประชาชน
-    const registration = await prisma.registration.findFirst({
+    // ค้นหาการสมัครทั้งหมดด้วยเลขบัตรประชาชน
+    const registrations = await prisma.registration.findMany({
       where: {
         idCardOrPassport: idCard.trim(),
       },
@@ -23,19 +23,28 @@ export async function GET(request: NextRequest) {
         id: true,
         firstNameTH: true,
         lastNameTH: true,
+        gradeLevel: true,
+        isSpecialISM: true,
         createdAt: true,
         status: true,
       },
+      orderBy: { createdAt: "desc" },
     });
 
-    if (!registration) {
+    if (!registrations.length) {
       return NextResponse.json(
         { error: "ไม่พบข้อมูลการสมัครด้วยเลขบัตรประชาชนนี้" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(registration);
+    // ถ้ามีแค่รายการเดียว ส่ง id กลับตรงๆ (backward compat)
+    if (registrations.length === 1) {
+      return NextResponse.json(registrations[0]);
+    }
+
+    // ถ้ามีหลายรายการ ส่ง array กลับ
+    return NextResponse.json({ multiple: true, registrations });
   } catch (error) {
     console.error("Search error:", error);
     return NextResponse.json(

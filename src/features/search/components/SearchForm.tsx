@@ -7,18 +7,42 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, AlertCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Search, AlertCircle, ChevronRight } from "lucide-react";
+
+interface SearchResult {
+  id: string;
+  firstNameTH: string;
+  lastNameTH: string;
+  gradeLevel: string;
+  isSpecialISM: boolean;
+  createdAt: string;
+  status: string;
+}
+
+const GRADE_LABEL: Record<string, string> = {
+  m1: "ม.1",
+  m4: "ม.4",
+};
+
+const STATUS_LABEL: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  pending: { label: "รอการตรวจสอบ", variant: "secondary" },
+  approved: { label: "อนุมัติแล้ว", variant: "default" },
+  rejected: { label: "ไม่อนุมัติ", variant: "destructive" },
+};
 
 export function SearchForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [idCard, setIdCard] = useState("");
+  const [multipleResults, setMultipleResults] = useState<SearchResult[] | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setMultipleResults(null);
 
     // Validate ID card
     if (!idCard || idCard.trim().length === 0) {
@@ -31,9 +55,16 @@ export function SearchForm() {
       const response = await fetch(`/api/registration/search?idCard=${encodeURIComponent(idCard.trim())}`);
       const data = await response.json();
 
-      if (response.ok && data.id) {
-        // พบข้อมูลการสมัคร redirect ไปหน้ารายละเอียด
-        router.push(`/registration/${data.id}`);
+      if (response.ok) {
+        if (data.multiple) {
+          // พบหลายรายการ ให้เลือก
+          setMultipleResults(data.registrations);
+        } else if (data.id) {
+          // พบรายการเดียว redirect ไปหน้ารายละเอียด
+          router.push(`/registration/${data.id}`);
+        } else {
+          setMessage(data.error || "ไม่พบข้อมูลการสมัครด้วยเลขบัตรประชาชนนี้");
+        }
       } else {
         setMessage(data.error || "ไม่พบข้อมูลการสมัครด้วยเลขบัตรประชาชนนี้");
       }
@@ -87,6 +118,38 @@ export function SearchForm() {
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
               <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
               <p className="text-red-800 text-sm">{message}</p>
+            </div>
+          )}
+
+          {/* Multiple results */}
+          {multipleResults && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-gray-700">พบ {multipleResults.length} รายการ — เลือกรายการที่ต้องการ:</p>
+              {multipleResults.map((reg) => {
+                const statusInfo = STATUS_LABEL[reg.status] ?? { label: reg.status, variant: "outline" as const };
+                return (
+                  <button
+                    key={reg.id}
+                    type="button"
+                    onClick={() => router.push(`/registration/${reg.id}`)}
+                    className="w-full flex items-center justify-between p-4 bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-50 rounded-lg transition-colors text-left"
+                  >
+                    <div className="space-y-1">
+                      <p className="font-medium text-gray-900">{reg.firstNameTH} {reg.lastNameTH}</p>
+                      <div className="flex flex-wrap gap-2 items-center">
+                        <Badge variant="outline" className="text-xs">{GRADE_LABEL[reg.gradeLevel] ?? reg.gradeLevel}</Badge>
+                        {reg.isSpecialISM ? (
+                          <Badge className="text-xs bg-purple-100 text-purple-800 hover:bg-purple-100">ห้องเรียนพิเศษ ISM</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="text-xs">รอบปกติ</Badge>
+                        )}
+                        <Badge variant={statusInfo.variant} className="text-xs">{statusInfo.label}</Badge>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 ml-2" />
+                  </button>
+                );
+              })}
             </div>
           )}
 

@@ -70,14 +70,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ตรวจสอบเลขบัตรประชาชนซ้ำ
+    // ตรวจสอบเลขบัตรประชาชนซ้ำ (เฉพาะ gradeLevel + isSpecialISM เดียวกัน)
     const existingRegistration = await prisma.registration.findFirst({
-      where: { idCardOrPassport: idCardOrPassport.trim() }
+      where: {
+        idCardOrPassport: idCardOrPassport.trim(),
+        gradeLevel: gradeLevel || "m1",
+        isSpecialISM: isSpecialISM !== undefined ? isSpecialISM : true,
+      }
     });
 
     if (existingRegistration) {
       return NextResponse.json(
-        { error: "เลขบัตรประชาชน/หนังสือเดินทางนี้มีในระบบแล้ว กรุณาตรวจสอบการสมัครของคุณ" },
+        { error: "มีการสมัครประเภทนี้ด้วยเลขบัตรประชาชนนี้แล้ว กรุณาตรวจสอบการสมัครของคุณ" },
         { status: 409 }
       );
     }
