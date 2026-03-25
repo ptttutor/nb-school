@@ -85,6 +85,7 @@ export function RegistrationTable({
   const [exportOptions, setExportOptions] = useState({
     gradeLevel: 'all' as string,
     status: 'all' as string,
+    ismFilter: 'all' as string,
     dateRange: 'all' as string,
     dateFrom: '',
     dateTo: '',
@@ -98,10 +99,11 @@ export function RegistrationTable({
       // Build query based on export options
       const useGradeLevel = exportOptions.gradeLevel;
       const useStatus = exportOptions.status;
+      const useIsmFilter = exportOptions.ismFilter;
       
       // Fetch all registrations without pagination
       const response = await fetch(
-        `/api/admin/registrations?page=1&limit=99999&status=${useStatus}&gradeLevel=${useGradeLevel}&search=`
+        `/api/admin/registrations?page=1&limit=99999&status=${useStatus}&gradeLevel=${useGradeLevel}&ismFilter=${useIsmFilter}&search=`
       );
       
       if (!response.ok) throw new Error('Failed to fetch data');
@@ -155,6 +157,9 @@ export function RegistrationTable({
       
       const gradeLevelText = useGradeLevel === 'all' ? 'ทุกระดับชั้น' :
                             useGradeLevel === 'm1' ? 'ม.1' : 'ม.4';
+
+      const ismFilterText = useIsmFilter === 'all' ? 'ทุกประเภท' :
+                            useIsmFilter === 'ism' ? 'ห้องเรียนพิเศษ ISM' : 'ห้องเรียนปกติ';
       
       const dateRangeText = exportOptions.dateRange === 'all' ? 'ทั้งหมด' :
                            exportOptions.dateRange === 'today' ? 'วันนี้' :
@@ -164,13 +169,30 @@ export function RegistrationTable({
 
       // Prepare data for Excel
       const excelData = allRegistrations.map((reg: Registration, index: number) => {
+        const gradeLabel = reg.gradeLevel === 'm1' ? 'ม.1' : reg.gradeLevel === 'm4' ? 'ม.4' : reg.gradeLevel;
+        const classType = reg.isSpecialISM ? 'ห้องเรียนพิเศษ ISM' : 'ห้องเรียนปกติ';
+
+        let studentZoneLabel = '-';
+        if (!reg.isSpecialISM && reg.studentZone) {
+          studentZoneLabel = reg.studentZone;
+        }
+
+        const statusLabel = reg.status === 'pending' ? 'รอดำเนินการ' : reg.status === 'approved' ? 'อนุมัติ' : reg.status === 'rejected' ? 'ปฏิเสธ' : reg.status;
+
         return {
           'ลำดับ': index + 1,
+          'วันที่สมัคร': new Date(reg.createdAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' }),
           'คำนำหน้า': reg.title,
           'ชื่อ': reg.firstNameTH,
           'นามสกุล': reg.lastNameTH,
           'เลขบัตรประชาชน': reg.idCardOrPassport || '-',
           'เบอร์โทร': reg.phone,
+          'ระดับชั้น': gradeLabel,
+          'ประเภทห้องเรียน': classType,
+          'ประเภทนักเรียน': studentZoneLabel,
+          'โรงเรียนเดิม': reg.schoolName || '-',
+          'จังหวัด': reg.province || '-',
+          'สถานะ': statusLabel,
         };
       });
 
@@ -180,6 +202,7 @@ export function RegistrationTable({
         [''],
         ['วันที่ Export:', exportDate],
         ['ระดับชั้นที่กรอง:', gradeLevelText],
+        ['ประเภทที่กรอง:', ismFilterText],
         ['สถานะที่กรอง:', statusText],
         ['ช่วงเวลาที่กรอง:', dateRangeText],
         ['จำนวนรายการทั้งหมด:', `${allRegistrations.length} รายการ`],
@@ -198,20 +221,27 @@ export function RegistrationTable({
         skipHeader: false 
       });
       
-      // Set column widths for 6 columns only
+      // Set column widths
       const colWidths = [
         { wch: 8 },  // ลำดับ
+        { wch: 16 }, // วันที่สมัคร
         { wch: 12 }, // คำนำหน้า
         { wch: 20 }, // ชื่อ
         { wch: 20 }, // นามสกุล
         { wch: 20 }, // เลขบัตรประชาชน
         { wch: 15 }, // เบอร์โทร
+        { wch: 10 }, // ระดับชั้น
+        { wch: 24 }, // ประเภทห้องเรียน
+        { wch: 20 }, // ประเภทนักเรียน
+        { wch: 30 }, // โรงเรียนเดิม
+        { wch: 20 }, // จังหวัด
+        { wch: 16 }, // สถานะ
       ];
       worksheet['!cols'] = colWidths;
       
-      // Merge cells for title (6 columns: A to F)
+      // Merge cells for title (13 columns: A to M)
       if (!worksheet['!merges']) worksheet['!merges'] = [];
-      worksheet['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }); // Merge title row
+      worksheet['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }); // Merge title row
 
       // Add to workbook
       XLSX.utils.book_append_sheet(workbook, worksheet, 'รายการสมัคร');
@@ -224,6 +254,7 @@ export function RegistrationTable({
         [''],
         ['เงื่อนไขการกรอง'],
         ['ระดับชั้น:', gradeLevelText],
+        ['ประเภท:', ismFilterText],
         ['สถานะ:', statusText],
         ['ช่วงเวลา:', dateRangeText],
         [''],
@@ -609,6 +640,24 @@ export function RegistrationTable({
             </Select>
           </div>
 
+          {/* Class Type ISM / Regular */}
+          <div className="space-y-2">
+            <Label className="text-amber-900 font-semibold">ประเภทห้องเรียน</Label>
+            <Select 
+              value={exportOptions.ismFilter} 
+              onValueChange={(value) => setExportOptions({...exportOptions, ismFilter: value})}
+            >
+              <SelectTrigger className="border-amber-200">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">ทุกประเภท</SelectItem>
+                <SelectItem value="ism">ห้องเรียนพิเศษ ISM</SelectItem>
+                <SelectItem value="regular">ห้องเรียนปกติ</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Status */}
           <div className="space-y-2">
             <Label className="text-amber-900 font-semibold">สถานะ</Label>
@@ -677,6 +726,7 @@ export function RegistrationTable({
             <p className="text-sm text-amber-900 font-semibold mb-2">สรุปข้อมูลที่จะ Export:</p>
             <ul className="text-sm text-amber-700 space-y-1">
               <li>• ระดับชั้น: {exportOptions.gradeLevel === 'all' ? 'ทุกระดับชั้น' : exportOptions.gradeLevel === 'm1' ? 'ม.1' : 'ม.4'}</li>
+              <li>• ประเภท: {exportOptions.ismFilter === 'all' ? 'ทุกประเภท' : exportOptions.ismFilter === 'ism' ? 'ห้องเรียนพิเศษ ISM' : 'ห้องเรียนปกติ'}</li>
               <li>• สถานะ: {exportOptions.status === 'all' ? 'ทุกสถานะ' : exportOptions.status === 'pending' ? 'รอดำเนินการ' : exportOptions.status === 'approved' ? 'อนุมัติ' : 'ปฏิเสธ'}</li>
               <li>• ช่วงเวลา: {
                 exportOptions.dateRange === 'all' ? 'ทั้งหมด' :
