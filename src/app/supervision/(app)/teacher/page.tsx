@@ -84,7 +84,6 @@ export default async function TeacherHomePage() {
         <Link href="/supervision/teacher/plans">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="py-4 text-center">
-              <div className="text-2xl mb-1">📝</div>
               <div className="font-medium text-sm">แผนการสอน</div>
               <div className="text-xs text-gray-500 mt-0.5">{planCount}/{assignments.length} วิชา</div>
             </CardContent>
@@ -93,7 +92,6 @@ export default async function TeacherHomePage() {
         <Link href="/supervision/teacher/clips">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="py-4 text-center">
-              <div className="text-2xl mb-1">🎬</div>
               <div className="font-medium text-sm">คลิปการสอน</div>
             </CardContent>
           </Card>
@@ -101,7 +99,6 @@ export default async function TeacherHomePage() {
         <Link href="/supervision/teacher/logs">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="py-4 text-center">
-              <div className="text-2xl mb-1">📓</div>
               <div className="font-medium text-sm">บันทึกหลังสอน</div>
             </CardContent>
           </Card>

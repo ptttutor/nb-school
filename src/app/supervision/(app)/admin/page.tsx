@@ -21,13 +21,13 @@ export default async function SupervisionAdminPage() {
     : 0;
 
   const menuItems = [
-    { href: "/supervision/admin/semesters", label: "ปีการศึกษา/ภาคเรียน", icon: "📅", desc: "กำหนดภาคเรียนและปฏิทินการส่งงาน" },
-    { href: "/supervision/admin/subject-groups", label: "กลุ่มสาระ", icon: "📚", desc: "จัดการกลุ่มสาระการเรียนรู้" },
-    { href: "/supervision/admin/teachers", label: "ครูผู้สอน", icon: "👨‍🏫", desc: "เพิ่ม/แก้ไขข้อมูลครู" },
-    { href: "/supervision/admin/subjects", label: "รายวิชา", icon: "📖", desc: "จัดการรายวิชาทั้งหมด" },
-    { href: "/supervision/admin/assignments", label: "มอบหมายการสอน", icon: "📋", desc: "กำหนดครูสอนวิชาและห้องเรียน" },
-    { href: "/supervision/admin/users", label: "จัดการผู้ใช้", icon: "👥", desc: "เพิ่ม/แก้ไขบัญชีผู้ใช้งาน" },
-    { href: "/supervision/admin/supervision-rounds", label: "รอบนิเทศ", icon: "🔍", desc: "กำหนดรอบนิเทศภายใน" },
+    { href: "/supervision/admin/semesters", label: "ปีการศึกษา/ภาคเรียน", icon: "", desc: "กำหนดภาคเรียนและปฏิทินการส่งงาน" },
+    { href: "/supervision/admin/subject-groups", label: "กลุ่มสาระ", icon: "", desc: "จัดการกลุ่มสาระการเรียนรู้" },
+    { href: "/supervision/admin/teachers", label: "ครูผู้สอน", icon: "", desc: "เพิ่ม/แก้ไขข้อมูลครู" },
+    { href: "/supervision/admin/subjects", label: "รายวิชา", icon: "", desc: "จัดการรายวิชาทั้งหมด" },
+    { href: "/supervision/admin/assignments", label: "มอบหมายการสอน", icon: "", desc: "กำหนดครูสอนวิชาและห้องเรียน" },
+    { href: "/supervision/admin/users", label: "จัดการผู้ใช้", icon: "", desc: "เพิ่ม/แก้ไขบัญชีผู้ใช้งาน" },
+    { href: "/supervision/admin/supervision-rounds", label: "รอบนิเทศ", icon: "", desc: "กำหนดรอบนิเทศภายใน" },
   ];
 
   return (

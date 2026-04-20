@@ -34,9 +34,9 @@ export default async function ReviewHomePage() {
   ]);
 
   const menus = [
-    { href: "/supervision/review/plans", label: "ตรวจแผนการสอน", icon: "📝", total: totalPlans, pending: pendingPlans, pendingLabel: "รอตรวจ" },
-    { href: "/supervision/review/clips", label: "ตรวจคลิปการสอน", icon: "🎬", total: totalClips, pending: pendingClips, pendingLabel: "รอนิเทศ" },
-    { href: "/supervision/review/logs", label: "ตรวจบันทึกหลังสอน", icon: "📓", total: totalLogs, pending: pendingLogs, pendingLabel: "รอตรวจ" },
+    { href: "/supervision/review/plans", label: "ตรวจแผนการสอน", icon: "", total: totalPlans, pending: pendingPlans, pendingLabel: "รอตรวจ" },
+    { href: "/supervision/review/clips", label: "ตรวจคลิปการสอน", icon: "", total: totalClips, pending: pendingClips, pendingLabel: "รอนิเทศ" },
+    { href: "/supervision/review/logs", label: "ตรวจบันทึกหลังสอน", icon: "", total: totalLogs, pending: pendingLogs, pendingLabel: "รอตรวจ" },
   ];
 
   return (

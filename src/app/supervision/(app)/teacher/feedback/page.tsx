@@ -147,7 +147,7 @@ export default function TeacherFeedbackPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="text-sm font-medium">
-                      📝 {r.plan?.assignment.subject.subjectCode} — {r.plan?.assignment.subject.subjectName}
+                      {r.plan?.assignment.subject.subjectCode} — {r.plan?.assignment.subject.subjectName}
                     </CardTitle>
                     <p className="text-xs text-gray-400">ห้อง {r.plan?.assignment.classGroup}</p>
                   </div>
@@ -180,7 +180,7 @@ export default function TeacherFeedbackPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="text-sm font-medium">
-                      🎬 {r.clip?.plan.assignment.subject.subjectCode} — {r.clip?.plan.assignment.subject.subjectName}
+                      {r.clip?.plan.assignment.subject.subjectCode} — {r.clip?.plan.assignment.subject.subjectName}
                     </CardTitle>
                     <p className="text-xs text-gray-400">ห้อง {r.clip?.plan.assignment.classGroup}</p>
                     {r.clip?.clipUrl && (
@@ -219,7 +219,7 @@ export default function TeacherFeedbackPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="text-sm font-medium">
-                      📓 {r.log?.unit.plan.assignment.subject.subjectCode} — {r.log?.unit.plan.assignment.subject.subjectName}
+                      {r.log?.unit.plan.assignment.subject.subjectCode} — {r.log?.unit.plan.assignment.subject.subjectName}
                     </CardTitle>
                     <p className="text-xs text-gray-400">
                       หน่วยที่ {r.log?.unit.unitNumber}: {r.log?.unit.unitName} · ห้อง {r.log?.unit.plan.assignment.classGroup}
