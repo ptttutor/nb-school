@@ -21,14 +21,19 @@ export function Header() {
               <div className="text-sm text-amber-700">Nongbua School</div>
             </div>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <a href="tel:056251281" className="hidden md:flex items-center gap-2 text-amber-700 hover:text-amber-900 transition-colors">
               <Phone className="w-4 h-4" />
               <span className="text-sm">056-251281</span>
             </a>
+            <Link href="/supervision">
+              <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-600 hover:text-white text-sm">
+                ระบบนิเทศภายใน
+              </Button>
+            </Link>
             <Link href="/admin">
-              <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-600 hover:text-white">
-                Admin Login
+              <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-600 hover:text-white text-sm">
+                Admin
               </Button>
             </Link>
           </div>

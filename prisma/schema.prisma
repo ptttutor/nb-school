@@ -135,3 +135,238 @@ model AdmissionSettings {
   
   @@index([gradeLevel])
 }
+
+// ===== SUPERVISION MODULE =====
+
+enum SupervisionRole {
+  ACADEMIC_ADMIN       // Admin วิชาการ
+  TEACHER              // ครูผู้สอน
+  SUBJECT_HEAD         // หัวหน้าสาระ
+  ACADEMIC_HEAD        // หัวหน้าวิชาการ
+  VICE_PRINCIPAL_ACADEMIC  // รองผู้อำนวยการฝ่ายวิชาการ
+  VICE_PRINCIPAL       // รองผู้อำนวยการฝ่ายอื่น
+  PRINCIPAL            // ผู้อำนวยการ
+}
+
+enum PlanStatus {
+  NOT_SUBMITTED        // ยังไม่ส่งแผน
+  SUBMITTED            // ส่งแผนแล้ว รอตรวจ
+  REVISION_REQUIRED    // ส่งกลับแก้ไข
+  APPROVED             // ผ่านการตรวจแผน
+}
+
+enum ClipStatus {
+  NOT_SUBMITTED        // ยังไม่ส่งคลิป
+  SUBMITTED            // ส่งคลิปแล้ว รอนิเทศ
+  SUPERVISING          // อยู่ระหว่างนิเทศ
+  COMPLETED            // ดำเนินการสมบูรณ์
+}
+
+enum LogStatus {
+  NOT_SUBMITTED        // ยังไม่บันทึกหลังสอน
+  SUBMITTED            // บันทึกแล้ว รอตรวจ
+  REVISION_REQUIRED    // ส่งกลับแก้ไข
+  APPROVED             // ผ่านการตรวจ
+}
+
+// ผู้ใช้งานในระบบ supervision
+model SupervisionUser {
+  id          String           @id @default(cuid())
+  username    String           @unique
+  password    String
+  role        SupervisionRole
+  displayName String
+  teacherId   String?          @unique  // เชื่อมกับ Teacher (สำหรับ role = TEACHER)
+  teacher     SupervisionTeacher? @relation(fields: [teacherId], references: [id])
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  reviews     ReviewRecord[]
+
+  @@index([role])
+}
+
+// กลุ่มสาระการเรียนรู้
+model SubjectGroup {
+  id                    String             @id @default(cuid())
+  name                  String             @unique  // เช่น "ภาษาไทย", "คณิตศาสตร์"
+  vicePrincipalId       String?            // รองฯ ที่รับผิดชอบนิเทศกลุ่มสาระนี้
+  subjects              Subject[]
+  teachers              SupervisionTeacher[]
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+}
+
+// ครูผู้สอน
+model SupervisionTeacher {
+  id          String         @id @default(cuid())
+  teacherCode String         @unique  // รหัสครู เช่น 101
+  prefix      String         // คำนำหน้า
+  firstName   String
+  lastName    String
+  subjectGroupId String?
+  subjectGroup SubjectGroup? @relation(fields: [subjectGroupId], references: [id])
+  user        SupervisionUser?
+  assignments TeacherSubjectAssignment[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([subjectGroupId])
+}
+
+// รายวิชา
+model Subject {
+  id             String         @id @default(cuid())
+  subjectCode    String         // รหัสวิชา เช่น ท21102
+  subjectName    String         // ชื่อวิชา
+  credits        Float
+  gradeLevel     String         // ม.1 - ม.6
+  subjectGroupId String?
+  subjectGroup   SubjectGroup?  @relation(fields: [subjectGroupId], references: [id])
+  assignments    TeacherSubjectAssignment[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([subjectGroupId])
+  @@index([gradeLevel])
+}
+
+// ปีการศึกษา / ภาคเรียน
+model AcademicSemester {
+  id            String    @id @default(cuid())
+  year          Int       // ปีการศึกษา เช่น 2568
+  semester      Int       // ภาคเรียน 1 หรือ 2
+  isActive      Boolean   @default(false)  // ภาคเรียนที่กำลังดำเนินการ
+  planDeadline  DateTime? // วันสุดท้ายของการส่งแผน
+  clipDeadline  DateTime? // วันสุดท้ายของการส่งคลิป
+  logDeadline   DateTime? // วันสุดท้ายของการส่งบันทึกหลังสอน
+  assignments   TeacherSubjectAssignment[]
+  supervisionRounds SupervisionRound[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([year, semester])
+}
+
+// ความสัมพันธ์: ครู - วิชา - ห้อง - ภาคเรียน
+model TeacherSubjectAssignment {
+  id           String           @id @default(cuid())
+  teacherId    String
+  teacher      SupervisionTeacher @relation(fields: [teacherId], references: [id])
+  subjectId    String
+  subject      Subject          @relation(fields: [subjectId], references: [id])
+  semesterId   String
+  semester     AcademicSemester @relation(fields: [semesterId], references: [id])
+  classGroup   String           // กลุ่ม-ห้อง เช่น "1", "2", "8"
+  teachingPlan TeachingPlan?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([teacherId, subjectId, semesterId, classGroup])
+  @@index([teacherId])
+  @@index([semesterId])
+}
+
+// รอบนิเทศ
+model SupervisionRound {
+  id          String           @id @default(cuid())
+  name        String           // ชื่อรอบ เช่น "รอบนิเทศที่ 1"
+  semesterId  String
+  semester    AcademicSemester @relation(fields: [semesterId], references: [id])
+  startDate   DateTime?
+  endDate     DateTime?
+  clips       SupervisionClip[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([semesterId])
+}
+
+// แผนการสอน (โมดูล 1)
+model TeachingPlan {
+  id             String                   @id @default(cuid())
+  assignmentId   String                   @unique
+  assignment     TeacherSubjectAssignment @relation(fields: [assignmentId], references: [id])
+  driveLink      String?                  // ลิงก์ Google Drive
+  status         PlanStatus               @default(NOT_SUBMITTED)
+  units          PlanUnit[]               // หน่วยการเรียนรู้/แผนย่อย
+  clips          SupervisionClip[]
+  reviews        ReviewRecord[]
+  submittedAt    DateTime?
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+}
+
+// หน่วยการเรียนรู้ / แผนย่อย (กำหนดโดยครู)
+model PlanUnit {
+  id           String       @id @default(cuid())
+  planId       String
+  plan         TeachingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  unitNumber   Int          // ลำดับที่
+  unitName     String       // ชื่อแผน/หน่วย
+  teachingLogs TeachingLog[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([planId])
+}
+
+// คลิปการสอน (โมดูล 2)
+model SupervisionClip {
+  id          String            @id @default(cuid())
+  planId      String
+  plan        TeachingPlan      @relation(fields: [planId], references: [id])
+  clipUrl     String            // ลิงก์คลิปการสอน
+  status      ClipStatus        @default(NOT_SUBMITTED)
+  roundId     String?           // รอบนิเทศที่ส่ง
+  round       SupervisionRound? @relation(fields: [roundId], references: [id])
+  reviews     ReviewRecord[]
+  submittedAt DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([planId])
+  @@index([roundId])
+}
+
+// บันทึกหลังสอน (โมดูล 3)
+model TeachingLog {
+  id          String      @id @default(cuid())
+  unitId      String
+  unit        PlanUnit    @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  status      LogStatus   @default(NOT_SUBMITTED)
+  // เนื้อหาบันทึกหลังสอน
+  result      String?     @db.Text  // ผลการจัดการเรียนรู้
+  issues      String?     @db.Text  // ปัญหา/อุปสรรค
+  improvement String?     @db.Text  // แนวทางแก้ไข/พัฒนา
+  studentWorkLink String? // ลิงก์ผลงานนักเรียน
+  attachmentLink  String? // ลิงก์เอกสารแนบอื่นๆ
+  reviews     ReviewRecord[]
+  submittedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([unitId])
+}
+
+// บันทึกการตรวจ / ข้อเสนอแนะ (ใช้ร่วมกันทั้ง 3 โมดูล)
+model ReviewRecord {
+  id            String           @id @default(cuid())
+  reviewerId    String
+  reviewer      SupervisionUser  @relation(fields: [reviewerId], references: [id])
+  // อ้างอิงถึงสิ่งที่ตรวจ (เลือกอย่างใดอย่างหนึ่ง)
+  planId        String?
+  plan          TeachingPlan?    @relation(fields: [planId], references: [id])
+  clipId        String?
+  clip          SupervisionClip? @relation(fields: [clipId], references: [id])
+  logId         String?
+  log           TeachingLog?     @relation(fields: [logId], references: [id])
+  comment       String           @db.Text  // ข้อเสนอแนะ
+  decision      String?          // "approved" | "revision_required" | "noted"
+  createdAt     DateTime         @default(now())
+
+  @@index([reviewerId])
+  @@index([planId])
+  @@index([clipId])
+  @@index([logId])
+}

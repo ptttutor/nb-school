@@ -1,5 +1,5 @@
 import { Header, Footer } from "@/components/layout";
-import { HeroSection, WelcomeSection, LocationSection } from "@/components/home";
+import { HeroSection, WelcomeSection, LocationSection, StaffPortalSection } from "@/components/home";
 import { NewsSection } from "@/features/news/components";
 import { prisma } from "@/lib/prisma";
 
@@ -23,6 +23,7 @@ export default async function Home() {
       <main className="flex-1 w-full">
         <HeroSection heroImages={heroImages} />
         <WelcomeSection />
+        <StaffPortalSection />
         <div className="pb-16">
           <NewsSection />
         </div>
